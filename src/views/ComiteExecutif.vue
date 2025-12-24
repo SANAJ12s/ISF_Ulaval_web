@@ -35,11 +35,11 @@
               <div class="card-body p-4">
                 <div class="d-flex align-items-start">
                   <div class="me-4">
-                    <img 
-                      src="/executif/Présidente.jpg" 
-                      alt="Soraya Faulet - Présidente" 
-                      class="rounded-circle" 
-                      width="120" 
+                    <img
+                      src="/executif/presidente.jpg"
+                      alt="Soraya Faulet - Présidente"
+                      class="rounded-circle"
+                      width="120"
                       height="120"
                       style="object-fit: cover; border: 3px solid #fff; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);"
                     >
@@ -69,11 +69,11 @@
               <div class="card-body p-4">
                 <div class="d-flex align-items-start">
                   <div class="me-4">
-                    <img 
-                      src="/executif/Vp Exécutive.jpg" 
-                      alt="Nelly Njakou - VP Exécutive" 
-                      class="rounded-circle" 
-                      width="120" 
+                    <img
+                      src="/executif/vp-executive.jpg"
+                      alt="Nelly Njakou - VP Exécutive"
+                      class="rounded-circle"
+                      width="120"
                       height="120"
                       style="object-fit: cover; border: 3px solid #fff; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);"
                     >
@@ -103,11 +103,11 @@
               <div class="card-body p-4">
                 <div class="d-flex align-items-start">
                   <div class="me-4">
-                    <img 
-                      src="/executif/Vp Trésorerie.jpg" 
-                      alt="VP Trésorerie" 
-                      class="rounded-circle" 
-                      width="120" 
+                    <img
+                      src="/executif/vp-tresorerie.jpg"
+                      alt="VP Trésorerie"
+                      class="rounded-circle"
+                      width="120"
                       height="120"
                       style="object-fit: cover; border: 3px solid #fff; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);"
                     >
@@ -137,11 +137,11 @@
               <div class="card-body p-4">
                 <div class="d-flex align-items-start">
                   <div class="me-4">
-                    <img 
-                      src="/executif/Vp Interne.jpg" 
-                      alt="VP Interne" 
-                      class="rounded-circle" 
-                      width="120" 
+                    <img
+                      src="/executif/vp-interne.jpg"
+                      alt="VP Interne"
+                      class="rounded-circle"
+                      width="120"
                       height="120"
                       style="object-fit: cover; border: 3px solid #fff; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);"
                     >
@@ -171,11 +171,11 @@
               <div class="card-body p-4">
                 <div class="d-flex align-items-start">
                   <div class="me-4">
-                    <img 
-                      src="/executif/Vp Communication.jpg" 
-                      alt="VP Communication" 
-                      class="rounded-circle" 
-                      width="120" 
+                    <img
+                      src="/executif/vp-communication.jpg"
+                      alt="VP Communication"
+                      class="rounded-circle"
+                      width="120"
                       height="120"
                       style="object-fit: cover; border: 3px solid #fff; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);"
                     >
@@ -205,11 +205,11 @@
               <div class="card-body p-4">
                 <div class="d-flex align-items-start">
                   <div class="me-4">
-                    <img 
-                      src="/executif/Vp Événementiel .jpg" 
-                      alt="VP Événementiel" 
-                      class="rounded-circle" 
-                      width="120" 
+                    <img
+                      src="/executif/vp-evenementiel.jpg"
+                      alt="VP Événementiel"
+                      class="rounded-circle"
+                      width="120"
                       height="120"
                       style="object-fit: cover; border: 3px solid #fff; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);"
                     >
@@ -287,11 +287,11 @@
               <div class="card-body p-4">
                 <div class="d-flex align-items-start mb-3">
                   <div class="me-4">
-                    <img 
-                      src="/executif/Vp Externe.jpg" 
-                      alt="VP Externe" 
-                      class="rounded-circle" 
-                      width="100" 
+                    <img
+                      src="/executif/vp-externe.jpg"
+                      alt="VP Externe"
+                      class="rounded-circle"
+                      width="100"
                       height="100"
                       style="object-fit: cover; border: 3px solid #fff; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);"
                     >
@@ -309,11 +309,11 @@
                 <hr>
                 <div class="d-flex align-items-start">
                   <div class="me-4">
-                    <img 
-                      src="/executif/Assistante Externe.jpg" 
-                      alt="Assistante Externe" 
-                      class="rounded-circle" 
-                      width="100" 
+                    <img
+                      src="/executif/assistante-externe.jpg"
+                      alt="Assistante Externe"
+                      class="rounded-circle"
+                      width="100"
                       height="100"
                       style="object-fit: cover; border: 3px solid #fff; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);"
                     >
@@ -338,11 +338,11 @@
               <div class="card-body p-4">
                 <div class="d-flex align-items-start mb-3">
                   <div class="me-4">
-                    <img 
-                      src="/executif/Vp Leadership.jpg" 
-                      alt="VP Leadership" 
-                      class="rounded-circle" 
-                      width="100" 
+                    <img
+                      src="/executif/vp-leadership.jpg"
+                      alt="VP Leadership"
+                      class="rounded-circle"
+                      width="100"
                       height="100"
                       style="object-fit: cover; border: 3px solid #fff; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);"
                     >
