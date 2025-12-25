@@ -298,7 +298,7 @@ export default {
 <style scoped>
 .hero {
   padding-top: 80px;
-  background: linear-gradient(135deg, var(--primary-color) 0%, var(--dark-color) 100%);
+  background-image: url('/ulaval.jpg'); background-size: cover; background-position: center;
   min-height: 100vh;
 }
 
