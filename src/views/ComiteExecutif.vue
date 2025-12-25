@@ -36,7 +36,7 @@
                 <div class="d-flex align-items-start">
                   <div class="me-4">
                     <img
-                      src="/executif/presidente.jpg"
+                      src="executif/Presidente.jpg"
                       alt="Soraya Faulet - Présidente"
                       class="rounded-circle"
                       width="120"
@@ -70,7 +70,7 @@
                 <div class="d-flex align-items-start">
                   <div class="me-4">
                     <img
-                      src="/executif/vp-executive.jpg"
+                      src="/executif/Vp_Executive.jpg"
                       alt="Nelly Njakou - VP Exécutive"
                       class="rounded-circle"
                       width="120"
@@ -104,7 +104,7 @@
                 <div class="d-flex align-items-start">
                   <div class="me-4">
                     <img
-                      src="/executif/vp-tresorerie.jpg"
+                      src="/executif/Vp_Tresorerie.jpg"
                       alt="VP Trésorerie"
                       class="rounded-circle"
                       width="120"
@@ -138,7 +138,7 @@
                 <div class="d-flex align-items-start">
                   <div class="me-4">
                     <img
-                      src="/executif/vp-interne.jpg"
+                      src="/executif/Vp_Interne.jpg"
                       alt="VP Interne"
                       class="rounded-circle"
                       width="120"
@@ -172,7 +172,7 @@
                 <div class="d-flex align-items-start">
                   <div class="me-4">
                     <img
-                      src="/executif/vp-communication.jpg"
+                      src="/executif/Vp_Communication.jpg"
                       alt="VP Communication"
                       class="rounded-circle"
                       width="120"
@@ -206,7 +206,7 @@
                 <div class="d-flex align-items-start">
                   <div class="me-4">
                     <img
-                      src="/executif/vp-evenementiel.jpg"
+                      src="/executif/Vp_Evenementiel.jpg"
                       alt="VP Événementiel"
                       class="rounded-circle"
                       width="120"
@@ -288,7 +288,7 @@
                 <div class="d-flex align-items-start mb-3">
                   <div class="me-4">
                     <img
-                      src="/executif/vp-externe.jpg"
+                      src="/executif/Vp_Externe.jpg"
                       alt="VP Externe"
                       class="rounded-circle"
                       width="100"
@@ -310,7 +310,7 @@
                 <div class="d-flex align-items-start">
                   <div class="me-4">
                     <img
-                      src="/executif/assistante-externe.jpg"
+                      src="/executif/Assistante_Externe.jpg"
                       alt="Assistante Externe"
                       class="rounded-circle"
                       width="100"
@@ -339,7 +339,7 @@
                 <div class="d-flex align-items-start mb-3">
                   <div class="me-4">
                     <img
-                      src="/executif/vp-leadership.jpg"
+                      src="/executif/Vp_Leadership.jpg"
                       alt="VP Leadership"
                       class="rounded-circle"
                       width="100"
@@ -360,11 +360,11 @@
                 <hr>
                 <div class="d-flex align-items-start">
                   <div class="me-4">
-                    <img 
-                      src="/executif/Assistant Leadership.jpg" 
-                      alt="Assistant Leadership" 
-                      class="rounded-circle" 
-                      width="100" 
+                    <img
+                      src="/executif/Assistant_Leadership.jpg"
+                      alt="Assistant Leadership"
+                      class="rounded-circle"
+                      width="100"
                       height="100"
                       style="object-fit: cover; border: 3px solid #fff; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);"
                     >
