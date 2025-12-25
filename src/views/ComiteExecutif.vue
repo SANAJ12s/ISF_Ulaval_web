@@ -36,7 +36,7 @@
                 <div class="d-flex align-items-start">
                   <div class="me-4">
                     <img
-                      src="executif/Presidente.jpg"
+                      src="/executif/Presidente.jpg"
                       alt="Soraya Faulet - Présidente"
                       class="rounded-circle"
                       width="120"
