@@ -6,7 +6,7 @@
       <img src="/logo.png" alt="Logo ISF Ulaval" class="hero-logo" />
     </section>
 
-    <!-- TEXTE SOUS LE BANNER -->
+    <!-- TEXTE SOUS LE BANNER (fond noir) -->
     <section class="hero-content py-5">
       <div class="container">
         <div class="row">
@@ -38,86 +38,122 @@
       </div>
     </section>
 
-    <!-- ÉVÉNEMENTS -->
-    <section class="py-5 bg-light">
+    <!-- IMAGE MIDICONF3 (après les 2 boutons) -->
+    <section class="midiconf-section">
       <div class="container">
-        <div class="text-center mb-5">
-          <h2 class="display-5 fw-bold">Événements à venir</h2>
-          <p class="lead text-muted">
-            Rejoignez nos prochaines activités
+        <img
+          src="/activites/midiconf3.png"
+          alt="Midiconf ISF ULaval"
+          class="midiconf-img"
+        />
+      </div>
+    </section>
+
+    <!-- BANDES : QUI SOMMES-NOUS -->
+    <section class="who-we-are">
+      <h2 class="section-title">Qui sommes-nous ?</h2>
+
+      <!-- ORANGE : NOTRE HISTOIRE -->
+      <div class="band band-orange">
+        <div class="container band-inner">
+          <h3>Notre histoire</h3>
+          <p>
+            La section Ingénieurs sans frontières – Université Laval fait partie du réseau
+            Ingénieurs sans frontières Canada. Elle rassemble aujourd’hui une communauté
+            dynamique et engagée de plus de 90 membres.
+          </p>
+          <p>
+            Ouverte à toutes les étudiantes et tous les étudiants, de tous les cycles, de tous
+            les programmes, incluant les étudiants et étudiantes aux cycles supérieurs, notre
+            section est un espace inclusif où chacun peut s’impliquer à sa façon et selon ses intérêts.
+          </p>
+        </div>
+      </div>
+
+      <!-- NOIR : NOTRE MISSION -->
+      <div class="band band-black">
+        <div class="container band-inner">
+          <h3>Notre mission</h3>
+          <p>
+            Notre mission est de sensibiliser et mobiliser la communauté étudiante autour des enjeux
+            sociaux, environnementaux et éthiques liés à l’ingénierie et au développement international.
+          </p>
+          <p>
+            Par le biais de conférences, d’activités de sensibilisation, d’événements et d’initiatives
+            concrètes, nous cherchons à créer un impact positif et durable, ici comme ailleurs.
+          </p>
+        </div>
+      </div>
+
+      <!-- ORANGE : NOTRE VISION -->
+      <div class="band band-orange">
+        <div class="container band-inner">
+          <h3>Notre vision</h3>
+          <p>
+            Nous croyons en une ingénierie humaine, responsable et engagée. Notre vision est de contribuer
+            à la formation de personnes conscientes des impacts de leurs actions et désireuses de mettre
+            leurs compétences au service d’un avenir plus juste, solidaire et durable.
+          </p>
+          <p>
+            Que tu sois simplement curieux·se ou prêt·e à t’impliquer activement,
+            tu as ta place parmi nous.
           </p>
         </div>
       </div>
     </section>
 
-    <!-- COMITÉ EXÉCUTIF (DISPLAY IDENTIQUE À LA PAGE COMITÉ) -->
-    <section class="py-5 exec-home">
+    <!-- ÉVÉNEMENTS À VENIR (ajoutée, fond noir) -->
+    <section class="py-5 events-home">
       <div class="container">
         <div class="text-center mb-5">
-          <h2 class="display-5 fw-bold">Comité exécutif</h2>
-          <p class="lead text-muted">
-            Les membres de l’exécutif d’ISF Université Laval
+          <h2 class="display-5 fw-bold text-white">Événements à venir</h2>
+          <p class="lead text-white-50">
+            On ajoutera bientôt les prochains événements (et plus tard on rendra ça dynamique).
           </p>
         </div>
 
-        <div class="exec-list">
-          <article
-            v-for="m in execMembers"
-            :key="m.role"
-            class="member-card"
-          >
-            <!-- Photo -->
-            <div class="member-photo">
-              <img :src="m.photo" :alt="`Photo de ${m.name}`" />
-            </div>
+        <!-- placeholder -->
+        <div class="events-placeholder">
+          <p class="mb-0 text-white-50">
+            ✨ Des événements seront affichés ici prochainement.
+          </p>
+        </div>
+      </div>
+    </section>
 
-            <!-- Infos -->
-            <div class="member-info">
-              <div class="member-top">
-                <div>
-                  <h3 class="member-name">{{ m.name }}</h3>
-                  <p class="member-role">{{ m.role }}</p>
-                </div>
-
-                <a
-                  class="member-email"
-                  :href="`mailto:${m.email}`"
-                >
-                  {{ m.email }}
-                </a>
-              </div>
-
-              <p class="member-desc">
-                {{ m.description }}
-              </p>
-            </div>
-          </article>
+    <!-- COMITÉ EXÉCUTIF (simplifié + bouton orange, fond noir) -->
+    <section class="py-5 exec-home">
+      <div class="container">
+        <div class="text-center mb-4">
+          <h2 class="display-5 fw-bold text-white">Comité exécutif</h2>
+          <p class="lead text-white-50 mb-0">
+            Découvre l’équipe qui coordonne ISF – Université Laval.
+          </p>
         </div>
 
-        <!-- Lien vers page complète -->
-        <div class="text-center mt-4">
-          <router-link to="/comite-executif" class="btn btn-custom-outline btn-lg">
-            Voir le comité complet
+        <div class="d-flex justify-content-center mt-4">
+          <router-link to="/comite-executif" class="exec-btn-orange btn btn-lg">
+            Voir le comité exécutif
           </router-link>
         </div>
       </div>
     </section>
 
-    <!-- DEVIENS MEMBRE -->
-    <section id="deviens-membre" class="py-5">
+    <!-- DEVIENS MEMBRE (gardée) -->
+    <section id="deviens-membre" class="py-5 become-member">
       <div class="container">
         <div class="text-center">
-          <h2 class="display-5 fw-bold mb-3">Deviens membre !</h2>
-          <p class="lead mb-4">
+          <h2 class="display-5 fw-bold mb-3 text-white">Deviens membre !</h2>
+          <p class="lead mb-4 text-white-50">
             Tous les programmes et tous les cycles sont les bienvenus.
           </p>
 
-          <div class="d-flex justify-content-center gap-3">
+          <div class="d-flex justify-content-center gap-3 flex-wrap">
             <a class="btn btn-primary btn-lg" href="#">
               Formulaire d’adhésion
             </a>
 
-            <a class="btn btn-outline-dark btn-lg" href="#">
+            <a class="btn btn-outline-light btn-lg" href="#">
               Merch
             </a>
           </div>
@@ -131,41 +167,21 @@
 <script>
 export default {
   name: "Home",
-  data() {
-    return {
-      execMembers: [
-        {
-          name: "Nom Prénom",
-          role: "Présidence",
-          email: "presidence@isf-ulaval.com",
-          photo: "/executif/Presidente.jpg",
-          description:
-            "La présidence représente l’association, coordonne les activités et veille au bon fonctionnement de l’équipe exécutive.",
-        },
-        {
-          name: "Nom Prénom",
-          role: "Vice-présidence aux communications",
-          email: "communications@isf-ulaval.com",
-          photo: "/executif/Communications.jpg",
-          description:
-            "Responsable de la diffusion de l’information, de l’image de l’association et des réseaux sociaux.",
-        },
-        {
-          name: "Nom Prénom",
-          role: "Vice-présidence aux finances",
-          email: "finances@isf-ulaval.com",
-          photo: "/executif/Finances.jpg",
-          description:
-            "Assure la gestion financière, le suivi budgétaire et la planification des dépenses.",
-        },
-      ],
-    };
-  },
 };
 </script>
 
 <style scoped>
-/* HERO */
+/* =======================
+   GLOBAL HOME DARK MODE
+   ======================= */
+.home {
+  background: #000;
+  color: #fff;
+}
+
+/* =======================
+   HERO (BACKGROUND ULAVAL)
+   ======================= */
 .hero {
   position: relative;
   background-image: url("/ulaval.jpg");
@@ -174,35 +190,39 @@ export default {
   height: 70vh;
 }
 
-/* LOGO DANS L'IMAGE */
+/* LOGO DANS L'IMAGE (décalé vers le haut) */
 .hero-logo {
   position: absolute;
-  top: 110px;
+  top: 70px; /* ✅ avant: 110px */
   left: 24px;
   width: 140px;
 }
 
-/* TEXTE SOUS HERO */
+/* =======================
+   TEXTE SOUS HERO -> noir
+   ======================= */
 .hero-content {
-  background: #ffffff;
-  color: #111827;
+  background: #000;
+  color: #fff;
 }
 
-/* BOUTONS */
+/* Boutons */
 .btn-custom-primary {
-  background: #111827;
-  color: #ffffff;
+  background: #f97316;
+  color: #000;
   border: none;
+  font-weight: 900;
 }
 
 .btn-custom-primary:hover {
-  background: #f97316;
+  background: #ff8a3d;
   box-shadow: 0 0 16px rgba(249, 115, 22, 0.6);
 }
 
 .btn-custom-outline {
-  border: 2px solid #111827;
-  color: #111827;
+  border: 2px solid #fff;
+  color: #fff;
+  font-weight: 900;
 }
 
 .btn-custom-outline:hover {
@@ -210,100 +230,151 @@ export default {
   color: #f97316;
 }
 
-/* ============================= */
-/* COMITÉ EXÉCUTIF – DISPLAY HOME */
-/* ============================= */
-
-.exec-list {
-  display: grid;
-  gap: 18px;
+/* =======================
+   IMAGE MIDICONF3
+   ======================= */
+.midiconf-section {
+  background: #000;
+  padding: 3.5rem 0 4.5rem;
 }
 
-.member-card {
-  display: grid;
-  grid-template-columns: 120px 1fr;
-  gap: 18px;
-  padding: 20px;
-  border-radius: 16px;
-  background: #ffffff;
-  border: 1px solid rgba(17, 24, 39, 0.06);
-  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.08);
-}
-
-.member-photo {
-  width: 120px;
-  height: 120px;
-  border-radius: 14px;
-  overflow: hidden;
-  background: #f3f4f6;
-}
-
-.member-photo img {
+.midiconf-img {
   width: 100%;
-  height: 100%;
+  max-width: 1100px;
+  display: block;
+  margin: 0 auto;
+  border-radius: 18px;
   object-fit: cover;
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.35);
 }
 
-.member-info {
-  min-width: 0;
+/* =======================
+   QUI SOMMES-NOUS (BANDES)
+   ======================= */
+.who-we-are {
+  background: #000;
+  padding-bottom: 0;
 }
 
-.member-top {
-  display: flex;
-  justify-content: space-between;
-  gap: 16px;
-  flex-wrap: wrap;
-}
-
-.member-name {
-  font-size: 1.25rem;
+.section-title {
+  text-align: center;
+  font-size: 2.4rem;
   font-weight: 900;
+  padding: 0 12px 2.5rem;
   margin: 0;
-  color: #111827;
+  color: #fff;
 }
 
-.member-role {
-  margin-top: 4px;
-  font-weight: 800;
-  color: #f97316;
+.band {
+  padding: 3.2rem 0;
 }
 
-.member-email {
-  font-weight: 700;
-  color: #111827;
+.band-inner {
+  max-width: 900px;
+}
+
+.band h3 {
+  font-size: 1.9rem;
+  font-weight: 900;
+  margin-bottom: 1rem;
+}
+
+.band p {
+  font-size: 1.05rem;
+  line-height: 1.8;
+  margin-bottom: 0.9rem;
+}
+
+/* orange / noir */
+.band-orange {
+  background: #f97316;
+  color: #000;
+}
+
+.band-black {
+  background: #000;
+  color: #fff;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* =======================
+   ÉVÉNEMENTS (fond noir)
+   ======================= */
+.events-home {
+  background: #000;
+}
+
+.events-placeholder {
+  max-width: 900px;
+  margin: 0 auto;
+  border: 1px dashed rgba(255, 255, 255, 0.18);
+  border-radius: 16px;
+  padding: 22px;
+}
+
+/* =======================
+   COMITÉ EXÉCUTIF (BOUTON ORANGE)
+   ======================= */
+.exec-home {
+  background: #000;
+}
+
+.exec-btn-orange {
+  background: #f97316;
+  border: 2px solid #f97316;
+  color: #000;
+  font-weight: 900;
+  padding: 14px 28px;
+  border-radius: 14px;
   text-decoration: none;
-  white-space: nowrap;
+  transition: transform 0.15s ease, box-shadow 0.2s ease, background 0.2s ease;
+  animation: glowOrange 2.8s ease-in-out infinite;
 }
 
-.member-email:hover {
-  color: #f97316;
-  text-decoration: underline;
+/* Hover: glow + petit lift (mais reste orange) */
+.exec-btn-orange:hover {
+  transform: translateY(-2px);
+  background: #ff8a3d;
+  border-color: #ff8a3d;
+  box-shadow: 0 0 22px rgba(249, 115, 22, 0.65);
+  color: #000;
 }
 
-.member-desc {
-  margin-top: 12px;
-  color: #374151;
-  line-height: 1.75;
+@keyframes glowOrange {
+  0% {
+    box-shadow: 0 0 0 rgba(249, 115, 22, 0.0);
+  }
+  50% {
+    box-shadow: 0 0 18px rgba(249, 115, 22, 0.55);
+  }
+  100% {
+    box-shadow: 0 0 0 rgba(249, 115, 22, 0.0);
+  }
 }
 
-/* RESPONSIVE */
+/* =======================
+   DEVIENS MEMBRE
+   ======================= */
+.become-member {
+  background: #000;
+}
+
+/* =======================
+   RESPONSIVE
+   ======================= */
 @media (max-width: 768px) {
-  .member-card {
-    grid-template-columns: 1fr;
-  }
-
-  .member-photo {
-    width: 150px;
-    height: 150px;
-  }
-
   .hero-logo {
-    top: 90px;
+    top: 55px; /* ✅ un peu plus haut sur mobile */
     width: 110px;
   }
 
-  .member-email {
-    white-space: normal;
+  .section-title {
+    font-size: 2rem;
+  }
+
+  .band-inner {
+    padding: 0 8%;
   }
 }
 </style>
