@@ -10,7 +10,7 @@
 
       <!-- Grid 2 colonnes -->
       <section class="exec-grid">
-        <article v-for="m in members" :key="m.email" class="exec-member">
+        <article v-for="m in members" :key="m.id" class="exec-member">
           <div class="photo-wrap">
             <img :src="m.photo" :alt="`Photo de ${m.name}`" class="photo" />
           </div>
@@ -18,7 +18,12 @@
           <h2 class="member-name">{{ m.name }}</h2>
           <h3 class="member-role">{{ m.role }}</h3>
 
-          <a class="member-email" :href="`mailto:${m.email}`">
+          <!-- Email optionnel -->
+          <a
+            v-if="m.email"
+            class="member-email"
+            :href="`mailto:${m.email}`"
+          >
             {{ m.email }}
           </a>
 
@@ -29,7 +34,7 @@
       </section>
     </div>
 
-    <!-- bande bordeaux en bas (comme sur ton exemple) -->
+    <!-- bande bordeaux en bas -->
     <div class="bottom-bar"></div>
   </main>
 </template>
@@ -41,36 +46,96 @@ export default {
     return {
       members: [
         {
-          name: "Nom Prénom",
+          id: "presidence",
+          name: "Nom à déterminer",
           role: "Présidence",
-          email: "presidence@isf-ulaval.com",
+          email: "",
           photo: "/executif/Presidente.jpg",
           description:
-            "La présidence représente officiellement l’association, coordonne les activités et veille au bon fonctionnement de l’exécutif. Elle assure également le lien avec les partenaires et les instances de la faculté.",
+            "Représente officiellement l’association, coordonne l’exécutif et assure le suivi des décisions et des activités.",
         },
         {
-          name: "Nom Prénom",
-          role: "VP aux affaires institutionnelles",
-          email: "institutionnelle@isf-ulaval.com",
-          photo: "/executif/Institutionnelle.jpg",
+          id: "vp-executive",
+          name: "Nom à déterminer",
+          role: "VP Exécutive",
+          email: "",
+          photo: "/executif/Vp_Executive.jpg",
           description:
-            "La vice-présidence aux affaires institutionnelles assiste la présidence, veille à la conformité des procédures et assure le bon déroulement des rencontres. Elle contribue à la mémoire organisationnelle de l’association.",
+            "Soutient la présidence, assure le bon fonctionnement du comité et la tenue des procès-verbaux (PV).",
         },
         {
-          name: "Nom Prénom",
-          role: "VP aux communications",
-          email: "communications@isf-ulaval.com",
-          photo: "/executif/Communications.jpg",
+          id: "vp-tresorerie",
+          name: "Nom à déterminer",
+          role: "VP Trésorerie",
+          email: "",
+          photo: "/executif/Vp_Tresorerie.jpg",
           description:
-            "Responsable des communications externes, des réseaux sociaux et de l’image de l’association. Elle s’assure que les informations importantes soient diffusées clairement aux membres.",
+            "Gère les finances, le budget et les transactions; assure le suivi des dépenses et des remboursements.",
         },
         {
-          name: "Nom Prénom",
-          role: "VP aux finances",
-          email: "finances@isf-ulaval.com",
-          photo: "/executif/Finances.jpg",
+          id: "vp-evenementiel",
+          name: "Nom à déterminer",
+          role: "VP Événementielles",
+          email: "",
+          photo: "/executif/Vp_Evenementiel.jpg",
           description:
-            "Assure la gestion budgétaire, le suivi des dépenses et la planification financière. Elle soutient les projets en veillant à une utilisation responsable des ressources.",
+            "Planifie et coordonne les événements et activités de financement; supervise la logistique et les bénévoles.",
+        },
+        {
+          id: "vp-externe",
+          name: "Nom à déterminer",
+          role: "VP Externe",
+          email: "",
+          photo: "/executif/Vp_Externe.jpg",
+          description:
+            "Développe les relations externes et partenariats; coordonne les activités d’implication et de sensibilisation.",
+        },
+        {
+          id: "vp-interne",
+          name: "Nom à déterminer",
+          role: "VP Interne",
+          email: "",
+          photo: "/executif/Vp_Interne.jpg",
+          description:
+            "Assure la cohésion du groupe et la communication interne; accueille les nouveaux membres et anime la vie associative.",
+        },
+        {
+          id: "vp-communications",
+          name: "Nom à déterminer",
+          role: "VP Communications",
+          email: "",
+          photo: "/executif/Vp_Communication.jpg",
+          description:
+            "Gère l’image et les réseaux sociaux; diffuse les informations importantes et maintient une cohérence visuelle.",
+        },
+        {
+          id: "vp-leadership",
+          name: "Nom à déterminer",
+          role: "VP Leadership",
+          email: "",
+          photo: "/executif/Vp_Leadership.jpg",
+          description:
+            "Organise des ateliers et activités de formation; développe les compétences et la conscientisation des membres.",
+        },
+
+        /* Assistants présents dans le dossier executif */
+        {
+          id: "assistante-externe",
+          name: "Nom à déterminer",
+          role: "Assistante – Affaires externes",
+          email: "",
+          photo: "/executif/Assistante_Externe.jpg",
+          description:
+            "Appuie la VP Externe dans l’organisation des initiatives et le suivi des partenaires et activités.",
+        },
+        {
+          id: "assistant-leadership",
+          name: "Nom à déterminer",
+          role: "Assistant – Leadership",
+          email: "",
+          photo: "/executif/Assistant_Leadership.jpg",
+          description:
+            "Appuie la VP Leadership dans la préparation et l’animation d’activités de formation et de sensibilisation.",
         },
       ],
     };
@@ -86,7 +151,7 @@ export default {
   padding-top: 120px; /* si navbar fixed */
 }
 
-/* Container un peu plus large (comme sur ton screenshot) */
+/* Container un peu plus large */
 .exec-container {
   max-width: 1180px;
 }
@@ -117,7 +182,7 @@ export default {
 .exec-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 44px 54px; /* gros espace comme l’exemple */
+  gap: 44px 54px;
   padding-bottom: 44px;
 }
 
@@ -126,7 +191,7 @@ export default {
   text-align: center;
 }
 
-/* Photo grande, format paysage */
+/* Photo grande */
 .photo-wrap {
   background: transparent;
   border: 1px solid rgba(59, 10, 10, 0.18);
@@ -135,19 +200,18 @@ export default {
 
 .photo {
   width: 100%;
-  height: 320px;       /* garde la même hauteur */
-  object-fit: contain; /* 🔑 affiche la photo AU COMPLET */
-  background: #f5f2dc; /* même fond beige que la page */
+  height: 320px;
+  object-fit: contain; /* affiche la photo au complet */
+  background: #f5f2dc;
   display: block;
 }
-
 
 /* Nom / rôle / email */
 .member-name {
   margin: 18px 0 10px 0;
   font-weight: 900;
   font-size: 1.6rem;
-  color: #7a0c0c; /* bordeaux */
+  color: #7a0c0c;
 }
 
 .member-role {
