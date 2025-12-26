@@ -1,283 +1,125 @@
 <template>
   <div class="home">
-    <!-- Hero Section -->
+
+    <!-- HERO : image ULaval + logo -->
     <section class="hero">
+      <img src="/logo.png" alt="Logo ISF Ulaval" class="hero-logo" />
+    </section>
+
+    <!-- TEXTE SOUS LE BANNER -->
+    <section class="hero-content py-5">
       <div class="container">
-        <div class="row align-items-center min-vh-100">
-          <div class="col-lg-6 text-center text-lg-start">
-            <h1 class="display-4 fw-bold mb-4">
-              ISF-Ulaval
+        <div class="row">
+          <div class="col-lg-8 mx-auto text-center">
+            <h1 class="display-4 fw-bold mb-3">
+              ISF – Université Laval
             </h1>
-            <p class="lead mb-4">
-              Ingénieurs sans frontières Canada - Section Université Laval
+
+            <p class="lead mb-3">
+              Ingénieurs sans frontières Canada – Section Université Laval
             </p>
+
             <p class="mb-4">
-              Une communauté dynamique et engagée de plus de 90 membres pour
-              une ingénierie humaine, responsable et solidaire.
+              Une communauté étudiante engagée pour une ingénierie humaine,
+              responsable et solidaire.
             </p>
-            <div class="d-flex gap-3 justify-content-center justify-content-lg-start">
-              <a href="#deviens-membre" class="btn btn-light btn-lg">
+
+            <div class="d-flex gap-3 justify-content-center">
+              <a href="#deviens-membre" class="btn btn-custom-primary btn-lg">
                 Rejoins-nous !
               </a>
-              <router-link to="/nos-projets" class="btn btn-outline-light btn-lg">
+
+              <router-link to="/nos-projets" class="btn btn-custom-outline btn-lg">
                 Nos projets
               </router-link>
             </div>
           </div>
-
-          <div class="col-lg-6">
-            <div class="text-center">
-              <div class="hero-visual rounded shadow d-flex align-items-center justify-content-center text-white">
-                <div class="text-center">
-                  <i class="fas fa-users fa-4x mb-2"></i>
-                  <p class="mb-0 fw-bold">ISF Université Laval</p>
-                </div>
-              </div>
-              <small class="text-white-50 d-block mt-2">
-                (Tu peux remplacer ce visuel par une vraie photo plus tard)
-              </small>
-            </div>
-          </div>
         </div>
       </div>
     </section>
 
-    <!-- Événements à venir -->
+    <!-- ÉVÉNEMENTS -->
     <section class="py-5 bg-light">
       <div class="container">
-        <div class="row">
-          <div class="col-12 text-center mb-5">
-            <h2 class="display-5 fw-bold">Événements à venir</h2>
-            <p class="lead text-muted">Rejoignez nos prochaines activités</p>
-          </div>
-        </div>
-
-        <div class="row g-4">
-          <div class="col-lg-4 col-md-6">
-            <div class="card h-100">
-              <div class="card-body text-center">
-                <div class="mb-3">
-                  <i class="fas fa-calendar-alt fa-3x icon-accent"></i>
-                </div>
-                <h5 class="card-title">Rencontre avec Samah et Rayanne</h5>
-                <p class="card-text">
-                  Dimanche 21 décembre 2025 à 17h<br />
-                  Présentation de notre plan de site web
-                </p>
-                <div class="badge badge-accent">Prochainement</div>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-lg-4 col-md-6">
-            <div class="card h-100">
-              <div class="card-body text-center">
-                <div class="mb-3">
-                  <i class="fas fa-hands-helping fa-3x icon-dark"></i>
-                </div>
-                <h5 class="card-title">Projet Panneaux solaires Madagascar</h5>
-                <p class="card-text">
-                  Mandat 2025-2026<br />
-                  Installation d'un système solaire pour une école de 125 élèves
-                </p>
-                <div class="badge bg-secondary">En préparation</div>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-lg-4 col-md-6">
-            <div class="card h-100">
-              <div class="card-body text-center">
-                <div class="mb-3">
-                  <i class="fas fa-microphone fa-3x icon-accent"></i>
-                </div>
-                <h5 class="card-title">Interviews d'ingénieurs</h5>
-                <p class="card-text">
-                  Série d'entrevues avec des ingénieurs<br />
-                  et CPI aux parcours inspirants
-                </p>
-                <div class="badge bg-dark">En cours</div>
-              </div>
-            </div>
-          </div>
+        <div class="text-center mb-5">
+          <h2 class="display-5 fw-bold">Événements à venir</h2>
+          <p class="lead text-muted">
+            Rejoignez nos prochaines activités
+          </p>
         </div>
       </div>
     </section>
 
-    <!-- Nos actions en images (placeholder) -->
-    <section class="py-5">
+    <!-- COMITÉ EXÉCUTIF (DISPLAY IDENTIQUE À LA PAGE COMITÉ) -->
+    <section class="py-5 exec-home">
       <div class="container">
-        <div class="row">
-          <div class="col-12 text-center mb-5">
-            <h2 class="display-5 fw-bold">Nos actions</h2>
-            <p class="lead text-muted">Découvrez nos projets et activités en images</p>
-          </div>
+        <div class="text-center mb-5">
+          <h2 class="display-5 fw-bold">Comité exécutif</h2>
+          <p class="lead text-muted">
+            Les membres de l’exécutif d’ISF Université Laval
+          </p>
         </div>
 
-        <div class="row">
-          <div class="col-12">
-            <div id="imageCarousel" class="carousel slide" data-bs-ride="carousel">
-              <div class="carousel-indicators">
-                <button type="button" data-bs-target="#imageCarousel" data-bs-slide-to="0" class="active"></button>
-                <button type="button" data-bs-target="#imageCarousel" data-bs-slide-to="1"></button>
-                <button type="button" data-bs-target="#imageCarousel" data-bs-slide-to="2"></button>
-                <button type="button" data-bs-target="#imageCarousel" data-bs-slide-to="3"></button>
-              </div>
-
-              <div class="carousel-inner">
-                <div class="carousel-item active">
-                  <div class="carousel-placeholder d-flex align-items-center justify-content-center text-white">
-                    <div class="text-center">
-                      <i class="fas fa-tint fa-5x mb-3"></i>
-                      <h5 class="fw-bold">Projet Puits Cameroun 2024</h5>
-                      <p>Construction d'un puits à Njindaré pour l'accès à l'eau potable</p>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="carousel-item">
-                  <div class="carousel-placeholder d-flex align-items-center justify-content-center text-white">
-                    <div class="text-center">
-                      <i class="fas fa-microphone fa-5x mb-3"></i>
-                      <h5 class="fw-bold">Conférences et sensibilisation</h5>
-                      <p>Événements de sensibilisation aux enjeux sociaux et environnementaux</p>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="carousel-item">
-                  <div class="carousel-placeholder d-flex align-items-center justify-content-center text-white">
-                    <div class="text-center">
-                      <i class="fas fa-users fa-5x mb-3"></i>
-                      <h5 class="fw-bold">Activités d'équipe</h5>
-                      <p>Une communauté engagée de plus de 90 membres</p>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="carousel-item">
-                  <div class="carousel-placeholder d-flex align-items-center justify-content-center text-white">
-                    <div class="text-center">
-                      <i class="fas fa-solar-panel fa-5x mb-3"></i>
-                      <h5 class="fw-bold">Projet Panneaux solaires Madagascar</h5>
-                      <p>Installation d'un système solaire pour une école de 125 élèves</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <button class="carousel-control-prev" type="button" data-bs-target="#imageCarousel" data-bs-slide="prev">
-                <span class="carousel-control-prev-icon"></span>
-              </button>
-              <button class="carousel-control-next" type="button" data-bs-target="#imageCarousel" data-bs-slide="next">
-                <span class="carousel-control-next-icon"></span>
-              </button>
+        <div class="exec-list">
+          <article
+            v-for="m in execMembers"
+            :key="m.role"
+            class="member-card"
+          >
+            <!-- Photo -->
+            <div class="member-photo">
+              <img :src="m.photo" :alt="`Photo de ${m.name}`" />
             </div>
-          </div>
+
+            <!-- Infos -->
+            <div class="member-info">
+              <div class="member-top">
+                <div>
+                  <h3 class="member-name">{{ m.name }}</h3>
+                  <p class="member-role">{{ m.role }}</p>
+                </div>
+
+                <a
+                  class="member-email"
+                  :href="`mailto:${m.email}`"
+                >
+                  {{ m.email }}
+                </a>
+              </div>
+
+              <p class="member-desc">
+                {{ m.description }}
+              </p>
+            </div>
+          </article>
+        </div>
+
+        <!-- Lien vers page complète -->
+        <div class="text-center mt-4">
+          <router-link to="/comite-executif" class="btn btn-custom-outline btn-lg">
+            Voir le comité complet
+          </router-link>
         </div>
       </div>
     </section>
 
-    <!-- Qui sommes-nous -->
-    <section class="py-5 who">
-      <div class="container">
-        <div class="row">
-          <div class="col-12 text-center mb-5">
-            <h2 class="display-5 fw-bold">Qui sommes-nous ?</h2>
-            <p class="lead text-muted">Notre histoire, mission et vision</p>
-          </div>
-        </div>
-
-        <div class="row g-4">
-          <div class="col-lg-4">
-            <div class="info-card">
-              <h3>Notre histoire</h3>
-              <p>
-                La section Ingénieurs sans frontières – Université Laval fait partie du réseau
-                de Ingénieurs sans frontières Canada. Elle rassemble aujourd’hui une communauté
-                dynamique et engagée de plus de 90 membres.
-              </p>
-              <p class="mb-0">
-                Ouverte à toutes les étudiantes et tous les étudiants, de tous les cycles et de
-                tous les programmes, notre section est un espace inclusif où chacun peut s’impliquer
-                à sa façon.
-              </p>
-            </div>
-          </div>
-
-          <div class="col-lg-4">
-            <div class="info-card">
-              <h3>Notre mission</h3>
-              <p class="mb-0">
-                Sensibiliser et mobiliser la communauté étudiante autour des enjeux sociaux,
-                environnementaux et éthiques liés à l’ingénierie et au développement international.
-                Par conférences, activités, événements et initiatives concrètes, nous cherchons un
-                impact positif et durable, ici comme ailleurs.
-              </p>
-            </div>
-          </div>
-
-          <div class="col-lg-4">
-            <div class="info-card">
-              <h3>Notre vision</h3>
-              <p class="mb-0">
-                Contribuer à une ingénierie humaine, responsable et engagée. Nous voulons former des
-                personnes conscientes des impacts de leurs actions et prêtes à mettre leurs compétences
-                au service d’un avenir plus juste, solidaire et durable.
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Comité exécutif (switch) -->
-    <ExecSwitch />
-
-    <!-- Deviens membre -->
+    <!-- DEVIENS MEMBRE -->
     <section id="deviens-membre" class="py-5">
       <div class="container">
-        <div class="row">
-          <div class="col-lg-9 mx-auto text-center">
-            <h2 class="display-5 fw-bold mb-3">Deviens membre !</h2>
-            <p class="lead mb-4">
-              Pour devenir membre il te suffit de compléter le formulaire ci-dessous !
-              Nous acceptons tous les programmes, tous les cycles et les étudiants gradués !
-            </p>
+        <div class="text-center">
+          <h2 class="display-5 fw-bold mb-3">Deviens membre !</h2>
+          <p class="lead mb-4">
+            Tous les programmes et tous les cycles sont les bienvenus.
+          </p>
 
-            <div class="d-flex flex-wrap gap-3 justify-content-center">
-              <!-- Remplace ce lien par TON lien officiel d’adhésion -->
-              <a class="btn btn-primary btn-lg" href="#" target="_blank" rel="noreferrer">
-                Formulaire d’adhésion
-              </a>
+          <div class="d-flex justify-content-center gap-3">
+            <a class="btn btn-primary btn-lg" href="#">
+              Formulaire d’adhésion
+            </a>
 
-              <a
-                class="btn btn-outline-dark btn-lg"
-                href="https://forms.gle/AmjDeCcUneTFepcT7"
-                target="_blank"
-                rel="noreferrer"
-              >
-                Formulaire merch
-              </a>
-
-              <a
-                class="btn btn-dark btn-lg"
-                href="https://www.facebook.com/groups/534075985970818/"
-                target="_blank"
-                rel="noreferrer"
-              >
-                Groupe Facebook privé
-              </a>
-            </div>
-
-            <div class="mt-4 text-muted">
-              <p class="mb-2 fw-semibold">Avantages d’être membre :</p>
-              <ul class="list-unstyled mb-0">
-                <li>• Avoir un impact réel, même à petite échelle, sur des initiatives locales ou internationales.</li>
-                <li>• Valoriser son parcours avec une expérience associative reconnue.</li>
-                <li>• Participer à des projets concrets en lien avec la solidarité internationale.</li>
-              </ul>
-            </div>
+            <a class="btn btn-outline-dark btn-lg" href="#">
+              Merch
+            </a>
           </div>
         </div>
       </div>
@@ -287,77 +129,181 @@
 </template>
 
 <script>
-import ExecSwitch from "@/components/ExecSwitch.vue";
-
 export default {
   name: "Home",
-  components: { ExecSwitch },
+  data() {
+    return {
+      execMembers: [
+        {
+          name: "Nom Prénom",
+          role: "Présidence",
+          email: "presidence@isf-ulaval.com",
+          photo: "/executif/Presidente.jpg",
+          description:
+            "La présidence représente l’association, coordonne les activités et veille au bon fonctionnement de l’équipe exécutive.",
+        },
+        {
+          name: "Nom Prénom",
+          role: "Vice-présidence aux communications",
+          email: "communications@isf-ulaval.com",
+          photo: "/executif/Communications.jpg",
+          description:
+            "Responsable de la diffusion de l’information, de l’image de l’association et des réseaux sociaux.",
+        },
+        {
+          name: "Nom Prénom",
+          role: "Vice-présidence aux finances",
+          email: "finances@isf-ulaval.com",
+          photo: "/executif/Finances.jpg",
+          description:
+            "Assure la gestion financière, le suivi budgétaire et la planification des dépenses.",
+        },
+      ],
+    };
+  },
 };
 </script>
 
 <style scoped>
+/* HERO */
 .hero {
-  padding-top: 80px;
-  background-image: url('/ulaval.jpg'); background-size: cover; background-position: center;
-  min-height: 100vh;
+  position: relative;
+  background-image: url("/ulaval.jpg");
+  background-size: cover;
+  background-position: center;
+  height: 70vh;
 }
 
-.hero-visual {
-  height: 300px;
-  background: linear-gradient(45deg, #111827, #f97316);
+/* LOGO DANS L'IMAGE */
+.hero-logo {
+  position: absolute;
+  top: 110px;
+  left: 24px;
+  width: 140px;
 }
 
-.min-vh-100 {
-  min-height: 100vh;
+/* TEXTE SOUS HERO */
+.hero-content {
+  background: #ffffff;
+  color: #111827;
 }
 
-.carousel-placeholder {
-  height: 400px;
-  background: linear-gradient(45deg, var(--dark-color), var(--primary-color));
+/* BOUTONS */
+.btn-custom-primary {
+  background: #111827;
+  color: #ffffff;
+  border: none;
 }
 
-/* Couleurs thème au lieu du bleu bootstrap */
-.icon-accent { color: var(--primary-color); }
-.icon-dark { color: var(--dark-color); }
-.badge-accent { background: var(--primary-color); }
-
-/* Qui sommes-nous */
-.who {
-  background: var(--bg-soft);
+.btn-custom-primary:hover {
+  background: #f97316;
+  box-shadow: 0 0 16px rgba(249, 115, 22, 0.6);
 }
 
-.info-card {
-  background: white;
+.btn-custom-outline {
+  border: 2px solid #111827;
+  color: #111827;
+}
+
+.btn-custom-outline:hover {
+  border-color: #f97316;
+  color: #f97316;
+}
+
+/* ============================= */
+/* COMITÉ EXÉCUTIF – DISPLAY HOME */
+/* ============================= */
+
+.exec-list {
+  display: grid;
+  gap: 18px;
+}
+
+.member-card {
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  gap: 18px;
+  padding: 20px;
   border-radius: 16px;
-  padding: 18px;
-  box-shadow: 0 10px 28px rgba(0,0,0,0.08);
+  background: #ffffff;
+  border: 1px solid rgba(17, 24, 39, 0.06);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.08);
+}
+
+.member-photo {
+  width: 120px;
+  height: 120px;
+  border-radius: 14px;
+  overflow: hidden;
+  background: #f3f4f6;
+}
+
+.member-photo img {
+  width: 100%;
   height: 100%;
+  object-fit: cover;
 }
 
-.info-card h3 {
-  color: var(--dark-color);
+.member-info {
+  min-width: 0;
+}
+
+.member-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.member-name {
+  font-size: 1.25rem;
+  font-weight: 900;
+  margin: 0;
+  color: #111827;
+}
+
+.member-role {
+  margin-top: 4px;
   font-weight: 800;
-  margin-bottom: 10px;
+  color: #f97316;
 }
 
-.info-card p {
+.member-email {
+  font-weight: 700;
+  color: #111827;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.member-email:hover {
+  color: #f97316;
+  text-decoration: underline;
+}
+
+.member-desc {
+  margin-top: 12px;
   color: #374151;
-  line-height: 1.7;
+  line-height: 1.75;
 }
 
-/* Responsive */
+/* RESPONSIVE */
 @media (max-width: 768px) {
-  .hero {
-    padding-top: 60px;
-    text-align: center;
+  .member-card {
+    grid-template-columns: 1fr;
   }
 
-  .display-4 {
-    font-size: 2rem;
+  .member-photo {
+    width: 150px;
+    height: 150px;
   }
 
-  .lead {
-    font-size: 1rem;
+  .hero-logo {
+    top: 90px;
+    width: 110px;
+  }
+
+  .member-email {
+    white-space: normal;
   }
 }
 </style>

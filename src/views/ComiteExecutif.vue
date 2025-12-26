@@ -1,463 +1,203 @@
 <template>
-  <div class="comite-executif">
-    <!-- Hero Section -->
-    <section class="hero-section">
-      <div class="container">
-        <div class="row align-items-center min-vh-75 py-5">
-          <div class="col-lg-8 mx-auto text-center">
-            <h1 class="display-4 fw-bold mb-4">Comité exécutif</h1>
-            <p class="lead">
-              Rencontrez l'équipe dirigeante d'ISF Université Laval
-            </p>
-          </div>
-        </div>
-      </div>
-    </section>
+  <main class="exec-page">
+    <div class="container exec-container">
+      <header class="exec-header">
+        <h1 class="exec-title">Comité exécutif</h1>
+        <p class="exec-subtitle">
+          Découvrez les membres de l’exécutif d’ISF Université Laval.
+        </p>
+      </header>
 
-    <!-- Membres du comité -->
-    <section class="py-5">
-      <div class="container">
-        <div class="row">
-          <div class="col-lg-12 mb-5">
-            <div class="text-center">
-              <h2 class="display-5 fw-bold mb-4">Notre équipe 2025-2026</h2>
-              <p class="lead text-muted">
-                Une équipe passionnée au service de notre mission
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div class="row g-4">
-          <!-- Présidente -->
-          <div class="col-lg-6 col-md-12">
-            <div class="card border-0 shadow h-100">
-              <div class="card-body p-4">
-                <div class="d-flex align-items-start">
-                  <div class="me-4">
-                    <img
-                      src="/executif/Presidente.jpg"
-                      alt="Soraya Faulet - Présidente"
-                      class="rounded-circle"
-                      width="120"
-                      height="120"
-                      style="object-fit: cover; border: 3px solid #fff; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);"
-                    >
-                  </div>
-                  <div class="flex-grow-1">
-                    <h4 class="fw-bold mb-2">Soraya Faulet</h4>
-                    <div class="badge bg-primary mb-3">Présidente</div>
-                    <p class="text-muted mb-2"><strong>Programme :</strong> [À compléter]</p>
-                    <p class="mb-3">
-                      Responsable de la vision globale et de la coordination des activités 
-                      de l'association. Elle guide l'équipe vers l'accomplissement de notre 
-                      mission et assure le bon fonctionnement de toutes les initiatives.
-                    </p>
-                    <div class="social-links">
-                      <a href="#" class="text-muted me-2"><i class="fab fa-linkedin"></i></a>
-                      <a href="#" class="text-muted me-2"><i class="fas fa-envelope"></i></a>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+      <!-- Grid 2 colonnes -->
+      <section class="exec-grid">
+        <article v-for="m in members" :key="m.email" class="exec-member">
+          <div class="photo-wrap">
+            <img :src="m.photo" :alt="`Photo de ${m.name}`" class="photo" />
           </div>
 
-          <!-- VP Exécutive -->
-          <div class="col-lg-6 col-md-12">
-            <div class="card border-0 shadow h-100">
-              <div class="card-body p-4">
-                <div class="d-flex align-items-start">
-                  <div class="me-4">
-                    <img
-                      src="/executif/Vp_Executive.jpg"
-                      alt="Nelly Njakou - VP Exécutive"
-                      class="rounded-circle"
-                      width="120"
-                      height="120"
-                      style="object-fit: cover; border: 3px solid #fff; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);"
-                    >
-                  </div>
-                  <div class="flex-grow-1">
-                    <h4 class="fw-bold mb-2">Nelly Njakou</h4>
-                    <div class="badge bg-success mb-3">VP Exécutive</div>
-                    <p class="text-muted mb-2"><strong>Programme :</strong> [À compléter]</p>
-                    <p class="mb-3">
-                      Soutient la présidence dans la gestion stratégique et assure la 
-                      coordination entre les différents postes exécutifs. Elle veille 
-                      à l'efficacité de nos actions et à la réalisation de nos objectifs.
-                    </p>
-                    <div class="social-links">
-                      <a href="#" class="text-muted me-2"><i class="fab fa-linkedin"></i></a>
-                      <a href="#" class="text-muted me-2"><i class="fas fa-envelope"></i></a>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+          <h2 class="member-name">{{ m.name }}</h2>
+          <h3 class="member-role">{{ m.role }}</h3>
 
-          <!-- VP Trésorerie -->
-          <div class="col-lg-6 col-md-12">
-            <div class="card border-0 shadow h-100">
-              <div class="card-body p-4">
-                <div class="d-flex align-items-start">
-                  <div class="me-4">
-                    <img
-                      src="/executif/Vp_Tresorerie.jpg"
-                      alt="VP Trésorerie"
-                      class="rounded-circle"
-                      width="120"
-                      height="120"
-                      style="object-fit: cover; border: 3px solid #fff; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);"
-                    >
-                  </div>
-                  <div class="flex-grow-1">
-                    <h4 class="fw-bold mb-2">[Nom à compléter]</h4>
-                    <div class="badge bg-warning text-dark mb-3">VP Trésorerie</div>
-                    <p class="text-muted mb-2"><strong>Programme :</strong> [À compléter]</p>
-                    <p class="mb-3">
-                      Gère les finances de l'association, prépare le budget et supervise 
-                      l'utilisation des fonds. Elle assure la transparence financière et 
-                      la viabilité économique de nos projets.
-                    </p>
-                    <div class="social-links">
-                      <a href="#" class="text-muted me-2"><i class="fab fa-linkedin"></i></a>
-                      <a href="#" class="text-muted me-2"><i class="fas fa-envelope"></i></a>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+          <a class="member-email" :href="`mailto:${m.email}`">
+            {{ m.email }}
+          </a>
 
-          <!-- VP Interne -->
-          <div class="col-lg-6 col-md-12">
-            <div class="card border-0 shadow h-100">
-              <div class="card-body p-4">
-                <div class="d-flex align-items-start">
-                  <div class="me-4">
-                    <img
-                      src="/executif/Vp_Interne.jpg"
-                      alt="VP Interne"
-                      class="rounded-circle"
-                      width="120"
-                      height="120"
-                      style="object-fit: cover; border: 3px solid #fff; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);"
-                    >
-                  </div>
-                  <div class="flex-grow-1">
-                    <h4 class="fw-bold mb-2">[Nom à compléter]</h4>
-                    <div class="badge bg-info mb-3">VP Interne</div>
-                    <p class="text-muted mb-2"><strong>Programme :</strong> [À compléter]</p>
-                    <p class="mb-3">
-                      Coordonne les activités internes de l'association, gère les 
-                      communications entre les membres et assure le bon fonctionnement 
-                      des réunions et événements internes.
-                    </p>
-                    <div class="social-links">
-                      <a href="#" class="text-muted me-2"><i class="fab fa-linkedin"></i></a>
-                      <a href="#" class="text-muted me-2"><i class="fas fa-envelope"></i></a>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+          <p class="member-desc">
+            {{ m.description }}
+          </p>
+        </article>
+      </section>
+    </div>
 
-          <!-- VP Communication -->
-          <div class="col-lg-6 col-md-12">
-            <div class="card border-0 shadow h-100">
-              <div class="card-body p-4">
-                <div class="d-flex align-items-start">
-                  <div class="me-4">
-                    <img
-                      src="/executif/Vp_Communication.jpg"
-                      alt="VP Communication"
-                      class="rounded-circle"
-                      width="120"
-                      height="120"
-                      style="object-fit: cover; border: 3px solid #fff; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);"
-                    >
-                  </div>
-                  <div class="flex-grow-1">
-                    <h4 class="fw-bold mb-2">[Nom à compléter]</h4>
-                    <div class="badge bg-secondary mb-3">VP Communication</div>
-                    <p class="text-muted mb-2"><strong>Programme :</strong> [À compléter]</p>
-                    <p class="mb-3">
-                      Gère la communication externe et interne, anime les réseaux sociaux 
-                      et assure la visibilité de l'association. Elle fait le lien entre 
-                      ISF et la communauté universitaire.
-                    </p>
-                    <div class="social-links">
-                      <a href="#" class="text-muted me-2"><i class="fab fa-linkedin"></i></a>
-                      <a href="#" class="text-muted me-2"><i class="fas fa-envelope"></i></a>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- VP Événementiel -->
-          <div class="col-lg-6 col-md-12">
-            <div class="card border-0 shadow h-100">
-              <div class="card-body p-4">
-                <div class="d-flex align-items-start">
-                  <div class="me-4">
-                    <img
-                      src="/executif/Vp_Evenementiel.jpg"
-                      alt="VP Événementiel"
-                      class="rounded-circle"
-                      width="120"
-                      height="120"
-                      style="object-fit: cover; border: 3px solid #fff; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);"
-                    >
-                  </div>
-                  <div class="flex-grow-1">
-                    <h4 class="fw-bold mb-2">[Nom à compléter]</h4>
-                    <div class="badge bg-danger mb-3">VP Événementiel</div>
-                    <p class="text-muted mb-2"><strong>Programme :</strong> [À compléter]</p>
-                    <p class="mb-3">
-                      Organise et coordonne tous les événements de l'association, 
-                      depuis les conférences jusqu'aux activités de team building. 
-                      Elle crée des moments de cohésion et d'échange.
-                    </p>
-                    <div class="social-links">
-                      <a href="#" class="text-muted me-2"><i class="fab fa-linkedin"></i></a>
-                      <a href="#" class="text-muted me-2"><i class="fas fa-envelope"></i></a>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- VP Projet d'ingénierie + Assistante -->
-          <div class="col-lg-6 col-md-12">
-            <div class="card border-0 shadow h-100">
-              <div class="card-body p-4">
-                <div class="d-flex align-items-start mb-3">
-                  <div class="me-4">
-                    <div 
-                      class="rounded-circle d-flex align-items-center justify-content-center text-white"
-                      style="width: 100px; height: 100px; background: linear-gradient(135deg, #059669, #10b981); border: 3px solid #fff; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);"
-                    >
-                      <i class="fas fa-hard-hat fa-2x"></i>
-                    </div>
-                  </div>
-                  <div class="flex-grow-1">
-                    <h5 class="fw-bold mb-2">[Nom à compléter]</h5>
-                    <div class="badge bg-success mb-2">VP Projet d'ingénierie</div>
-                    <p class="text-muted mb-2"><strong>Programme :</strong> [À compléter]</p>
-                    <p class="small">
-                      Dirige les projets techniques et d'ingénierie de l'association, 
-                      coordonne les initiatives comme le puits au Cameroun et les 
-                      panneaux solaires à Madagascar.
-                    </p>
-                  </div>
-                </div>
-                <hr>
-                <div class="d-flex align-items-start">
-                  <div class="me-4">
-                    <div 
-                      class="rounded-circle d-flex align-items-center justify-content-center text-white"
-                      style="width: 100px; height: 100px; background: linear-gradient(135deg, #10b981, #34d399); border: 3px solid #fff; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);"
-                    >
-                      <i class="fas fa-tools fa-2x"></i>
-                    </div>
-                  </div>
-                  <div class="flex-grow-1">
-                    <h5 class="fw-bold mb-2">[Nom à compléter]</h5>
-                    <div class="badge bg-light text-dark mb-2">Assistante Projet d'ingénierie</div>
-                    <p class="text-muted mb-2"><strong>Programme :</strong> [À compléter]</p>
-                    <p class="small">
-                      Appuie la VP dans la gestion des projets et assure le suivi 
-                      technique des différentes initiatives d'ingénierie.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- VP Externe + Assistante -->
-          <div class="col-lg-6 col-md-12">
-            <div class="card border-0 shadow h-100">
-              <div class="card-body p-4">
-                <div class="d-flex align-items-start mb-3">
-                  <div class="me-4">
-                    <img
-                      src="/executif/Vp_Externe.jpg"
-                      alt="VP Externe"
-                      class="rounded-circle"
-                      width="100"
-                      height="100"
-                      style="object-fit: cover; border: 3px solid #fff; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);"
-                    >
-                  </div>
-                  <div class="flex-grow-1">
-                    <h5 class="fw-bold mb-2">[Nom à compléter]</h5>
-                    <div class="badge bg-primary mb-2">VP Externe</div>
-                    <p class="text-muted mb-2"><strong>Programme :</strong> [À compléter]</p>
-                    <p class="small">
-                      Gère les relations externes, développe les partenariats et 
-                      réalise les interviews d'ingénieurs pour inspirer notre communauté.
-                    </p>
-                  </div>
-                </div>
-                <hr>
-                <div class="d-flex align-items-start">
-                  <div class="me-4">
-                    <img
-                      src="/executif/Assistante_Externe.jpg"
-                      alt="Assistante Externe"
-                      class="rounded-circle"
-                      width="100"
-                      height="100"
-                      style="object-fit: cover; border: 3px solid #fff; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);"
-                    >
-                  </div>
-                  <div class="flex-grow-1">
-                    <h5 class="fw-bold mb-2">[Nom à compléter]</h5>
-                    <div class="badge bg-light text-dark mb-2">Assistante Externe</div>
-                    <p class="text-muted mb-2"><strong>Programme :</strong> [À compléter]</p>
-                    <p class="small">
-                      Appuie la VP dans le développement des partenariats et 
-                      la coordination des activités externes.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- VP Leadership + Assistant -->
-          <div class="col-lg-6 col-md-12">
-            <div class="card border-0 shadow h-100">
-              <div class="card-body p-4">
-                <div class="d-flex align-items-start mb-3">
-                  <div class="me-4">
-                    <img
-                      src="/executif/Vp_Leadership.jpg"
-                      alt="VP Leadership"
-                      class="rounded-circle"
-                      width="100"
-                      height="100"
-                      style="object-fit: cover; border: 3px solid #fff; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);"
-                    >
-                  </div>
-                  <div class="flex-grow-1">
-                    <h5 class="fw-bold mb-2">[Nom à compléter]</h5>
-                    <div class="badge bg-warning text-dark mb-2">VP Leadership</div>
-                    <p class="text-muted mb-2"><strong>Programme :</strong> [À compléter]</p>
-                    <p class="small">
-                      Développe les compétences de leadership des membres, organise 
-                      des formations et favorise l'épanouissement personnel et professionnel.
-                    </p>
-                  </div>
-                </div>
-                <hr>
-                <div class="d-flex align-items-start">
-                  <div class="me-4">
-                    <img
-                      src="/executif/Assistant_Leadership.jpg"
-                      alt="Assistant Leadership"
-                      class="rounded-circle"
-                      width="100"
-                      height="100"
-                      style="object-fit: cover; border: 3px solid #fff; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);"
-                    >
-                  </div>
-                  <div class="flex-grow-1">
-                    <h5 class="fw-bold mb-2">[Nom à compléter]</h5>
-                    <div class="badge bg-light text-dark mb-2">Assistant Leadership</div>
-                    <p class="text-muted mb-2"><strong>Programme :</strong> [À compléter]</p>
-                    <p class="small">
-                      Appuie la VP dans l'organisation des activités de développement 
-                      personnel et de formation au leadership.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Call to Action -->
-    <section class="py-5 bg-light">
-      <div class="container">
-        <div class="row">
-          <div class="col-lg-8 mx-auto text-center">
-            <h2 class="display-5 fw-bold mb-4">Rejoins notre équipe !</h2>
-            <p class="lead mb-4">
-              Tu veux t'impliquer dans la gestion d'ISF et contribuer à notre mission ? 
-              Nous cherchons toujours des personnes motivées pour rejoindre notre équipe.
-            </p>
-            <div class="d-flex gap-3 justify-content-center">
-              <router-link to="/devenir-membre" class="btn btn-primary btn-lg">
-                Devenir membre
-              </router-link>
-              <router-link to="/nous-joindre" class="btn btn-outline-primary btn-lg">
-                Nous contacter
-              </router-link>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-  </div>
+    <!-- bande bordeaux en bas (comme sur ton exemple) -->
+    <div class="bottom-bar"></div>
+  </main>
 </template>
 
 <script>
 export default {
-  name: 'ComiteExecutif'
-}
+  name: "ComiteExecutif",
+  data() {
+    return {
+      members: [
+        {
+          name: "Nom Prénom",
+          role: "Présidence",
+          email: "presidence@isf-ulaval.com",
+          photo: "/executif/Presidente.jpg",
+          description:
+            "La présidence représente officiellement l’association, coordonne les activités et veille au bon fonctionnement de l’exécutif. Elle assure également le lien avec les partenaires et les instances de la faculté.",
+        },
+        {
+          name: "Nom Prénom",
+          role: "VP aux affaires institutionnelles",
+          email: "institutionnelle@isf-ulaval.com",
+          photo: "/executif/Institutionnelle.jpg",
+          description:
+            "La vice-présidence aux affaires institutionnelles assiste la présidence, veille à la conformité des procédures et assure le bon déroulement des rencontres. Elle contribue à la mémoire organisationnelle de l’association.",
+        },
+        {
+          name: "Nom Prénom",
+          role: "VP aux communications",
+          email: "communications@isf-ulaval.com",
+          photo: "/executif/Communications.jpg",
+          description:
+            "Responsable des communications externes, des réseaux sociaux et de l’image de l’association. Elle s’assure que les informations importantes soient diffusées clairement aux membres.",
+        },
+        {
+          name: "Nom Prénom",
+          role: "VP aux finances",
+          email: "finances@isf-ulaval.com",
+          photo: "/executif/Finances.jpg",
+          description:
+            "Assure la gestion budgétaire, le suivi des dépenses et la planification financière. Elle soutient les projets en veillant à une utilisation responsable des ressources.",
+        },
+      ],
+    };
+  },
+};
 </script>
 
 <style scoped>
-.hero-section {
-  padding-top: 80px;
-  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+/* Page */
+.exec-page {
+  background: #fbf7dd; /* beige clair comme l’exemple */
+  min-height: 100vh;
+  padding-top: 120px; /* si navbar fixed */
 }
 
-.min-vh-75 {
-  min-height: 60vh;
+/* Container un peu plus large (comme sur ton screenshot) */
+.exec-container {
+  max-width: 1180px;
 }
 
-.card img {
-  border: 3px solid #fff;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+/* Header */
+.exec-header {
+  text-align: center;
+  margin-bottom: 36px;
 }
 
-.social-links a {
-  font-size: 1.1rem;
-  transition: color 0.3s ease;
+.exec-title {
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  font-size: clamp(2.2rem, 3vw, 3rem);
+  margin-bottom: 10px;
+  color: #3b0a0a;
 }
 
-.social-links a:hover {
-  color: var(--primary-color) !important;
+.exec-subtitle {
+  color: #1f2937;
+  opacity: 0.85;
+  max-width: 760px;
+  margin: 0 auto;
+  line-height: 1.7;
 }
 
-@media (max-width: 768px) {
-  .hero-section {
-    padding-top: 60px;
+/* Grid 2 colonnes */
+.exec-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 44px 54px; /* gros espace comme l’exemple */
+  padding-bottom: 44px;
+}
+
+/* Carte membre */
+.exec-member {
+  text-align: center;
+}
+
+/* Photo grande, format paysage */
+.photo-wrap {
+  background: transparent;
+  border: 1px solid rgba(59, 10, 10, 0.18);
+  padding: 10px;
+}
+
+.photo {
+  width: 100%;
+  height: 320px;       /* garde la même hauteur */
+  object-fit: contain; /* 🔑 affiche la photo AU COMPLET */
+  background: #f5f2dc; /* même fond beige que la page */
+  display: block;
+}
+
+
+/* Nom / rôle / email */
+.member-name {
+  margin: 18px 0 10px 0;
+  font-weight: 900;
+  font-size: 1.6rem;
+  color: #7a0c0c; /* bordeaux */
+}
+
+.member-role {
+  margin: 0 0 14px 0;
+  font-weight: 800;
+  color: #7a0c0c;
+}
+
+.member-email {
+  display: inline-block;
+  font-style: italic;
+  color: #111827;
+  text-decoration: none;
+  margin-bottom: 18px;
+}
+
+.member-email:hover {
+  text-decoration: underline;
+  color: #7a0c0c;
+}
+
+/* Description */
+.member-desc {
+  text-align: left;
+  margin: 0;
+  color: #111827;
+  line-height: 1.75;
+  font-size: 1rem;
+}
+
+/* Bande bordeaux en bas */
+.bottom-bar {
+  height: 10px;
+  background: #7a0c0c;
+  width: 100%;
+}
+
+/* Responsive : 1 colonne */
+@media (max-width: 992px) {
+  .exec-page {
+    padding-top: 96px;
   }
-  
-  .display-4 {
-    font-size: 2rem;
+
+  .exec-grid {
+    grid-template-columns: 1fr;
+    gap: 34px;
   }
-  
-  .card .d-flex {
-    flex-direction: column;
-    text-align: center;
-  }
-  
-  .me-4 {
-    margin-right: 0 !important;
-    margin-bottom: 1rem;
+
+  .photo {
+    height: 280px;
   }
 }
 </style>
