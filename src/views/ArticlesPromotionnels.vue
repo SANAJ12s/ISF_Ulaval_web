@@ -1,316 +1,444 @@
 <template>
   <div class="articles-promotionnels">
-    <!-- Hero Section -->
+    <!-- HERO (fond noir, style cohérent) -->
     <section class="hero-section">
-      <div class="container">
+      <div class="hero-overlay"></div>
+      <div class="container hero-inner">
         <div class="row align-items-center min-vh-75 py-5">
           <div class="col-lg-8 mx-auto text-center">
-            <h1 class="display-4 fw-bold mb-4">Articles promotionnels</h1>
-            <p class="lead mb-4">
-              Découvrez notre merchandise officielle ISF Université Laval
+            <h1 class="display-4 fw-bold mb-3 text-white">Merch</h1>
+            <p class="lead mb-4 text-white-50">
+              Découvre nos articles officiels ISF Université Laval
             </p>
+
+            <a
+              href="https://forms.gle/AmjDeCcUneTFepcT7"
+              target="_blank"
+              class="btn btn-donate btn-lg"
+            >
+              <i class="fas fa-external-link-alt me-2"></i>
+              Commander via le formulaire
+            </a>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- Reminder merch -->
-    <section class="py-5">
+    <!-- Image annonce (au début) -->
+    <section class="py-5 section-dark">
       <div class="container">
-        <div class="row">
-          <div class="col-lg-8 mx-auto">
-            <div class="card border-0 shadow">
-              <div class="card-body p-5 text-center">
-                <div class="mb-4">
-                  <i class="fas fa-tshirt fa-4x text-primary"></i>
-                </div>
-                <h2 class="display-5 fw-bold mb-4">N'oublie pas ta merch !</h2>
-                <p class="lead mb-4">
-                  <strong>N'oublie pas de remplir le formulaire de merch pour toi aussi avoir ton pull de membre !</strong>
-                </p>
-                <div class="alert alert-warning">
-                  <h5 class="alert-heading">
-                    <i class="fas fa-exclamation-triangle me-2"></i>
-                    Important
-                  </h5>
-                  <p class="mb-3">
-                    Le formulaire de merch s'ouvre dans un nouvel onglet. 
-                    Remplis-le pour recevoir ton pull officiel ISF Université Laval !
-                  </p>
-                  <a 
-                    href="https://forms.gle/AmjDeCcUneTFepcT7" 
-                    target="_blank"
-                    class="btn btn-warning btn-lg"
-                  >
-                    <i class="fas fa-external-link-alt me-2"></i>
-                    Accéder au formulaire Merch
-                  </a>
-                </div>
-              </div>
-            </div>
-          </div>
+        <div class="announce-card">
+          <img
+            src="/membres/AnnonceDesArticlesEtQRCode.png"
+            alt="Annonce des articles et QR Code"
+            class="announce-img"
+          />
         </div>
       </div>
     </section>
 
-    <!-- Galerie produits -->
-    <section class="py-5 bg-light">
+    <!-- Produits (display tous, fond noir, cartes plus clean) -->
+    <section class="py-5 section-dark">
       <div class="container">
         <div class="row">
           <div class="col-lg-8 mx-auto text-center mb-5">
-            <h2 class="display-5 fw-bold mb-4">Notre merchandise</h2>
-            <p class="lead text-muted">
-              Des articles de qualité pour représenter fièrement ISF Université Laval
+            <h2 class="display-6 fw-bold mb-2 text-white">Nos articles</h2>
+            <p class="lead text-white-50 mb-0">
+              Clique sur un article pour voir la photo en grand.
             </p>
           </div>
         </div>
 
         <div class="row g-4">
-          <!-- Pull-over -->
+          <!-- Pull (devant) -->
           <div class="col-lg-4 col-md-6">
-            <div class="card border-0 shadow h-100">
-              <div class="card-body p-4">
-                <div class="product-image mb-3">
-                  <div 
-                    class="img-fluid rounded d-flex align-items-center justify-content-center text-white"
-                    style="height: 250px; background: linear-gradient(45deg, #2563eb, #3b82f6);"
-                  >
-                    <div class="text-center">
-                      <i class="fas fa-tshirt fa-4x mb-2"></i>
-                      <p class="mb-0 fw-bold">Pull-over ISF</p>
-                    </div>
-                  </div>
-                </div>
-                <h5 class="fw-bold mb-3">Pull-over ISF Université Laval</h5>
-                <p class="text-muted mb-3">
-                  Notre produit phare ! Coton premium, design officiel ISF, 
-                  disponible en plusieurs tailles et couleurs.
-                </p>
-                <div class="product-features mb-3">
-                  <ul class="list-unstyled">
-                    <li class="mb-1">
-                      <i class="fas fa-check text-success me-2"></i>
-                      Coton premium 100%
-                    </li>
-                    <li class="mb-1">
-                      <i class="fas fa-check text-success me-2"></i>
-                      Tailles : XS à XXL
-                    </li>
-                    <li class="mb-1">
-                      <i class="fas fa-check text-success me-2"></i>
-                      Couleurs : Noir, Blanc, Bleu marine
-                    </li>
-                    <li class="mb-1">
-                      <i class="fas fa-check text-success me-2"></i>
-                      Lavable en machine
-                    </li>
-                  </ul>
-                </div>
-                <div class="price text-center mb-3">
-                  <span class="badge bg-success fs-6">35$ CAD</span>
-                </div>
-                <a 
-                  href="https://forms.gle/AmjDeCcUneTFepcT7" 
-                  target="_blank"
-                  class="btn btn-primary w-100"
-                >
-                  <i class="fas fa-shopping-cart me-2"></i>
-                  Commander via le formulaire
-                </a>
+            <article class="card card-dark card-hover h-100 product-card" @click="openLightbox(0)">
+              <div class="product-media">
+                <img src="/membres/tottePull.png" alt="Pull ISF (devant)" class="product-img" />
               </div>
-            </div>
+              <div class="card-body p-4">
+                <h5 class="fw-bold text-white mb-2">Pull ISF</h5>
+                <p class="text-white-50 mb-0">Photo : tottePull.png</p>
+              </div>
+            </article>
           </div>
 
-          <!-- Badges -->
+          <!-- Pull (dos) -->
           <div class="col-lg-4 col-md-6">
-            <div class="card border-0 shadow h-100">
-              <div class="card-body p-4">
-                <div class="product-image mb-3">
-                  <div 
-                    class="img-fluid rounded d-flex align-items-center justify-content-center text-white"
-                    style="height: 250px; background: linear-gradient(45deg, #059669, #10b981);"
-                  >
-                    <div class="text-center">
-                      <i class="fas fa-certificate fa-4x mb-2"></i>
-                      <p class="mb-0 fw-bold">Badges ISF</p>
-                    </div>
-                  </div>
-                </div>
-                <h5 class="fw-bold mb-3">Badges et autocollants</h5>
-                <p class="text-muted mb-3">
-                  Montre ton appartenance à ISF avec nos badges et autocollants 
-                  de haute qualité. Parfait pour ton sac ou ton laptop !
-                </p>
-                <div class="product-features mb-3">
-                  <ul class="list-unstyled">
-                    <li class="mb-1">
-                      <i class="fas fa-check text-success me-2"></i>
-                      Badge métallique premium
-                    </li>
-                    <li class="mb-1">
-                      <i class="fas fa-check text-success me-2"></i>
-                      Autocollants résistants
-                    </li>
-                    <li class="mb-1">
-                      <i class="fas fa-check text-success me-2"></i>
-                      Design officiel ISF
-                    </li>
-                    <li class="mb-1">
-                      <i class="fas fa-check text-success me-2"></i>
-                      Lot de 3 pièces
-                    </li>
-                  </ul>
-                </div>
-                <div class="price text-center mb-3">
-                  <span class="badge bg-success fs-6">8$ CAD</span>
-                </div>
-                <a 
-                  href="https://forms.gle/AmjDeCcUneTFepcT7" 
-                  target="_blank"
-                  class="btn btn-primary w-100"
-                >
-                  <i class="fas fa-shopping-cart me-2"></i>
-                  Commander via le formulaire
-                </a>
+            <article class="card card-dark card-hover h-100 product-card" @click="openLightbox(1)">
+              <div class="product-media">
+                <img src="/membres/backpull.png" alt="Pull ISF (dos)" class="product-img" />
               </div>
-            </div>
+              <div class="card-body p-4">
+                <h5 class="fw-bold text-white mb-2">Pull ISF (dos)</h5>
+                <p class="text-white-50 mb-0">Photo : backpull.png</p>
+              </div>
+            </article>
           </div>
 
-          <!-- Sac -->
+          <!-- Tote bag -->
           <div class="col-lg-4 col-md-6">
-            <div class="card border-0 shadow h-100">
-              <div class="card-body p-4">
-                <div class="product-image mb-3">
-                  <div 
-                    class="img-fluid rounded d-flex align-items-center justify-content-center text-white"
-                    style="height: 250px; background: linear-gradient(45deg, #dc2626, #ef4444);"
-                  >
-                    <div class="text-center">
-                      <i class="fas fa-shopping-bag fa-4x mb-2"></i>
-                      <p class="mb-0 fw-bold">Sac ISF</p>
-                    </div>
-                  </div>
-                </div>
-                <h5 class="fw-bold mb-3">Sac fourre-tout ISF</h5>
-                <p class="text-muted mb-3">
-                  Pratique et écologique ! Notre sac en coton biologique 
-                  est parfait pour tes cours, tes projets, ou tes aventures urbaines.
-                </p>
-                <div class="product-features mb-3">
-                  <ul class="list-unstyled">
-                    <li class="mb-1">
-                      <i class="fas fa-check text-success me-2"></i>
-                      Coton biologique 100%
-                    </li>
-                    <li class="mb-1">
-                      <i class="fas fa-check text-success me-2"></i>
-                      Format moyen (38cm x 42cm)
-                    </li>
-                    <li class="mb-1">
-                      <i class="fas fa-check text-success me-2"></i>
-                      Poche intérieure
-                    </li>
-                    <li class="mb-1">
-                      <i class="fas fa-check text-success me-2"></i>
-                      Design éco-responsable
-                    </li>
-                  </ul>
-                </div>
-                <div class="price text-center mb-3">
-                  <span class="badge bg-success fs-6">20$ CAD</span>
-                </div>
-                <a 
-                  href="https://forms.gle/AmjDeCcUneTFepcT7" 
-                  target="_blank"
-                  class="btn btn-primary w-100"
-                >
-                  <i class="fas fa-shopping-cart me-2"></i>
-                  Commander via le formulaire
-                </a>
+            <article class="card card-dark card-hover h-100 product-card" @click="openLightbox(2)">
+              <div class="product-media">
+                <img src="/membres/tottebag.png" alt="Tote bag ISF" class="product-img" />
               </div>
-            </div>
+              <div class="card-body p-4">
+                <h5 class="fw-bold text-white mb-2">Tote bag ISF</h5>
+                <p class="text-white-50 mb-0">Photo : tottebag.png</p>
+              </div>
+            </article>
           </div>
+
+          <!-- Combo Pull + tote -->
+          <div class="col-lg-4 col-md-6">
+            <article class="card card-dark card-hover h-100 product-card" @click="openLightbox(3)">
+              <div class="product-media">
+                <img
+                  src="/membres/pullbackettotte.png"
+                  alt="Pull + tote bag"
+                  class="product-img"
+                />
+              </div>
+              <div class="card-body p-4">
+                <h5 class="fw-bold text-white mb-2">Combo Pull + Tote</h5>
+                <p class="text-white-50 mb-0">Photo : pullbackettotte.png</p>
+              </div>
+            </article>
+          </div>
+
+          <!-- Patch -->
+          <div class="col-lg-4 col-md-6">
+            <article class="card card-dark card-hover h-100 product-card" @click="openLightbox(4)">
+              <div class="product-media">
+                <img src="/membres/patch.png" alt="Patch ISF" class="product-img" />
+              </div>
+              <div class="card-body p-4">
+                <h5 class="fw-bold text-white mb-2">Patch ISF</h5>
+                <p class="text-white-50 mb-0">Photo : patch.png</p>
+              </div>
+            </article>
+          </div>
+
+          <!-- Patches -->
+          <div class="col-lg-4 col-md-6">
+            <article class="card card-dark card-hover h-100 product-card" @click="openLightbox(5)">
+              <div class="product-media">
+                <img src="/membres/patchs.png" alt="Patches ISF" class="product-img" />
+              </div>
+              <div class="card-body p-4">
+                <h5 class="fw-bold text-white mb-2">Patches ISF</h5>
+                <p class="text-white-50 mb-0">Photo : patchs.png</p>
+              </div>
+            </article>
+          </div>
+        </div>
+
+        <!-- CTA en bas -->
+        <div class="text-center mt-5">
+          <a
+            href="https://forms.gle/AmjDeCcUneTFepcT7"
+            target="_blank"
+            class="btn btn-donate btn-lg"
+          >
+            <i class="fas fa-shopping-cart me-2"></i>
+            Commander maintenant
+          </a>
         </div>
       </div>
     </section>
 
-    <!-- Call to Action -->
-    <section class="py-5 bg-primary text-white">
-      <div class="container">
-        <div class="row">
-          <div class="col-lg-8 mx-auto text-center">
-            <h2 class="display-5 fw-bold mb-4">Portez fièrement ISF !</h2>
-            <p class="lead mb-4">
-              Rejoignez la communauté ISF avec style ! Commandez dès maintenant 
-              votre merchandise officielle et représentez nos valeurs.
-            </p>
-            <div class="d-flex gap-3 justify-content-center">
-              <a 
-                href="https://forms.gle/AmjDeCcUneTFepcT7" 
-                target="_blank"
-                class="btn btn-light btn-lg"
-              >
-                <i class="fas fa-shopping-cart me-2"></i>
-                Commander maintenant
-              </a>
-              <router-link to="/devenir-membre" class="btn btn-outline-light btn-lg">
-                <i class="fas fa-users me-2"></i>
-                Devenir membre
-              </router-link>
+    <!-- LIGHTBOX -->
+    <teleport to="body">
+      <div v-if="lightboxOpen">
+        <div class="lb-backdrop" @click="closeLightbox"></div>
+
+        <div class="lb-modal" role="dialog" aria-modal="true">
+          <button class="lb-close" @click="closeLightbox" aria-label="Fermer">
+            <i class="fas fa-times"></i>
+          </button>
+
+          <button class="lb-nav lb-prev" @click="prevImage" aria-label="Précédent">
+            <i class="fas fa-chevron-left"></i>
+          </button>
+
+          <div class="lb-content">
+            <img :src="products[currentIndex].src" :alt="products[currentIndex].title" class="lb-img" />
+            <div class="lb-caption">
+              <div class="lb-title">{{ products[currentIndex].title }}</div>
+              <div class="lb-sub">{{ products[currentIndex].sub }}</div>
             </div>
+          </div>
+
+          <button class="lb-nav lb-next" @click="nextImage" aria-label="Suivant">
+            <i class="fas fa-chevron-right"></i>
+          </button>
+
+          <div class="lb-actions">
+            <a
+              href="https://forms.gle/AmjDeCcUneTFepcT7"
+              target="_blank"
+              class="btn btn-donate"
+            >
+              <i class="fas fa-external-link-alt me-2"></i>
+              Commander
+            </a>
           </div>
         </div>
       </div>
-    </section>
+    </teleport>
   </div>
 </template>
 
 <script>
 export default {
-  name: 'ArticlesPromotionnels'
-}
+  name: "ArticlesPromotionnels",
+  data() {
+    return {
+      lightboxOpen: false,
+      currentIndex: 0,
+      products: [
+        { title: "Pull ISF", sub: "tottePull.png", src: "/membres/tottePull.png" },
+        { title: "Pull ISF (dos)", sub: "backpull.png", src: "/membres/backpull.png" },
+        { title: "Tote bag ISF", sub: "tottebag.png", src: "/membres/tottebag.png" },
+        { title: "Combo Pull + Tote", sub: "pullbackettotte.png", src: "/membres/pullbackettotte.png" },
+        { title: "Patch ISF", sub: "patch.png", src: "/membres/patch.png" },
+        { title: "Patches ISF", sub: "patchs.png", src: "/membres/patchs.png" },
+      ],
+    };
+  },
+  mounted() {
+    window.addEventListener("keydown", this.onKeydown);
+  },
+  beforeUnmount() {
+    window.removeEventListener("keydown", this.onKeydown);
+    document.body.classList.remove("modal-open");
+  },
+  methods: {
+    openLightbox(index) {
+      this.currentIndex = index;
+      this.lightboxOpen = true;
+      document.body.classList.add("modal-open");
+    },
+    closeLightbox() {
+      this.lightboxOpen = false;
+      document.body.classList.remove("modal-open");
+    },
+    nextImage() {
+      this.currentIndex = (this.currentIndex + 1) % this.products.length;
+    },
+    prevImage() {
+      this.currentIndex = (this.currentIndex - 1 + this.products.length) % this.products.length;
+    },
+    onKeydown(e) {
+      if (!this.lightboxOpen) return;
+
+      if (e.key === "Escape") this.closeLightbox();
+      if (e.key === "ArrowRight") this.nextImage();
+      if (e.key === "ArrowLeft") this.prevImage();
+    },
+  },
+};
 </script>
 
 <style scoped>
-.hero-section {
-  padding-top: 80px;
-  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+/* Global dark */
+.articles-promotionnels {
+  background: #000;
+  color: #fff;
+}
+.section-dark {
+  background: #000;
 }
 
+/* HERO */
+.hero-section {
+  position: relative;
+  padding-top: 80px;
+  background: radial-gradient(circle at 20% 10%, rgba(249,115,22,0.22), transparent 45%),
+              radial-gradient(circle at 80% 30%, rgba(255,255,255,0.08), transparent 40%),
+              #000;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.35);
+}
+.hero-inner {
+  position: relative;
+  z-index: 1;
+}
 .min-vh-75 {
   min-height: 60vh;
 }
 
-.product-image {
+/* Annonce */
+.announce-card {
+  border-radius: 18px;
   overflow: hidden;
-  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.10);
+  background: rgba(255,255,255,0.03);
+  box-shadow: 0 18px 45px rgba(0,0,0,0.35);
+}
+.announce-img {
+  width: 100%;
+  height: auto;
+  display: block;
 }
 
-.product-features li {
-  font-size: 0.9rem;
+/* Cards dark */
+.card-dark {
+  background: #0b0b0b;
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
 }
-
-.price .badge {
-  font-size: 1rem;
-  padding: 0.5rem 1rem;
+.card-hover {
+  transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+  cursor: pointer;
 }
-
-.card {
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.card:hover {
+.card-hover:hover {
   transform: translateY(-4px);
-  box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.35);
+  border-color: rgba(249, 115, 22, 0.35);
 }
 
+/* Product media */
+.product-media {
+  height: 280px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle at 30% 20%, rgba(249,115,22,0.18), transparent 55%),
+              #050505;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+.product-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 20px;
+}
+
+/* Buttons */
+.btn-donate {
+  background: #f97316;
+  color: #000;
+  border: none;
+  font-weight: 900;
+  border-radius: 14px;
+  padding: 12px 20px;
+}
+.btn-donate:hover {
+  background: #ff8a3d;
+  box-shadow: 0 0 16px rgba(249, 115, 22, 0.45);
+  color: #000;
+}
+
+/* LIGHTBOX */
+:global(body.modal-open) {
+  overflow: hidden;
+}
+
+.lb-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.78);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+  z-index: 2000;
+}
+.lb-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 2001;
+  display: grid;
+  place-items: center;
+  padding: 18px;
+}
+.lb-content {
+  max-width: 980px;
+  width: min(980px, 92vw);
+  background: #0b0b0b;
+  border: 1px solid rgba(255,255,255,0.10);
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 22px 70px rgba(0,0,0,0.55);
+}
+.lb-img {
+  width: 100%;
+  height: min(70vh, 640px);
+  object-fit: contain;
+  background: #050505;
+  display: block;
+}
+.lb-caption {
+  padding: 14px 16px 16px;
+  border-top: 1px solid rgba(255,255,255,0.08);
+}
+.lb-title {
+  font-weight: 900;
+  color: #fff;
+}
+.lb-sub {
+  color: rgba(255,255,255,0.65);
+  margin-top: 4px;
+  font-size: 0.95rem;
+}
+
+.lb-close {
+  position: fixed;
+  top: 18px;
+  right: 18px;
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.18);
+  background: rgba(0,0,0,0.35);
+  color: #fff;
+  display: grid;
+  place-items: center;
+  z-index: 2002;
+}
+
+.lb-nav {
+  position: fixed;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 48px;
+  height: 48px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.18);
+  background: rgba(0,0,0,0.35);
+  color: #fff;
+  display: grid;
+  place-items: center;
+  z-index: 2002;
+}
+.lb-prev { left: 18px; }
+.lb-next { right: 18px; }
+
+.lb-actions {
+  position: fixed;
+  bottom: 18px;
+  left: 0;
+  right: 0;
+  z-index: 2002;
+  display: flex;
+  justify-content: center;
+  padding: 0 18px;
+}
+
+/* Responsive */
 @media (max-width: 768px) {
   .hero-section {
     padding-top: 60px;
   }
-  
   .display-4 {
     font-size: 2rem;
+  }
+  .product-media {
+    height: 240px;
   }
 }
 </style>

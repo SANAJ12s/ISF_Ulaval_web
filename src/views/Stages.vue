@@ -1,44 +1,69 @@
 <template>
   <div class="stages">
-    <!-- Hero Section -->
+    <!-- HERO (dark) -->
     <section class="hero-section">
-      <div class="container">
+      <div class="hero-overlay"></div>
+      <div class="container hero-inner">
         <div class="row align-items-center min-vh-75 py-5">
           <div class="col-lg-8 mx-auto text-center">
-            <h1 class="display-4 fw-bold mb-4">Stages à l'international</h1>
-            <p class="lead mb-4">
+            <h1 class="display-4 fw-bold mb-3 text-white">Stages à l'international</h1>
+            <p class="lead mb-4 text-white-50">
               Opportunités de stages et d'expériences internationales
             </p>
+
+            <div class="hero-chips">
+              <span class="chip">
+                <i class="fas fa-globe-americas me-2"></i>Ressources partenaires
+              </span>
+              <span class="chip">
+                <i class="fas fa-passport me-2"></i>Conseils & préparation
+              </span>
+              <span class="chip">
+                <i class="fas fa-shield-alt me-2"></i>Sécurité
+              </span>
+            </div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- Information principale -->
-    <section class="py-5">
+    <!-- INFO PRINCIPALE -->
+    <section class="py-5 section-dark">
       <div class="container">
         <div class="row">
-          <div class="col-lg-8 mx-auto">
-            <div class="card border-0 shadow">
+          <div class="col-lg-9 mx-auto">
+            <div class="card card-dark shadow-soft">
               <div class="card-body p-5 text-center">
-                <div class="mb-4">
-                  <i class="fas fa-info-circle fa-4x text-primary"></i>
+                <div class="icon-bubble mb-4">
+                  <i class="fas fa-info-circle"></i>
                 </div>
-                <h2 class="display-5 fw-bold mb-4">Stages internationaux</h2>
-                <p class="lead mb-4">
-                  ISF Université Laval n'offre pas directement de stages à l'international 
-                  pour le moment. Cependant, nous pouvons vous orienter vers des 
+                <h2 class="display-6 fw-bold mb-3 text-white">Stages internationaux</h2>
+                <p class="lead mb-4 text-white-50">
+                  ISF Université Laval n'offre pas directement de stages à l'international
+                  pour le moment. Cependant, nous pouvons vous orienter vers des
                   organisations qui proposent ces opportunités.
                 </p>
-                <div class="alert alert-info">
-                  <h5 class="alert-heading">
-                    <i class="fas fa-lightbulb me-2"></i>
+
+                <div class="alert alert-dark alert-dark-custom">
+                  <h5 class="alert-heading text-white">
+                    <i class="fas fa-lightbulb me-2 text-warning"></i>
                     Conseil
                   </h5>
-                  <p class="mb-0">
-                    Nous vous encourageons à explorer les opportunités proposées par nos 
-                    organisations partenaires et le réseau plus large d'Ingénieurs sans frontières.
+                  <p class="mb-0 text-white-50">
+                    Explorez les opportunités proposées par nos organisations partenaires et le
+                    réseau plus large d'Ingénieurs sans frontières.
                   </p>
+                </div>
+
+                <div class="d-flex gap-3 justify-content-center flex-wrap mt-4">
+                  <a href="https://isfq.qc.ca" target="_blank" class="btn btn-accent btn-lg">
+                    <i class="fas fa-external-link-alt me-2"></i>
+                    Voir ISFQ
+                  </a>
+                  <a href="https://www.ewb.ca" target="_blank" class="btn btn-outline-light btn-lg">
+                    <i class="fas fa-external-link-alt me-2"></i>
+                    Voir EWB
+                  </a>
                 </div>
               </div>
             </div>
@@ -47,14 +72,14 @@
       </div>
     </section>
 
-    <!-- Organisations partenaires pour stages -->
-    <section class="py-5 bg-light">
+    <!-- ORG PARTENAIRES -->
+    <section class="py-5 section-dark">
       <div class="container">
         <div class="row">
           <div class="col-lg-8 mx-auto text-center mb-5">
-            <h2 class="display-5 fw-bold mb-4">Organisations partenaires</h2>
-            <p class="lead text-muted">
-              Découvrez les opportunités de stages via nos partenaires
+            <h2 class="display-6 fw-bold mb-2 text-white">Organisations partenaires</h2>
+            <p class="lead text-white-50 mb-0">
+              Découvre les opportunités de stages via nos partenaires
             </p>
           </div>
         </div>
@@ -62,45 +87,34 @@
         <div class="row g-4">
           <!-- ISFQ -->
           <div class="col-lg-6">
-            <div class="card border-0 shadow h-100">
+            <div class="card card-dark card-hover h-100">
               <div class="card-body p-4">
                 <div class="d-flex align-items-start">
                   <div class="me-4">
-                    <div class="bg-primary text-white rounded-circle p-3">
-                      <i class="fas fa-globe-americas fa-2x"></i>
+                    <div class="round-badge badge-accent">
+                      <i class="fas fa-globe-americas"></i>
                     </div>
                   </div>
                   <div class="flex-grow-1">
-                    <h5 class="fw-bold mb-3">Ingénieurs sans frontières Québec (ISFQ)</h5>
-                    <p class="text-muted mb-3">
-                      ISFQ propose différents programmes de stages et de volontariats 
-                      internationaux axés sur l'ingénierie humanitaire et le développement durable.
+                    <h5 class="fw-bold mb-2 text-white">Ingénieurs sans frontières Québec (ISFQ)</h5>
+                    <p class="text-white-50 mb-3">
+                      Programmes de stages et de volontariats internationaux axés sur l'ingénierie
+                      humanitaire et le développement durable.
                     </p>
-                    <div class="mb-3">
-                      <h6 class="fw-bold">Types de stages :</h6>
-                      <ul class="list-unstyled">
-                        <li class="mb-1">
-                          <i class="fas fa-check text-success me-2"></i>
-                          Stages techniques en Afrique
-                        </li>
-                        <li class="mb-1">
-                          <i class="fas fa-check text-success me-2"></i>
-                          Projets d'eau potable
-                        </li>
-                        <li class="mb-1">
-                          <i class="fas fa-check text-success me-2"></i>
-                          Énergies renouvelables
-                        </li>
-                        <li class="mb-1">
-                          <i class="fas fa-check text-success me-2"></i>
-                          Infrastructures communautaires
-                        </li>
-                      </ul>
+
+                    <div class="tags">
+                      <span class="tag">Eau potable</span>
+                      <span class="tag">Énergies renouvelables</span>
+                      <span class="tag">Infrastructures</span>
+                      <span class="tag">Afrique</span>
                     </div>
-                    <a href="https://isfq.qc.ca" target="_blank" class="btn btn-primary">
-                      <i class="fas fa-external-link-alt me-2"></i>
-                      Visiter ISFQ
-                    </a>
+
+                    <div class="mt-4">
+                      <a href="https://isfq.qc.ca" target="_blank" class="btn btn-accent">
+                        <i class="fas fa-external-link-alt me-2"></i>
+                        Visiter ISFQ
+                      </a>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -109,45 +123,34 @@
 
           <!-- EWB -->
           <div class="col-lg-6">
-            <div class="card border-0 shadow h-100">
+            <div class="card card-dark card-hover h-100">
               <div class="card-body p-4">
                 <div class="d-flex align-items-start">
                   <div class="me-4">
-                    <div class="bg-success text-white rounded-circle p-3">
-                      <i class="fas fa-hands-helping fa-2x"></i>
+                    <div class="round-badge badge-green">
+                      <i class="fas fa-hands-helping"></i>
                     </div>
                   </div>
                   <div class="flex-grow-1">
-                    <h5 class="fw-bold mb-3">Engineers Without Borders (EWB)</h5>
-                    <p class="text-muted mb-3">
-                      EWB offre des opportunités de stages et de Fellowships internationaux 
-                      pour développer des solutions innovantes aux défis du développement.
+                    <h5 class="fw-bold mb-2 text-white">Engineers Without Borders (EWB)</h5>
+                    <p class="text-white-50 mb-3">
+                      Opportunités de stages et de Fellowships pour développer des solutions
+                      innovantes aux défis du développement.
                     </p>
-                    <div class="mb-3">
-                      <h6 class="fw-bold">Programmes disponibles :</h6>
-                      <ul class="list-unstyled">
-                        <li class="mb-1">
-                          <i class="fas fa-check text-success me-2"></i>
-                          Fellowships en Afrique de l'Ouest
-                        </li>
-                        <li class="mb-1">
-                          <i class="fas fa-check text-success me-2"></i>
-                          Stages techniques au Ghana
-                        </li>
-                        <li class="mb-1">
-                          <i class="fas fa-check text-success me-2"></i>
-                          Projets d'innovation
-                        </li>
-                        <li class="mb-1">
-                          <i class="fas fa-check text-success me-2"></i>
-                          Programmes d'échange
-                        </li>
-                      </ul>
+
+                    <div class="tags">
+                      <span class="tag">Fellowships</span>
+                      <span class="tag">Innovation</span>
+                      <span class="tag">Afrique de l'Ouest</span>
+                      <span class="tag">Échanges</span>
                     </div>
-                    <a href="https://www.ewb.ca" target="_blank" class="btn btn-success">
-                      <i class="fas fa-external-link-alt me-2"></i>
-                      Visiter EWB
-                    </a>
+
+                    <div class="mt-4">
+                      <a href="https://www.ewb.ca" target="_blank" class="btn btn-outline-success">
+                        <i class="fas fa-external-link-alt me-2"></i>
+                        Visiter EWB
+                      </a>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -157,104 +160,98 @@
       </div>
     </section>
 
-    <!-- Conseils et préparation -->
-    <section class="py-5">
+    <!-- CONSEILS -->
+    <section class="py-5 section-dark">
       <div class="container">
         <div class="row">
           <div class="col-lg-8 mx-auto text-center mb-5">
-            <h2 class="display-5 fw-bold mb-4">Préparez votre expérience internationale</h2>
-            <p class="lead text-muted">
-              Conseils pour maximiser vos chances et bien vous préparer
+            <h2 class="display-6 fw-bold mb-2 text-white">Prépare ton expérience</h2>
+            <p class="lead text-white-50 mb-0">
+              Conseils pour maximiser tes chances et bien te préparer
             </p>
           </div>
         </div>
 
         <div class="row g-4">
           <div class="col-lg-4">
-            <div class="card border-0 shadow h-100">
+            <div class="card card-dark card-hover h-100">
               <div class="card-body text-center p-4">
-                <div class="mb-3">
-                  <i class="fas fa-passport fa-3x text-primary"></i>
+                <div class="tip-icon text-accent">
+                  <i class="fas fa-passport"></i>
                 </div>
-                <h5 class="fw-bold mb-3">Documentation</h5>
-                <p>
-                  Assurez-vous d valide et les'avoir un passeport visas nécessaires 
-                  pour votre destination. Anticipez les délais de traitement.
+                <h5 class="fw-bold mb-2 text-white">Documentation</h5>
+                <p class="text-white-50 mb-0">
+                  Vérifie passeport, visas et délais de traitement avant de réserver quoi que ce soit.
                 </p>
               </div>
             </div>
           </div>
 
           <div class="col-lg-4">
-            <div class="card border-0 shadow h-100">
+            <div class="card card-dark card-hover h-100">
               <div class="card-body text-center p-4">
-                <div class="mb-3">
-                  <i class="fas fa-syringe fa-3x text-success"></i>
+                <div class="tip-icon text-success">
+                  <i class="fas fa-syringe"></i>
                 </div>
-                <h5 class="fw-bold mb-3">Vaccinations</h5>
-                <p>
-                  Consultez un centre de vaccination et prenez les précautions 
-                  sanitaires nécessaires selon votre destination.
+                <h5 class="fw-bold mb-2 text-white">Vaccinations</h5>
+                <p class="text-white-50 mb-0">
+                  Consulte un centre de vaccination et prépare ton kit santé selon la destination.
                 </p>
               </div>
             </div>
           </div>
 
           <div class="col-lg-4">
-            <div class="card border-0 shadow h-100">
+            <div class="card card-dark card-hover h-100">
               <div class="card-body text-center p-4">
-                <div class="mb-3">
-                  <i class="fas fa-language fa-3x text-info"></i>
+                <div class="tip-icon text-info">
+                  <i class="fas fa-language"></i>
                 </div>
-                <h5 class="fw-bold mb-3">Langues</h5>
-                <p>
-                  Développez vos compétences linguistiques, particulièrement 
-                  en anglais et dans la langue locale de votre destination.
+                <h5 class="fw-bold mb-2 text-white">Langues</h5>
+                <p class="text-white-50 mb-0">
+                  Renforce ton anglais et apprends les bases utiles de la langue locale.
                 </p>
               </div>
             </div>
           </div>
 
           <div class="col-lg-4">
-            <div class="card border-0 shadow h-100">
+            <div class="card card-dark card-hover h-100">
               <div class="card-body text-center p-4">
-                <div class="mb-3">
-                  <i class="fas fa-briefcase fa-3x text-warning"></i>
+                <div class="tip-icon text-warning">
+                  <i class="fas fa-briefcase"></i>
                 </div>
-                <h5 class="fw-bold mb-3">Compétences techniques</h5>
-                <p>
-                  Renforcez vos compétences techniques pertinentes pour votre 
-                  stage et familiarisez-vous avec les contextes locaux.
+                <h5 class="fw-bold mb-2 text-white">Compétences</h5>
+                <p class="text-white-50 mb-0">
+                  Mets à jour ton CV, ton portfolio, et révise les bases techniques liées au mandat.
                 </p>
               </div>
             </div>
           </div>
 
           <div class="col-lg-4">
-            <div class="card border-0 shadow h-100">
+            <div class="card card-dark card-hover h-100">
               <div class="card-body text-center p-4">
-                <div class="mb-3">
-                  <i class="fas fa-heart fa-3x text-danger"></i>
+                <div class="tip-icon text-danger">
+                  <i class="fas fa-heart"></i>
                 </div>
-                <h5 class="fw-bold mb-3">Sensibilité culturelle</h5>
-                <p>
-                  Informez-vous sur la culture, les coutumes et les normes 
-                  sociales de votre pays de destination.
+                <h5 class="fw-bold mb-2 text-white">Culture</h5>
+                <p class="text-white-50 mb-0">
+                  Informe-toi sur la culture et les coutumes : c’est la clé d’une bonne intégration.
                 </p>
               </div>
             </div>
           </div>
 
           <div class="col-lg-4">
-            <div class="card border-0 shadow h-100">
+            <div class="card card-dark card-hover h-100">
               <div class="card-body text-center p-4">
-                <div class="mb-3">
-                  <i class="fas fa-shield-alt fa-3x text-secondary"></i>
+                <div class="tip-icon text-secondary">
+                  <i class="fas fa-shield-alt"></i>
                 </div>
-                <h5 class="fw-bold mb-3">Sécurité</h5>
-                <p>
-                  Suivez les conseils de sécurité du gouvernement canadien 
-                  et maintenez des contacts réguliers avec votre famille.
+                <h5 class="fw-bold mb-2 text-white">Sécurité</h5>
+                <p class="text-white-50 mb-0">
+                  Suis les recommandations officielles et garde des contacts réguliers avec tes proches.
                 </p>
               </div>
             </div>
@@ -263,81 +260,21 @@
       </div>
     </section>
 
-    <!-- Témoignages -->
-    <section class="py-5 bg-light">
+    <!-- Témoignages supprimés (sur demande) -->
+
+    <!-- CTA -->
+    <section class="py-5 cta-section">
       <div class="container">
         <div class="row">
-          <div class="col-lg-8 mx-auto text-center mb-5">
-            <h2 class="display-5 fw-bold mb-4">Témoignages</h2>
-            <p class="lead text-muted">
-              Expériences de nos membres ayant fait des stages internationaux
+          <div class="col-lg-9 mx-auto text-center">
+            <h2 class="display-6 fw-bold mb-3 text-white">
+              Besoin d'aide pour ton projet international ?
+            </h2>
+            <p class="lead mb-4 text-white-50">
+              Notre VP Externe peut t'accompagner dans ta recherche de stages et t'orienter
+              vers les bonnes ressources.
             </p>
-          </div>
-        </div>
-
-        <div class="row g-4">
-          <div class="col-lg-6">
-            <div class="card border-0 shadow h-100">
-              <div class="card-body p-4">
-                <div class="d-flex align-items-start mb-3">
-                  <div 
-                    class="rounded-circle d-flex align-items-center justify-content-center text-white me-3"
-                    style="width: 60px; height: 60px; background: linear-gradient(135deg, #2563eb, #3b82f6);"
-                  >
-                    <i class="fas fa-user fa-lg"></i>
-                  </div>
-                  <div>
-                    <h6 class="fw-bold mb-1">[Nom du membre]</h6>
-                    <small class="text-muted">Stage au Ghana - EWB</small>
-                  </div>
-                </div>
-                <p class="fst-italic">
-                  "Mon stage avec EWB au Ghana a été une expérience transformatrice. 
-                  J'ai pu appliquer mes compétences techniques tout en apprenant sur 
-                  les enjeux du développement international."
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-lg-6">
-            <div class="card border-0 shadow h-100">
-              <div class="card-body p-4">
-                <div class="d-flex align-items-start mb-3">
-                  <div 
-                    class="rounded-circle d-flex align-items-center justify-content-center text-white me-3"
-                    style="width: 60px; height: 60px; background: linear-gradient(135deg, #059669, #10b981);"
-                  >
-                    <i class="fas fa-user fa-lg"></i>
-                  </div>
-                  <div>
-                    <h6 class="fw-bold mb-1">[Nom du membre]</h6>
-                    <small class="text-muted">Stage eau potable - ISFQ</small>
-                  </div>
-                </div>
-                <p class="fst-italic">
-                  "Le programme de stage d'ISFQ m'a permis de travailler sur un projet 
-                  d'eau potable au Sénégal. Une expérience enrichissante qui a confirmé 
-                  ma vocation pour l'ingénierie humanitaire."
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Contact et soutien -->
-    <section class="py-5 bg-primary text-white">
-      <div class="container">
-        <div class="row">
-          <div class="col-lg-8 mx-auto text-center">
-            <h2 class="display-5 fw-bold mb-4">Besoin d'aide pour votre projet international ?</h2>
-            <p class="lead mb-4">
-              Notre VP Externe peut vous accompagner dans votre recherche de stages 
-              et vous orienter vers les bonnes ressources.
-            </p>
-            <div class="d-flex gap-3 justify-content-center">
+            <div class="d-flex gap-3 justify-content-center flex-wrap">
               <router-link to="/comite-executif" class="btn btn-light btn-lg">
                 <i class="fas fa-users me-2"></i>
                 Contacter notre VP Externe
@@ -356,34 +293,174 @@
 
 <script>
 export default {
-  name: 'Stages'
-}
+  name: "Stages",
+};
 </script>
 
 <style scoped>
-.hero-section {
-  padding-top: 80px;
-  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+/* GLOBAL DARK */
+.stages {
+  background: #000;
+  color: #fff;
 }
-
+.section-dark {
+  background: #000;
+}
 .min-vh-75 {
   min-height: 60vh;
 }
 
-.card {
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+/* HERO */
+.hero-section {
+  position: relative;
+  padding-top: 80px;
+  background: radial-gradient(circle at 20% 10%, rgba(249,115,22,0.22), transparent 45%),
+              radial-gradient(circle at 80% 30%, rgba(255,255,255,0.08), transparent 40%),
+              #000;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+}
+.hero-inner {
+  position: relative;
+  z-index: 1;
+}
+.hero-chips {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 14px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.10);
+  color: rgba(255,255,255,0.85);
+  font-weight: 700;
 }
 
-.card:hover {
+/* CARDS */
+.card-dark {
+  background: #0b0b0b;
+  color: #fff;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 16px;
+}
+.card-hover {
+  transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+}
+.card-hover:hover {
   transform: translateY(-4px);
-  box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 18px 45px rgba(0,0,0,0.35);
+  border-color: rgba(249,115,22,0.35);
+}
+.shadow-soft {
+  box-shadow: 0 18px 45px rgba(0,0,0,0.35);
 }
 
+/* ICONS */
+.icon-bubble {
+  width: 76px;
+  height: 76px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  margin: 0 auto;
+  background: radial-gradient(circle at 30% 20%, rgba(249,115,22,0.30), transparent 55%),
+              rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.10);
+  color: #fff;
+  font-size: 34px;
+}
+
+.round-badge {
+  width: 54px;
+  height: 54px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  font-size: 22px;
+  border: 1px solid rgba(255,255,255,0.12);
+}
+.badge-accent {
+  background: rgba(249,115,22,0.22);
+  color: #fff;
+}
+.badge-green {
+  background: rgba(16,185,129,0.18);
+  color: #fff;
+}
+
+/* TAGS */
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.tag {
+  padding: 8px 10px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.10);
+  color: rgba(255,255,255,0.82);
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+/* Tips icons */
+.tip-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  margin: 0 auto 12px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.10);
+  font-size: 24px;
+}
+.text-accent { color: #f97316; }
+
+/* ALERT custom */
+.alert-dark-custom {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.10);
+}
+
+/* BUTTONS */
+.btn-accent {
+  background: #f97316;
+  color: #000;
+  border: none;
+  font-weight: 900;
+  border-radius: 14px;
+  padding: 10px 16px;
+}
+.btn-accent:hover {
+  background: #ff8a3d;
+  box-shadow: 0 0 16px rgba(249,115,22,0.45);
+  color: #000;
+}
+
+/* CTA */
+.cta-section {
+  background: linear-gradient(135deg, rgba(249,115,22,0.30) 0%, rgba(0,0,0,1) 55%);
+  border-top: 1px solid rgba(255,255,255,0.08);
+}
+
+/* RESPONSIVE */
 @media (max-width: 768px) {
   .hero-section {
     padding-top: 60px;
   }
-  
   .display-4 {
     font-size: 2rem;
   }

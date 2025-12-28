@@ -79,7 +79,15 @@
           </li>
 
           <li class="nav-item">
+          <router-link to="/comite-executif" class="nav-link">Exécutif</router-link>
+          </li>
+
+          <li class="nav-item">
             <router-link to="/stages" class="nav-link">Stages</router-link>
+          </li>
+
+          <li class="nav-item">
+          <router-link to="/documents" class="nav-link">Documents</router-link>
           </li>
 
           <li class="nav-item">

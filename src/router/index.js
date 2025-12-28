@@ -10,6 +10,7 @@ import Stages from '../views/Stages.vue'
 import FaireUnDon from '../views/FaireUnDon.vue'
 import NousJoindre from '../views/NousJoindre.vue'
 import ArticlesPromotionnels from '../views/ArticlesPromotionnels.vue'
+import Documents from '../views/Documents.vue'
 
 const routes = [
   {
@@ -71,7 +72,13 @@ const routes = [
   { path: "/activites", 
     name: "Activites",
     component: () => import("../views/Activites.vue") 
-  }
+  },
+  {
+  path: '/documents',
+  name: 'Documents',
+  component: Documents
+},
+
 
 ]
 
