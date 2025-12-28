@@ -3,7 +3,6 @@ import Home from '../views/Home.vue'
 import QuiSommesNous from '../views/QuiSommesNous.vue'
 import ComiteExecutif from '../views/ComiteExecutif.vue'
 import DevenirMembre from '../views/DevenirMembre.vue'
-import Bibliotheque from '../views/Bibliotheque.vue'
 import NosProjets from '../views/NosProjets.vue'
 import Partenaires from '../views/Partenaires.vue'
 import Charte from '../views/Charte.vue'
@@ -33,11 +32,7 @@ const routes = [
     name: 'DevenirMembre',
     component: DevenirMembre
   },
-  {
-    path: '/bibliotheque',
-    name: 'Bibliotheque',
-    component: Bibliotheque
-  },
+
   {
     path: '/nos-projets',
     name: 'NosProjets',
@@ -72,7 +67,12 @@ const routes = [
     path: '/articles-promotionnels',
     name: 'ArticlesPromotionnels',
     component: ArticlesPromotionnels
+  },
+  { path: "/activites", 
+    name: "Activites",
+    component: () => import("../views/Activites.vue") 
   }
+
 ]
 
 const router = createRouter({

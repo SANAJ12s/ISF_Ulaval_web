@@ -62,8 +62,12 @@
             <router-link to="/nos-projets" class="nav-link">Nos projets</router-link>
           </li>
 
+          <!-- ✅ AJOUT ICI : ACTIVITÉS -->
           <li class="nav-item">
-            <router-link to="/bibliotheque" class="nav-link">Bibliothèque</router-link>
+            <router-link to="/activites" class="nav-link">
+              <i class="fas fa-camera me-1"></i>
+              Activités
+            </router-link>
           </li>
 
           <li class="nav-item">
@@ -120,7 +124,6 @@ export default {
 </script>
 
 <style scoped>
-
 .navbar-orange {
   background: rgba(249, 115, 22, 0.88);
   backdrop-filter: blur(6px);
@@ -139,7 +142,7 @@ export default {
 .navbar-hidden {
   opacity: 0;
   transform: translateY(-100%);
-  pointer-events: none; /* évite de cliquer sur du "vide" */
+  pointer-events: none;
 }
 
 /* Brand + liens */
@@ -152,9 +155,9 @@ export default {
 
 /* Espacement propre à droite */
 .nav-links {
-  gap: 18px;              /* espace régulier entre les items */
+  gap: 18px;
   align-items: center;
-  white-space: nowrap;    /* évite les retours à la ligne */
+  white-space: nowrap;
 }
 
 /* Hover */

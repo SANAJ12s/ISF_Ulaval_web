@@ -1,476 +1,551 @@
 <template>
-  <div class="nos-projets">
-    <!-- Hero Section -->
-    <section class="hero-section">
-      <div class="container">
-        <div class="row align-items-center min-vh-75 py-5">
-          <div class="col-lg-8 mx-auto text-center">
-            <h1 class="display-4 fw-bold mb-4">Nos projets</h1>
-            <p class="lead mb-4">
-              Découvrez nos initiatives concrètes pour un impact positif
+  <main class="projects-page">
+    <!-- HERO -->
+    <section class="hero">
+      <div class="hero-overlay"></div>
+      <div class="container hero-inner">
+        <div class="row align-items-center min-vh-60 py-5">
+          <div class="col-lg-9 mx-auto text-center">
+            <h1 class="display-4 fw-bold text-white mb-3">Nos projets</h1>
+            <p class="lead text-white-50 mb-0">
+              Découvrez nos initiatives, nos impacts et les images associées à chaque projet.
             </p>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- Projet Puits Cameroun 2024 -->
-    <section class="py-5">
+    <!-- LISTE DES PROJETS -->
+    <section class="section-dark py-5">
       <div class="container">
-        <div class="row align-items-center mb-5">
-          <div class="col-lg-6">
-            <h2 class="display-5 fw-bold mb-4">Projet du puits - Cameroun 2024</h2>
-            <p class="lead mb-4">
-              Le projet <strong>Eau pour tous</strong>, mené durant le mandat 2024‑2025, 
-              visait la construction d'un puits de <strong>1 270 $</strong> à 
-              <strong>Njindaré, au Cameroun</strong>, afin d'offreir un accès durable 
-              à l'eau potable.
-            </p>
-            <p class="mb-4">
-              La réalisation a été effectuée en collaboration avec un ancien étudiant 
-              de l'Université Laval, fondateur de <strong>Gather Charity</strong>, 
-              déjà à l'origine de trois projets similaires dans la région.
-            </p>
-            <div class="d-flex gap-3">
-              <a 
-                href="https://www.gofundme.com/f/operation-eau-pour-tous" 
-                target="_blank"
-                class="btn btn-primary"
-              >
-                <i class="fas fa-external-link-alt me-2"></i>
-                Voir la campagne GoFundMe
-              </a>
-              <a 
-                href="https://drive.google.com/drive/folders/1SUGTWbXwwFAi-C1OLJ8QHU6jmgOqNJWP" 
-                target="_blank"
-                class="btn btn-outline-primary"
-              >
-                <i class="fas fa-images me-2"></i>
-                Photos du projet
-              </a>
+        <div v-for="(p, idx) in projects" :key="p.id" class="project-block">
+          <div class="row align-items-center g-4">
+            <!-- TEXTE -->
+            <div class="col-lg-6">
+              <div class="project-text">
+                <div class="project-kicker">Projet</div>
+                <h2 class="project-title">{{ p.title }}</h2>
+
+                <div v-if="p.tag" class="project-tag">{{ p.tag }}</div>
+
+                <p class="project-desc">
+                  {{ p.description }}
+                </p>
+
+                <ul v-if="p.highlights?.length" class="project-highlights">
+                  <li v-for="(h, i) in p.highlights" :key="i">{{ h }}</li>
+                </ul>
+
+                <div v-if="p.cta || (p.images && p.images.length)" class="mt-3 d-flex gap-3 flex-wrap">
+                  <a
+                    v-if="p.cta?.href"
+                    class="btn btn-warning btn-lg"
+                    :href="p.cta.href"
+                    target="_blank"
+                    rel="noopener"
+                  >
+                    <i class="fab fa-youtube me-2"></i>
+                    {{ p.cta.label }}
+                  </a>
+
+                  <button
+                    v-if="p.images?.length"
+                    class="btn btn-outline-light btn-lg"
+                    type="button"
+                    @click="openGallery(idx, 0)"
+                  >
+                    <i class="fas fa-images me-2"></i>
+                    Voir les photos
+                  </button>
+                </div>
+              </div>
             </div>
-          </div>
-          <div class="col-lg-6">
-            <div class="card border-0 shadow">
-              <div id="puitsCarousel" class="carousel slide" data-bs-ride="carousel">
-                <div class="carousel-indicators">
-                  <button 
-                    type="button" 
-                    data-bs-target="#puitsCarousel" 
-                    data-bs-slide-to="0" 
-                    class="active"
-                  ></button>
-                  <button 
-                    type="button" 
-                    data-bs-target="#puitsCarousel" 
-                    data-bs-slide-to="1"
-                  ></button>
-                  <button 
-                    type="button" 
-                    data-bs-target="#puitsCarousel" 
-                    data-bs-slide-to="2"
-                  ></button>
-                </div>
-                <div class="carousel-inner">
-                  <div class="carousel-item active">
-                    <img 
-                      src="/projets/puit_construction.jpg" 
-                      class="d-block w-100" 
-                      alt="Construction du puits"
-                      style="height: 300px; object-fit: cover;"
-                    >
-                    <div class="carousel-caption">
-                      <h5>Construction en cours</h5>
-                    </div>
-                  </div>
-                  <div class="carousel-item">
-                    <img 
-                      src="/projets/puit_construction1.jpg" 
-                      class="d-block w-100" 
-                      alt="Inauguration du puits"
-                      style="height: 300px; object-fit: cover;"
-                    >
-                    <div class="carousel-caption">
-                      <h5>Inauguration officielle</h5>
-                    </div>
-                  </div>
-                  <div class="carousel-item">
-                    <img 
-                      src="/projets/puit_construction2.jpg" 
-                      class="d-block w-100" 
-                      alt="Bénéficiaires du puits"
-                      style="height: 300px; object-fit: cover;"
-                    >
-                    <div class="carousel-caption">
-                      <h5>La communauté bénéficiaire</h5>
+
+            <!-- PHOTO COVER -->
+            <div class="col-lg-6">
+              <button
+                v-if="p.images?.length"
+                class="cover-btn"
+                type="button"
+                @click="openGallery(idx, 0)"
+                :aria-label="`Ouvrir les photos du projet ${p.title}`"
+              >
+                <div class="cover-card">
+                  <img
+                    class="cover-img"
+                    :src="p.images[0]"
+                    :alt="`Photo du projet ${p.title}`"
+                    loading="lazy"
+                  />
+                  <div class="cover-gradient"></div>
+
+                  <div class="cover-caption">
+                    <div class="cover-caption-title">{{ p.title }}</div>
+                    <div class="cover-caption-sub">
+                      Cliquer pour agrandir • {{ p.images.length }} photo(s)
                     </div>
                   </div>
                 </div>
-                <button 
-                  class="carousel-control-prev" 
-                  type="button" 
-                  data-bs-target="#puitsCarousel" 
-                  data-bs-slide="prev"
-                >
-                  <span class="carousel-control-prev-icon"></span>
-                </button>
-                <button 
-                  class="carousel-control-next" 
-                  type="button" 
-                  data-bs-target="#puitsCarousel" 
-                  data-bs-slide="next"
-                >
-                  <span class="carousel-control-next-icon"></span>
-                </button>
+              </button>
+
+              <div v-else class="cover-empty">
+                <div class="text-white-50">
+                  Ajoute des images dans <code>public/projets</code> et liste-les dans <code>projects[].images</code>.
+                </div>
               </div>
             </div>
           </div>
+
+          <hr v-if="idx !== projects.length - 1" class="divider" />
         </div>
       </div>
     </section>
 
-    <!-- Projet Interviews d'ingénieurs -->
-    <section class="py-5 bg-light">
-      <div class="container">
-        <div class="row align-items-center">
-          <div class="col-lg-6">
-            <div class="card border-0 shadow">
-              <div 
-                class="d-flex align-items-center justify-content-center text-white"
-                style="height: 250px; background: linear-gradient(135deg, #dc2626, #ef4444);"
-              >
-                <div class="text-center">
-                  <i class="fas fa-microphone fa-4x mb-3"></i>
-                  <h5 class="fw-bold">Série d'interviews</h5>
-                </div>
-              </div>
-              <div class="card-body text-center">
-                <h5 class="card-title fw-bold">Série d'interviews</h5>
-                <p class="card-text">
-                  Découvrez les témoignages d'ingénieurs inspirants
-                </p>
-              </div>
-            </div>
-          </div>
-          <div class="col-lg-6">
-            <h2 class="display-5 fw-bold mb-4">Projet interviews d'ingénieurs</h2>
-            <p class="lead mb-4">
-              Notre <strong>VP externe</strong> réalise des entrevues avec des ingénieurs 
-              et CPI aux parcours inspirants. Découvrez leurs témoignages, leurs conseils 
-              et leurs expériences directement sur notre chaîne YouTube.
-            </p>
-            
-            <div class="row g-3 mb-4">
-              <div class="col-md-6">
-                <div class="stat-card text-center p-3 bg-white rounded shadow">
-                  <div class="stat-number">5+</div>
-                  <div class="stat-label">Interviews réalisées</div>
-                </div>
-              </div>
-              <div class="col-md-6">
-                <div class="stat-card text-center p-3 bg-white rounded shadow">
-                  <div class="stat-number">1000+</div>
-                  <div class="stat-label">Vues sur YouTube</div>
-                </div>
-              </div>
-            </div>
-            
-            <div class="d-flex gap-3">
-              <a 
-                href="#" 
-                target="_blank"
-                class="btn btn-danger"
-              >
-                <i class="fab fa-youtube me-2"></i>
-                Chaîne YouTube
-              </a>
-              <router-link to="/comite-executif" class="btn btn-outline-danger">
-                <i class="fas fa-users me-2"></i>
-                Notre VP Externe
-              </router-link>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
+    <!-- LIGHTBOX / MODAL -->
+    <div
+      v-if="lightbox.open"
+      class="lightbox"
+      role="dialog"
+      aria-modal="true"
+      @click.self="closeGallery"
+    >
+      <div class="lightbox-inner">
+        <button class="lb-close" type="button" @click="closeGallery" aria-label="Fermer">
+          <i class="fas fa-times"></i>
+        </button>
 
-    <!-- Projet Panneaux solaires Madagascar -->
-    <section class="py-5">
-      <div class="container">
-        <div class="row align-items-center">
-          <div class="col-lg-6">
-            <h2 class="display-5 fw-bold mb-4">Projet panneaux solaires - Madagascar</h2>
-            <p class="lead mb-4">
-              Le projet <strong>Panneaux solaires à Madagascar</strong>, inscrit dans le 
-              mandat 2025‑2026, vise l'installation d'un système solaire dans une école 
-              accueillant <strong>125 élèves</strong>.
-            </p>
-            <p class="mb-4">
-              Cette initiative permettra de fournir une source d'énergie durable et fiable, 
-              essentielle au bon déroulement des activités scolaires.
-            </p>
-            <p class="mb-4">
-              <strong>Actuellement en préparation</strong>, ce projet s'inscrit dans notre 
-              volonté de soutenir des infrastructures éducatives tout en promouvant des 
-              solutions énergétiques responsables.
-            </p>
-            
-            <div class="alert alert-info">
-              <i class="fas fa-info-circle me-2"></i>
-              <strong>Statut :</strong> En phase de préparation et de financement
-            </div>
-            
-            <div class="d-flex gap-3">
-              <router-link to="/faire-un-don" class="btn btn-success">
-                <i class="fas fa-hand-holding-heart me-2"></i>
-                Soutenir le projet
-              </router-link>
-              <router-link to="/partenaires" class="btn btn-outline-success">
-                <i class="fas fa-handshake me-2"></i>
-                Nos partenaires
-              </router-link>
-            </div>
-          </div>
-          <div class="col-lg-6">
-            <div class="card border-0 shadow">
-              <div class="card-body p-4">
-                <h5 class="card-title fw-bold mb-4">Impact attendu</h5>
-                
-                <div class="row g-3">
-                  <div class="col-12">
-                    <div class="d-flex align-items-center p-3 bg-light rounded">
-                      <i class="fas fa-school fa-2x text-primary me-3"></i>
-                      <div>
-                        <h6 class="mb-1">125 élèves bénéficiaires</h6>
-                        <small class="text-muted">Accès à l'éducation de qualité</small>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div class="col-12">
-                    <div class="d-flex align-items-center p-3 bg-light rounded">
-                      <i class="fas fa-solar-panel fa-2x text-warning me-3"></i>
-                      <div>
-                        <h6 class="mb-1">Énergie durable</h6>
-                        <small class="text-muted">Réduction de l'empreinte carbone</small>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div class="col-12">
-                    <div class="d-flex align-items-center p-3 bg-light rounded">
-                      <i class="fas fa-graduation-cap fa-2x text-success me-3"></i>
-                      <div>
-                        <h6 class="mb-1">Amélioration des conditions d'étude</h6>
-                        <small class="text-muted">Éclairage et technologie en classe</small>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
+        <button class="lb-nav lb-prev" type="button" @click="prevImage" aria-label="Image précédente">
+          <i class="fas fa-chevron-left"></i>
+        </button>
 
-    <!-- Galerie de tous nos projets -->
-    <section class="py-5 bg-light">
-      <div class="container">
-        <div class="row">
-          <div class="col-lg-8 mx-auto text-center mb-5">
-            <h2 class="display-5 fw-bold mb-4">Nos actions en images</h2>
-            <p class="lead text-muted">
-              Découvrez notre galerie de projets et activités
-            </p>
-          </div>
-        </div>
-        
-        <div class="row g-4">
-          <div class="col-lg-4 col-md-6">
-            <div class="card border-0 shadow h-100">
-              <img 
-                src="/projets/puit_construction4.jpg" 
-                class="card-img-top" 
-                alt="Projet 1"
-                style="height: 200px; object-fit: cover;"
-              >
-              <div class="card-body">
-                <h5 class="card-title">Sensibilisation</h5>
-                <p class="card-text">
-                  Conférences et activités de sensibilisation aux enjeux sociaux et environnementaux.
-                </p>
-              </div>
-            </div>
-          </div>
-          
-          <div class="col-lg-4 col-md-6">
-            <div class="card border-0 shadow h-100">
-              <img 
-                src="/projets/puit_construction5.jpg" 
-                class="card-img-top" 
-                alt="Projet 2"
-                style="height: 200px; object-fit: cover;"
-              >
-              <div class="card-body">
-                <h5 class="card-title">Formation</h5>
-                <p class="card-text">
-                  Ateliers et formations pour développer les compétences de nos membres.
-                </p>
-              </div>
-            </div>
-          </div>
-          
-          <div class="col-lg-4 col-md-6">
-            <div class="card border-0 shadow h-100">
-              <img 
-                src="/projets/puit_construction6.jpg" 
-                class="card-img-top" 
-                alt="Projet 3"
-                style="height: 200px; object-fit: cover;"
-              >
-              <div class="card-body">
-                <h5 class="card-title">Réseautage</h5>
-                <p class="card-text">
-                  Événements de networking avec des professionnels et anciens étudiants.
-                </p>
-              </div>
-            </div>
-          </div>
-          
-          <div class="col-lg-4 col-md-6">
-            <div class="card border-0 shadow h-100">
-              <img 
-                src="/projets/puit_construction7.jpg" 
-                class="card-img-top" 
-                alt="Projet 4"
-                style="height: 200px; object-fit: cover;"
-              >
-              <div class="card-body">
-                <h5 class="card-title">Projet communautaire</h5>
-                <p class="card-text">
-                  Initiatives locales pour avoir un impact dans notre communauté.
-                </p>
-              </div>
-            </div>
-          </div>
-          
-          <div class="col-lg-4 col-md-6">
-            <div class="card border-0 shadow h-100">
-              <img 
-                src="/projets/puit7.jpg" 
-                class="card-img-top" 
-                alt="Projet 5"
-                style="height: 200px; object-fit: cover;"
-              >
-              <div class="card-body">
-                <h5 class="card-title">Innovation</h5>
-                <p class="card-text">
-                  Recherche et développement de solutions innovantes aux défis sociaux.
-                </p>
-              </div>
-            </div>
-          </div>
-          
-          <div class="col-lg-4 col-md-6">
-            <div class="card border-0 shadow h-100">
-              <img 
-                src="/projets/puit8.jpg" 
-                class="card-img-top" 
-                alt="Projet 6"
-                style="height: 200px; object-fit: cover;"
-              >
-              <div class="card-body">
-                <h5 class="card-title">Engagement</h5>
-                <p class="card-text">
-                  Mobilisation et engagement de la communauté étudiante autour de nos valeurs.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
+        <div class="lb-stage" :class="{ 'lb-pop': lightbox.pop }">
+          <img
+            class="lb-img"
+            :src="currentImage"
+            :alt="`Image ${lightbox.imageIndex + 1} du projet ${currentProject?.title || ''}`"
+            draggable="false"
+          />
 
-    <!-- Call to Action -->
-    <section class="py-5 bg-primary text-white">
-      <div class="container">
-        <div class="row">
-          <div class="col-lg-8 mx-auto text-center">
-            <h2 class="display-5 fw-bold mb-4">Participe à nos projets !</h2>
-            <p class="lead mb-4">
-              Tu veux contribuer à nos initiatives et avoir un impact concret ? 
-              Rejoins-nous et participe à la réalisation de nos projets !
-            </p>
-            <div class="d-flex gap-3 justify-content-center">
-              <router-link to="/devenir-membre" class="btn btn-light btn-lg">
-                Devenir membre
-              </router-link>
-              <router-link to="/faire-un-don" class="btn btn-outline-light btn-lg">
-                Faire un don
-              </router-link>
+          <div class="lb-meta">
+            <div class="lb-title">{{ currentProject?.title }}</div>
+            <div class="lb-counter">
+              {{ lightbox.imageIndex + 1 }} / {{ currentProject?.images?.length || 0 }}
             </div>
           </div>
         </div>
+
+        <button class="lb-nav lb-next" type="button" @click="nextImage" aria-label="Image suivante">
+          <i class="fas fa-chevron-right"></i>
+        </button>
       </div>
-    </section>
-  </div>
+    </div>
+  </main>
 </template>
 
 <script>
 export default {
-  name: 'NosProjets'
-}
+  name: "NosProjets",
+  data() {
+    return {
+      projects: [
+        {
+          id: "puits-2024",
+          title: "Eau pour tous — Puits (2024)",
+          tag: "Mandat 2024–2025",
+          description:
+            "Le projet Eau pour tous visait la construction d’un puits de 1 270 $ à Njindaré, au Cameroun, afin d’offrir un accès durable à l’eau potable. La réalisation a été effectuée en collaboration avec un ancien étudiant de l’Université Laval, fondateur de Gather Charity, déjà à l’origine de trois projets similaires dans la région.",
+          highlights: [
+            "Lieu : Njindaré (Cameroun)",
+            "Objectif : accès durable à l’eau potable",
+            "Budget : 1 270 $",
+            "Partenaire : Gather Charity",
+          ],
+          // ✅ TES VRAIS FICHIERS
+          images: [
+            "/projets/isfPuit.png",
+            "/projets/puit.jpg",
+            "/projets/puit2.jpg",
+            "/projets/puit7.jpg",
+            "/projets/puit8.jpg",
+            "/projets/puit_construction.jpg",
+            "/projets/puit_construction1.jpg",
+            "/projets/puit_construction2.jpg",
+            "/projets/puit_construction3.jpg",
+            "/projets/puit_construction4.jpg",
+            "/projets/puit_construction5.jpg",
+            "/projets/puit_construction6.jpg",
+            "/projets/puit_construction7.jpg",
+          ],
+        },
+
+        {
+          id: "interviews",
+          title: "Interviews d’ingénieurs",
+          tag: "Série vidéo",
+          description:
+            "Notre VP externe réalise des entrevues avec des ingénieurs et CPI aux parcours inspirants. Découvrez leurs témoignages, leurs conseils et leurs expériences directement sur notre chaîne YouTube.",
+          highlights: [
+            "Formats : témoignages, conseils, parcours",
+            "Public : étudiants, CPI, ingénieurs",
+          ],
+          cta: {
+            label: "Voir sur YouTube",
+            // 🔁 Remplace par ta chaîne/playlist
+            href: "https://www.youtube.com/",
+          },
+          // Mets tes images quand elles existent
+          images: [],
+        },
+
+        {
+          id: "madagascar-solaire",
+          title: "Panneaux solaires à Madagascar",
+          tag: "Mandat 2025–2026 (à venir)",
+          description:
+            "Le projet Panneaux solaires à Madagascar vise l’installation d’un système solaire dans une école accueillant 125 élèves. Cette initiative permettra de fournir une source d’énergie durable et fiable, essentielle au bon déroulement des activités scolaires. Actuellement en préparation, ce projet s’inscrit dans notre volonté de soutenir des infrastructures éducatives tout en promouvant des solutions énergétiques responsables.",
+          highlights: [
+            "Cible : école (125 élèves)",
+            "Objectif : énergie durable et fiable",
+            "Statut : en préparation",
+          ],
+          // Mets tes images quand elles existent
+          images: [],
+        },
+      ],
+
+      lightbox: {
+        open: false,
+        projectIndex: 0,
+        imageIndex: 0,
+        pop: false, // animation "forward"
+      },
+    };
+  },
+  computed: {
+    currentProject() {
+      return this.projects?.[this.lightbox.projectIndex] || null;
+    },
+    currentImage() {
+      return this.currentProject?.images?.[this.lightbox.imageIndex] || "";
+    },
+  },
+  mounted() {
+    window.addEventListener("keydown", this.onKeyDown);
+  },
+  beforeUnmount() {
+    window.removeEventListener("keydown", this.onKeyDown);
+  },
+  methods: {
+    openGallery(projectIndex, imageIndex = 0) {
+      this.lightbox.projectIndex = projectIndex;
+      this.lightbox.imageIndex = imageIndex;
+      this.lightbox.open = true;
+
+      // animation "forward"
+      this.lightbox.pop = false;
+      this.$nextTick(() => {
+        requestAnimationFrame(() => {
+          this.lightbox.pop = true;
+          setTimeout(() => (this.lightbox.pop = false), 220);
+        });
+      });
+
+      document.body.style.overflow = "hidden";
+    },
+    closeGallery() {
+      this.lightbox.open = false;
+      document.body.style.overflow = "";
+    },
+    nextImage() {
+      const imgs = this.currentProject?.images || [];
+      if (!imgs.length) return;
+      this.lightbox.imageIndex = (this.lightbox.imageIndex + 1) % imgs.length;
+      this.triggerPop();
+    },
+    prevImage() {
+      const imgs = this.currentProject?.images || [];
+      if (!imgs.length) return;
+      this.lightbox.imageIndex = (this.lightbox.imageIndex - 1 + imgs.length) % imgs.length;
+      this.triggerPop();
+    },
+    triggerPop() {
+      this.lightbox.pop = false;
+      requestAnimationFrame(() => {
+        this.lightbox.pop = true;
+        setTimeout(() => (this.lightbox.pop = false), 220);
+      });
+    },
+    onKeyDown(e) {
+      if (!this.lightbox.open) return;
+      if (e.key === "Escape") this.closeGallery();
+      if (e.key === "ArrowRight") this.nextImage();
+      if (e.key === "ArrowLeft") this.prevImage();
+    },
+  },
+};
 </script>
 
 <style scoped>
-.hero-section {
+.projects-page {
+  background: #000;
+  color: #fff;
+}
+
+/* Hero */
+.hero {
+  position: relative;
   padding-top: 80px;
-  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  background: radial-gradient(circle at 15% 10%, rgba(249, 115, 22, 0.22), transparent 45%),
+              radial-gradient(circle at 85% 30%, rgba(255, 255, 255, 0.08), transparent 40%),
+              #000;
+}
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.25);
+}
+.hero-inner { position: relative; z-index: 1; }
+.min-vh-60 { min-height: 55vh; }
+
+.section-dark { background: #000; }
+
+.project-block { padding: 6px 0 26px; }
+
+.divider {
+  border: 0;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.08);
+  margin: 34px 0 0;
 }
 
-.min-vh-75 {
-  min-height: 60vh;
+/* Texte */
+.project-text {
+  background: #0b0b0b;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 18px;
+  padding: 24px;
 }
 
-.stat-card {
-  transition: transform 0.3s ease;
-}
-
-.stat-card:hover {
-  transform: translateY(-2px);
-}
-
-.stat-number {
-  font-size: 2rem;
-  font-weight: 700;
-  color: var(--primary-color);
-  line-height: 1;
-}
-
-.stat-label {
-  font-size: 0.9rem;
-  color: var(--gray-color);
+.project-kicker {
+  display: inline-block;
+  font-weight: 800;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.55);
+  margin-bottom: 10px;
 }
 
-.card {
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+.project-title {
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  margin: 0 0 10px;
+  font-size: clamp(1.6rem, 2.2vw, 2.1rem);
 }
 
-.card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.1);
+.project-tag {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(249, 115, 22, 0.5);
+  color: #f97316;
+  font-weight: 800;
+  font-size: 0.9rem;
+  margin-bottom: 14px;
+}
+
+.project-desc {
+  color: rgba(255, 255, 255, 0.78);
+  line-height: 1.8;
+  margin: 0 0 14px;
+}
+
+.project-highlights {
+  margin: 0;
+  padding-left: 18px;
+  color: rgba(255, 255, 255, 0.72);
+  line-height: 1.75;
+}
+.project-highlights li { margin-bottom: 6px; }
+
+/* Cover image */
+.cover-btn {
+  width: 100%;
+  background: transparent;
+  border: 0;
+  padding: 0;
+  text-align: left;
+}
+
+.cover-card {
+  position: relative;
+  border-radius: 18px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: #050505;
+  transform: translateZ(0);
+  transition: transform 0.18s ease, box-shadow 0.2s ease;
+}
+
+.cover-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.45);
+}
+
+.cover-img {
+  width: 100%;
+  height: 420px;
+  object-fit: cover;
+  display: block;
+}
+
+.cover-gradient {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.75), rgba(0,0,0,0.0) 55%);
+  pointer-events: none;
+}
+
+.cover-caption {
+  position: absolute;
+  left: 18px;
+  right: 18px;
+  bottom: 16px;
+  z-index: 2;
+}
+
+.cover-caption-title {
+  font-weight: 900;
+  font-size: 1.15rem;
+  color: #fff;
+}
+
+.cover-caption-sub {
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 0.95rem;
+  margin-top: 4px;
+}
+
+.cover-empty {
+  border-radius: 18px;
+  border: 1px dashed rgba(255, 255, 255, 0.16);
+  padding: 26px;
+}
+
+/* Lightbox */
+.lightbox {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.85);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 22px;
+}
+
+.lightbox-inner {
+  position: relative;
+  width: min(1100px, 100%);
+  height: min(78vh, 760px);
+  display: grid;
+  grid-template-columns: 64px 1fr 64px;
+  align-items: center;
+  gap: 14px;
+}
+
+.lb-stage {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: #050505;
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform: scale(1);
+  transition: transform 0.2s ease;
+}
+
+.lb-pop { transform: scale(1.02); }
+
+.lb-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  user-select: none;
+}
+
+.lb-meta {
+  position: absolute;
+  left: 14px;
+  right: 14px;
+  bottom: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.lb-title { font-weight: 900; color: #fff; }
+
+.lb-counter { color: rgba(255, 255, 255, 0.75); font-weight: 800; }
+
+.lb-nav {
+  width: 64px;
+  height: 64px;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(15, 15, 15, 0.7);
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.12s ease, background 0.2s ease;
+}
+.lb-nav:hover {
+  background: rgba(249, 115, 22, 0.22);
+  transform: translateY(-1px);
+}
+.lb-nav i { font-size: 1.35rem; }
+
+.lb-close {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(15, 15, 15, 0.75);
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.lb-close:hover { background: rgba(249, 115, 22, 0.22); }
+
+/* Responsive */
+@media (max-width: 992px) {
+  .cover-img { height: 320px; }
 }
 
 @media (max-width: 768px) {
-  .hero-section {
-    padding-top: 60px;
+  .hero { padding-top: 60px; }
+  .lightbox-inner {
+    grid-template-columns: 52px 1fr 52px;
+    height: min(72vh, 680px);
   }
-  
-  .display-4 {
-    font-size: 2rem;
+  .lb-nav {
+    width: 52px;
+    height: 52px;
+    border-radius: 14px;
   }
 }
 </style>
