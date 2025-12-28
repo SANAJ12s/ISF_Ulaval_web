@@ -36,7 +36,7 @@
                   <li v-for="(h, i) in p.highlights" :key="i">{{ h }}</li>
                 </ul>
 
-                <div v-if="p.cta || (p.images && p.images.length)" class="mt-3 d-flex gap-3 flex-wrap">
+                <div v-if="p.cta?.href || hasImages(p)" class="mt-3 d-flex gap-3 flex-wrap">
                   <a
                     v-if="p.cta?.href"
                     class="btn btn-warning btn-lg"
@@ -49,7 +49,7 @@
                   </a>
 
                   <button
-                    v-if="p.images?.length"
+                    v-if="hasImages(p)"
                     class="btn btn-outline-light btn-lg"
                     type="button"
                     @click="openGallery(idx, 0)"
@@ -63,8 +63,9 @@
 
             <!-- PHOTO COVER -->
             <div class="col-lg-6">
+              <!-- Si images -> cover cliquable -->
               <button
-                v-if="p.images?.length"
+                v-if="hasImages(p)"
                 class="cover-btn"
                 type="button"
                 @click="openGallery(idx, 0)"
@@ -88,9 +89,16 @@
                 </div>
               </button>
 
+              <!-- Sinon -> carte "photos à venir" (propre) -->
               <div v-else class="cover-empty">
-                <div class="text-white-50">
-                  Ajoute des images dans <code>public/projets</code> et liste-les dans <code>projects[].images</code>.
+                <div class="cover-empty-inner">
+                  <div class="cover-empty-icon">
+                    <i class="fas fa-camera-retro"></i>
+                  </div>
+                  <div class="cover-empty-title">Photos à venir</div>
+                  <div class="cover-empty-sub">
+                    On ajoutera bientôt des images pour ce projet.
+                  </div>
                 </div>
               </div>
             </div>
@@ -160,7 +168,6 @@ export default {
             "Budget : 1 270 $",
             "Partenaire : Gather Charity",
           ],
-          // ✅ TES VRAIS FICHIERS
           images: [
             "/projets/isfPuit.png",
             "/projets/puit.jpg",
@@ -190,10 +197,8 @@ export default {
           ],
           cta: {
             label: "Voir sur YouTube",
-            // 🔁 Remplace par ta chaîne/playlist
-            href: "https://www.youtube.com/",
+            href: "https://www.youtube.com/@isf-ulaval",
           },
-          // Mets tes images quand elles existent
           images: [],
         },
 
@@ -208,8 +213,17 @@ export default {
             "Objectif : énergie durable et fiable",
             "Statut : en préparation",
           ],
-          // Mets tes images quand elles existent
           images: [],
+        },
+
+        {
+          id: "friperie",
+          title: "Friperie ISF",
+          tag: "Activité de financement",
+          description:
+            "Une friperie organisée par ISF Université Laval pour financer nos initiatives et renforcer l’esprit de communauté, tout en donnant une seconde vie à des vêtements.",
+          highlights: ["Objectif : financement", "Ambiance : fun & communautaire"],
+          images: ["/projets/friperie.png"],
         },
       ],
 
@@ -217,7 +231,7 @@ export default {
         open: false,
         projectIndex: 0,
         imageIndex: 0,
-        pop: false, // animation "forward"
+        pop: false,
       },
     };
   },
@@ -236,12 +250,14 @@ export default {
     window.removeEventListener("keydown", this.onKeyDown);
   },
   methods: {
+    hasImages(p) {
+      return !!(p?.images && p.images.length);
+    },
     openGallery(projectIndex, imageIndex = 0) {
       this.lightbox.projectIndex = projectIndex;
       this.lightbox.imageIndex = imageIndex;
       this.lightbox.open = true;
 
-      // animation "forward"
       this.lightbox.pop = false;
       this.$nextTick(() => {
         requestAnimationFrame(() => {
@@ -291,25 +307,34 @@ export default {
   color: #fff;
 }
 
-/* Hero */
+/* Hero (fond ulaval.jpg) */
 .hero {
   position: relative;
   padding-top: 80px;
-  background: radial-gradient(circle at 15% 10%, rgba(249, 115, 22, 0.22), transparent 45%),
-              radial-gradient(circle at 85% 30%, rgba(255, 255, 255, 0.08), transparent 40%),
-              #000;
+  background-image: url("/ulaval.jpg");
+  background-size: cover;
+  background-position: center;
 }
 .hero-overlay {
   position: absolute;
   inset: 0;
-  background: rgba(0, 0, 0, 0.25);
+  background: rgba(0, 0, 0, 0.58);
 }
-.hero-inner { position: relative; z-index: 1; }
-.min-vh-60 { min-height: 55vh; }
+.hero-inner {
+  position: relative;
+  z-index: 1;
+}
+.min-vh-60 {
+  min-height: 55vh;
+}
 
-.section-dark { background: #000; }
+.section-dark {
+  background: #000;
+}
 
-.project-block { padding: 6px 0 26px; }
+.project-block {
+  padding: 6px 0 26px;
+}
 
 .divider {
   border: 0;
@@ -366,7 +391,9 @@ export default {
   color: rgba(255, 255, 255, 0.72);
   line-height: 1.75;
 }
-.project-highlights li { margin-bottom: 6px; }
+.project-highlights li {
+  margin-bottom: 6px;
+}
 
 /* Cover image */
 .cover-btn {
@@ -402,7 +429,7 @@ export default {
 .cover-gradient {
   position: absolute;
   inset: 0;
-  background: linear-gradient(to top, rgba(0,0,0,0.75), rgba(0,0,0,0.0) 55%);
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0) 55%);
   pointer-events: none;
 }
 
@@ -426,10 +453,51 @@ export default {
   margin-top: 4px;
 }
 
+/* Cover empty (sans message “ajoute des images…”) */
 .cover-empty {
   border-radius: 18px;
-  border: 1px dashed rgba(255, 255, 255, 0.16);
-  padding: 26px;
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  background: radial-gradient(circle at 30% 20%, rgba(249, 115, 22, 0.20), transparent 60%),
+              #070707;
+  padding: 30px;
+  min-height: 420px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cover-empty-inner {
+  text-align: center;
+  max-width: 360px;
+}
+
+.cover-empty-icon {
+  width: 72px;
+  height: 72px;
+  border-radius: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(249, 115, 22, 0.18);
+  border: 1px solid rgba(249, 115, 22, 0.25);
+  color: #f97316;
+  margin-bottom: 12px;
+}
+
+.cover-empty-icon i {
+  font-size: 1.6rem;
+}
+
+.cover-empty-title {
+  font-weight: 900;
+  font-size: 1.25rem;
+  color: #fff;
+}
+
+.cover-empty-sub {
+  margin-top: 8px;
+  color: rgba(255, 255, 255, 0.70);
+  line-height: 1.6;
 }
 
 /* Lightbox */
@@ -469,7 +537,9 @@ export default {
   transition: transform 0.2s ease;
 }
 
-.lb-pop { transform: scale(1.02); }
+.lb-pop {
+  transform: scale(1.02);
+}
 
 .lb-img {
   width: 100%;
@@ -493,9 +563,15 @@ export default {
   border: 1px solid rgba(255, 255, 255, 0.12);
 }
 
-.lb-title { font-weight: 900; color: #fff; }
+.lb-title {
+  font-weight: 900;
+  color: #fff;
+}
 
-.lb-counter { color: rgba(255, 255, 255, 0.75); font-weight: 800; }
+.lb-counter {
+  color: rgba(255, 255, 255, 0.75);
+  font-weight: 800;
+}
 
 .lb-nav {
   width: 64px;
@@ -509,11 +585,15 @@ export default {
   justify-content: center;
   transition: transform 0.12s ease, background 0.2s ease;
 }
+
 .lb-nav:hover {
   background: rgba(249, 115, 22, 0.22);
   transform: translateY(-1px);
 }
-.lb-nav i { font-size: 1.35rem; }
+
+.lb-nav i {
+  font-size: 1.35rem;
+}
 
 .lb-close {
   position: absolute;
@@ -529,15 +609,25 @@ export default {
   align-items: center;
   justify-content: center;
 }
-.lb-close:hover { background: rgba(249, 115, 22, 0.22); }
+
+.lb-close:hover {
+  background: rgba(249, 115, 22, 0.22);
+}
 
 /* Responsive */
 @media (max-width: 992px) {
-  .cover-img { height: 320px; }
+  .cover-img {
+    height: 320px;
+  }
+  .cover-empty {
+    min-height: 320px;
+  }
 }
 
 @media (max-width: 768px) {
-  .hero { padding-top: 60px; }
+  .hero {
+    padding-top: 60px;
+  }
   .lightbox-inner {
     grid-template-columns: 52px 1fr 52px;
     height: min(72vh, 680px);

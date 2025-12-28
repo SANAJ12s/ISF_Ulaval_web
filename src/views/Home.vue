@@ -1,10 +1,8 @@
 <template>
   <div class="home">
 
-    <!-- HERO : image ULaval + logo -->
-    <section class="hero">
-      <img src="/logo.png" alt="Logo ISF Ulaval" class="hero-logo" />
-    </section>
+    <!-- HERO : image midiconf4 (logo déjà dans l’image) -->
+    <section class="hero"></section>
 
     <!-- TEXTE SOUS LE BANNER (fond noir) -->
     <section class="hero-content py-5">
@@ -25,9 +23,9 @@
             </p>
 
             <div class="d-flex gap-3 justify-content-center">
-              <a href="#deviens-membre" class="btn btn-custom-primary btn-lg">
+              <router-link to="/nous-joindre" class="btn btn-custom-primary btn-lg">
                 Rejoins-nous !
-              </a>
+              </router-link>
 
               <router-link to="/nos-projets" class="btn btn-custom-outline btn-lg">
                 Nos projets
@@ -38,12 +36,12 @@
       </div>
     </section>
 
-    <!-- IMAGE MIDICONF3 (après les 2 boutons) -->
+    <!-- IMAGE cover1 (après les 2 boutons) -->
     <section class="midiconf-section">
       <div class="container">
         <img
-          src="/activites/midiconf3.png"
-          alt="Midiconf ISF ULaval"
+          src="/cover1.png"
+          alt="ISF ULaval cover"
           class="midiconf-img"
         />
       </div>
@@ -112,7 +110,6 @@
           </p>
         </div>
 
-        <!-- placeholder -->
         <div class="events-placeholder">
           <p class="mb-0 text-white-50">
             ✨ Des événements seront affichés ici prochainement.
@@ -121,7 +118,7 @@
       </div>
     </section>
 
-    <!-- COMITÉ EXÉCUTIF (simplifié + bouton orange, fond noir) -->
+    <!-- COMITÉ EXÉCUTIF -->
     <section class="py-5 exec-home">
       <div class="container">
         <div class="text-center mb-4">
@@ -139,7 +136,7 @@
       </div>
     </section>
 
-    <!-- DEVIENS MEMBRE (gardée) -->
+    <!-- DEVIENS MEMBRE -->
     <section id="deviens-membre" class="py-5 become-member">
       <div class="container">
         <div class="text-center">
@@ -149,13 +146,13 @@
           </p>
 
           <div class="d-flex justify-content-center gap-3 flex-wrap">
-            <a class="btn btn-primary btn-lg" href="#">
+            <router-link to="/devenir-membre" class="btn btn-primary btn-lg">
               Formulaire d’adhésion
-            </a>
+            </router-link>
 
-            <a class="btn btn-outline-light btn-lg" href="#">
+            <router-link to="/articles-promotionnels" class="btn btn-outline-light btn-lg">
               Merch
-            </a>
+            </router-link>
           </div>
         </div>
       </div>
@@ -171,36 +168,21 @@ export default {
 </script>
 
 <style scoped>
-/* =======================
-   GLOBAL HOME DARK MODE
-   ======================= */
 .home {
   background: #000;
   color: #fff;
 }
 
-/* =======================
-   HERO (BACKGROUND ULAVAL)
-   ======================= */
+/* HERO (BACKGROUND midiconf4) */
 .hero {
   position: relative;
-  background-image: url("/ulaval.jpg");
+  background-image: url("/activites/midiconf4.png");
   background-size: cover;
   background-position: center;
   height: 70vh;
 }
 
-/* LOGO DANS L'IMAGE (décalé vers le haut) */
-.hero-logo {
-  position: absolute;
-  top: 70px; /* ✅ avant: 110px */
-  left: 24px;
-  width: 140px;
-}
-
-/* =======================
-   TEXTE SOUS HERO -> noir
-   ======================= */
+/* TEXTE SOUS HERO -> noir */
 .hero-content {
   background: #000;
   color: #fff;
@@ -213,7 +195,6 @@ export default {
   border: none;
   font-weight: 900;
 }
-
 .btn-custom-primary:hover {
   background: #ff8a3d;
   box-shadow: 0 0 16px rgba(249, 115, 22, 0.6);
@@ -224,20 +205,16 @@ export default {
   color: #fff;
   font-weight: 900;
 }
-
 .btn-custom-outline:hover {
   border-color: #f97316;
   color: #f97316;
 }
 
-/* =======================
-   IMAGE MIDICONF3
-   ======================= */
+/* IMAGE cover1 */
 .midiconf-section {
   background: #000;
   padding: 3.5rem 0 4.5rem;
 }
-
 .midiconf-img {
   width: 100%;
   max-width: 1100px;
@@ -248,14 +225,11 @@ export default {
   box-shadow: 0 14px 40px rgba(0, 0, 0, 0.35);
 }
 
-/* =======================
-   QUI SOMMES-NOUS (BANDES)
-   ======================= */
+/* QUI SOMMES-NOUS (BANDES) */
 .who-we-are {
   background: #000;
   padding-bottom: 0;
 }
-
 .section-title {
   text-align: center;
   font-size: 2.4rem;
@@ -264,33 +238,26 @@ export default {
   margin: 0;
   color: #fff;
 }
-
 .band {
   padding: 3.2rem 0;
 }
-
 .band-inner {
   max-width: 900px;
 }
-
 .band h3 {
   font-size: 1.9rem;
   font-weight: 900;
   margin-bottom: 1rem;
 }
-
 .band p {
   font-size: 1.05rem;
   line-height: 1.8;
   margin-bottom: 0.9rem;
 }
-
-/* orange / noir */
 .band-orange {
   background: #f97316;
   color: #000;
 }
-
 .band-black {
   background: #000;
   color: #fff;
@@ -298,13 +265,10 @@ export default {
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-/* =======================
-   ÉVÉNEMENTS (fond noir)
-   ======================= */
+/* ÉVÉNEMENTS */
 .events-home {
   background: #000;
 }
-
 .events-placeholder {
   max-width: 900px;
   margin: 0 auto;
@@ -313,13 +277,10 @@ export default {
   padding: 22px;
 }
 
-/* =======================
-   COMITÉ EXÉCUTIF (BOUTON ORANGE)
-   ======================= */
+/* COMITÉ EXÉCUTIF */
 .exec-home {
   background: #000;
 }
-
 .exec-btn-orange {
   background: #f97316;
   border: 2px solid #f97316;
@@ -331,8 +292,6 @@ export default {
   transition: transform 0.15s ease, box-shadow 0.2s ease, background 0.2s ease;
   animation: glowOrange 2.8s ease-in-out infinite;
 }
-
-/* Hover: glow + petit lift (mais reste orange) */
 .exec-btn-orange:hover {
   transform: translateY(-2px);
   background: #ff8a3d;
@@ -340,39 +299,22 @@ export default {
   box-shadow: 0 0 22px rgba(249, 115, 22, 0.65);
   color: #000;
 }
-
 @keyframes glowOrange {
-  0% {
-    box-shadow: 0 0 0 rgba(249, 115, 22, 0.0);
-  }
-  50% {
-    box-shadow: 0 0 18px rgba(249, 115, 22, 0.55);
-  }
-  100% {
-    box-shadow: 0 0 0 rgba(249, 115, 22, 0.0);
-  }
+  0% { box-shadow: 0 0 0 rgba(249, 115, 22, 0.0); }
+  50% { box-shadow: 0 0 18px rgba(249, 115, 22, 0.55); }
+  100% { box-shadow: 0 0 0 rgba(249, 115, 22, 0.0); }
 }
 
-/* =======================
-   DEVIENS MEMBRE
-   ======================= */
+/* DEVIENS MEMBRE */
 .become-member {
   background: #000;
 }
 
-/* =======================
-   RESPONSIVE
-   ======================= */
+/* RESPONSIVE */
 @media (max-width: 768px) {
-  .hero-logo {
-    top: 55px; /* ✅ un peu plus haut sur mobile */
-    width: 110px;
-  }
-
   .section-title {
     font-size: 2rem;
   }
-
   .band-inner {
     padding: 0 8%;
   }

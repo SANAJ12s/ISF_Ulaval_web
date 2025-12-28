@@ -45,6 +45,8 @@
               @click="openGallery(idx, 0)"
               role="button"
               tabindex="0"
+              @keydown.enter="openGallery(idx, 0)"
+              @keydown.space.prevent="openGallery(idx, 0)"
             >
               <img
                 class="activity-img"
@@ -156,6 +158,11 @@ export default {
             "/activites/chalet1.png",
             "/activites/chalet2.png",
             "/activites/chalet3.png",
+            "/activites/chalet4.png",
+            "/activites/chalet5.png",
+            "/activites/chalet6.png",
+            "/activites/chalet7.png",
+            "/activites/chalet8.png",
           ],
         },
         {
@@ -165,6 +172,7 @@ export default {
             "/activites/midiconf1.png",
             "/activites/midiconf2.png",
             "/activites/midiconf3.png",
+            "/activites/midiconf4.png",
           ],
         },
         {
@@ -174,6 +182,7 @@ export default {
             "/activites/visiteDavid1.png",
             "/activites/visiteDavid2.png",
             "/activites/visiteDavid3.png",
+            "/activites/visiteDavid4.png",
           ],
         },
         {
@@ -206,15 +215,12 @@ export default {
   },
   methods: {
     scrollTo(id) {
-      // petit délai pour être safe si la page vient juste de se rendre
       this.$nextTick(() => {
         const el = document.getElementById(id);
         if (!el) return;
 
-        // si tu as une navbar fixed, ajuste ce offset
-        const offset = 90;
+        const offset = 90; // ajuste si navbar fixed
         const top = el.getBoundingClientRect().top + window.scrollY - offset;
-
         window.scrollTo({ top, behavior: "smooth" });
       });
     },
@@ -264,19 +270,18 @@ export default {
   color: #fff;
 }
 
-/* HERO */
+/* HERO (fond visiteDavid3.png) */
 .hero {
   position: relative;
   padding-top: 80px;
-  background:
-    radial-gradient(circle at 20% 10%, rgba(249,115,22,0.22), transparent 45%),
-    radial-gradient(circle at 80% 30%, rgba(255,255,255,0.08), transparent 40%),
-    #000;
+  background-image: url("/activites/visiteDavid3.png");
+  background-size: cover;
+  background-position: center;
 }
 .hero-overlay {
   position: absolute;
   inset: 0;
-  background: rgba(0,0,0,0.35);
+  background: rgba(0,0,0,0.62);
 }
 .hero-inner {
   position: relative;
@@ -362,7 +367,7 @@ export default {
 .activity-hover {
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.75) 85%);
+  background: linear-gradient(180deg, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.78) 86%);
   display: flex;
   align-items: flex-end;
   padding: 22px;
