@@ -11,6 +11,12 @@ import FaireUnDon from '../views/FaireUnDon.vue'
 import NousJoindre from '../views/NousJoindre.vue'
 import ArticlesPromotionnels from '../views/ArticlesPromotionnels.vue'
 import Documents from '../views/Documents.vue'
+import AdminLogin from "../views/admin/AdminLogin.vue";
+import AdminDashboard from "../views/admin/AdminDashboard.vue";
+import AdminActivities from "../views/admin/AdminActivities.vue";
+import { auth } from "../firebase";
+import { onAuthStateChanged } from "firebase/auth";
+
 
 const routes = [
   {
@@ -69,6 +75,25 @@ const routes = [
     name: 'ArticlesPromotionnels',
     component: ArticlesPromotionnels
   },
+  {
+  path: "/admin/login",
+  name: "AdminLogin",
+  component: AdminLogin,
+  meta: { public: true },
+},
+{
+  path: "/admin",
+  name: "AdminDashboard",
+  component: AdminDashboard,
+  meta: { requiresAuth: true },
+},
+{
+  path: "/admin/activities",
+  name: "AdminActivities",
+  component: AdminActivities,
+  meta: { requiresAuth: true },
+},
+
   { path: "/activites", 
     name: "Activites",
     component: () => import("../views/Activites.vue") 
@@ -86,5 +111,31 @@ const router = createRouter({
   history: createWebHistory(),
   routes
 })
+let authReady = false;
+let cachedUser = null;
+
+function getCurrentUser() {
+  return new Promise((resolve) => {
+    if (authReady) return resolve(cachedUser);
+
+    const unsub = onAuthStateChanged(auth, (user) => {
+      authReady = true;
+      cachedUser = user;
+      unsub();
+      resolve(user);
+    });
+  });
+}
+
+router.beforeEach(async (to, from, next) => {
+  const isPublic = to.meta?.public;
+  const requiresAuth = to.meta?.requiresAuth;
+
+  if (!requiresAuth) return next();
+
+  const user = await getCurrentUser();
+  if (!user && !isPublic) return next("/admin/login");
+  return next();
+});
 
 export default router
