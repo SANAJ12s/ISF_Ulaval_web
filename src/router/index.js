@@ -16,6 +16,7 @@ import AdminDashboard from "../views/admin/AdminDashboard.vue";
 import AdminActivities from "../views/admin/AdminActivities.vue";
 import { auth } from "../firebase";
 import { onAuthStateChanged } from "firebase/auth";
+import { useAdminStore } from "@/stores/admin";
 
 
 const routes = [
@@ -103,6 +104,13 @@ const routes = [
   name: 'Documents',
   component: Documents
 },
+{
+  path: "/admin",
+  name: "Admin",
+  component: () => import("@/views/admin/AdminDashboard.vue"),
+  meta: { requiresAdmin: true }
+}
+
 
 
 ]
@@ -127,6 +135,20 @@ function getCurrentUser() {
   });
 }
 
+router.beforeEach((to, from, next) => {
+  const admin = useAdminStore();
+
+  if (admin.loading) {
+    admin.init();
+  }
+
+  if (to.meta.requiresAdmin && !admin.isAdmin) {
+    next("/"); // redirection sécurité
+  } else {
+    next();
+  }
+});
+
 router.beforeEach(async (to, from, next) => {
   const isPublic = to.meta?.public;
   const requiresAuth = to.meta?.requiresAuth;
@@ -137,5 +159,6 @@ router.beforeEach(async (to, from, next) => {
   if (!user && !isPublic) return next("/admin/login");
   return next();
 });
+
 
 export default router
