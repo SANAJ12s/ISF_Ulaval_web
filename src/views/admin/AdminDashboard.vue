@@ -3,9 +3,9 @@
     <h1>Admin ISF ULaval</h1>
 
     <section class="cards">
-      <router-link to="/admin/activites">Activités</router-link>
-      <router-link to="/admin/projets">Projets</router-link>
-      <router-link to="/admin/evenements">Événements</router-link>
+      <router-link to="/admin/activities">Activités</router-link>
+      <router-link to="/admin/projects">Projets</router-link>
+      <router-link to="/admin/events">Événements</router-link>
       <router-link to="/admin/executif">Exécutif</router-link>
       <router-link to="/admin/documents">Documents</router-link>
     </section>

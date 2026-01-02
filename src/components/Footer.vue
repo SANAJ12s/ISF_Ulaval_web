@@ -62,7 +62,7 @@
         </div>
         <div class="col-md-6 text-md-end">
           <p class="mb-0">
-            Fait avec <i class="fas fa-heart text-danger"></i> par des étudiants engagés
+            Fait avec <i class="fas fa-heart text-danger"></i> par Samah Naji
           </p>
         </div>
       </div>

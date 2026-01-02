@@ -1,6 +1,5 @@
 <template>
   <div class="home">
-
     <!-- HERO : image midiconf4 (logo déjà dans l’image) -->
     <section class="hero"></section>
 
@@ -9,17 +8,12 @@
       <div class="container">
         <div class="row">
           <div class="col-lg-8 mx-auto text-center">
-            <h1 class="display-4 fw-bold mb-3">
-              ISF – Université Laval
-            </h1>
+            <h1 class="display-4 fw-bold mb-3">ISF – Université Laval</h1>
 
-            <p class="lead mb-3">
-              Ingénieurs sans frontières Canada – Section Université Laval
-            </p>
+            <p class="lead mb-3">Ingénieurs sans frontières Canada – Section Université Laval</p>
 
             <p class="mb-4">
-              Une communauté étudiante engagée pour une ingénierie humaine,
-              responsable et solidaire.
+              Une communauté étudiante engagée pour une ingénierie humaine, responsable et solidaire.
             </p>
 
             <div class="d-flex gap-3 justify-content-center">
@@ -36,14 +30,10 @@
       </div>
     </section>
 
-    <!-- IMAGE cover1 (après les 2 boutons) -->
+    <!-- IMAGE cover1 -->
     <section class="midiconf-section">
       <div class="container">
-        <img
-          src="/cover1.png"
-          alt="ISF ULaval cover"
-          class="midiconf-img"
-        />
+        <img src="/cover1.png" alt="ISF ULaval cover" class="midiconf-img" />
       </div>
     </section>
 
@@ -51,24 +41,22 @@
     <section class="who-we-are">
       <h2 class="section-title">Qui sommes-nous ?</h2>
 
-      <!-- ORANGE : NOTRE HISTOIRE -->
       <div class="band band-orange">
         <div class="container band-inner">
           <h3>Notre histoire</h3>
           <p>
             La section Ingénieurs sans frontières – Université Laval fait partie du réseau
-            Ingénieurs sans frontières Canada. Elle rassemble aujourd’hui une communauté
-            dynamique et engagée de plus de 90 membres.
+            Ingénieurs sans frontières Canada. Elle rassemble aujourd’hui une communauté dynamique
+            et engagée de plus de 90 membres.
           </p>
           <p>
-            Ouverte à toutes les étudiantes et tous les étudiants, de tous les cycles, de tous
-            les programmes, incluant les étudiants et étudiantes aux cycles supérieurs, notre
-            section est un espace inclusif où chacun peut s’impliquer à sa façon et selon ses intérêts.
+            Ouverte à toutes les étudiantes et tous les étudiants, de tous les cycles, de tous les
+            programmes, incluant les étudiants et étudiantes aux cycles supérieurs, notre section
+            est un espace inclusif où chacun peut s’impliquer à sa façon et selon ses intérêts.
           </p>
         </div>
       </div>
 
-      <!-- NOIR : NOTRE MISSION -->
       <div class="band band-black">
         <div class="container band-inner">
           <h3>Notre mission</h3>
@@ -83,7 +71,6 @@
         </div>
       </div>
 
-      <!-- ORANGE : NOTRE VISION -->
       <div class="band band-orange">
         <div class="container band-inner">
           <h3>Notre vision</h3>
@@ -93,27 +80,117 @@
             leurs compétences au service d’un avenir plus juste, solidaire et durable.
           </p>
           <p>
-            Que tu sois simplement curieux·se ou prêt·e à t’impliquer activement,
-            tu as ta place parmi nous.
+            Que tu sois simplement curieux·se ou prêt·e à t’impliquer activement, tu as ta place parmi nous.
           </p>
         </div>
       </div>
     </section>
 
-    <!-- ÉVÉNEMENTS À VENIR (ajoutée, fond noir) -->
+    <!-- ÉVÉNEMENTS À VENIR (Firestore + carousel auto) -->
     <section class="py-5 events-home">
       <div class="container">
         <div class="text-center mb-5">
           <h2 class="display-5 fw-bold text-white">Événements à venir</h2>
           <p class="lead text-white-50">
-            On ajoutera bientôt les prochains événements (et plus tard on rendra ça dynamique).
+            Découvre nos prochains événements — navigue avec les flèches.
           </p>
         </div>
 
-        <div class="events-placeholder">
-          <p class="mb-0 text-white-50">
-            ✨ Des événements seront affichés ici prochainement.
-          </p>
+        <!-- Loading / Empty -->
+        <div v-if="loadingEvents" class="events-placeholder">
+          <p class="mb-0 text-white-50">Chargement des événements…</p>
+        </div>
+
+        <div v-else-if="visibleUpcoming.length === 0" class="events-placeholder">
+          <p class="mb-0 text-white-50">✨ Aucun événement à venir pour le moment.</p>
+        </div>
+
+        <!-- Carousel -->
+        <div
+          v-else
+          class="event-shell"
+          @mouseenter="pauseAuto"
+          @mouseleave="resumeAuto"
+          @focusin="pauseAuto"
+          @focusout="resumeAuto"
+        >
+          <button
+            class="nav-btn"
+            @click="prevEvent(true)"
+            :disabled="visibleUpcoming.length <= 1"
+            aria-label="Événement précédent"
+          >
+            <i class="fas fa-chevron-left"></i>
+          </button>
+
+          <article class="event-card">
+            <div class="event-media">
+              <img
+                v-if="currentEvent.imageUrl"
+                :src="currentEvent.imageUrl"
+                class="event-img"
+                :alt="currentEvent.title"
+              />
+              <div v-else class="event-img fallback">
+                <div class="fallback-inner">
+                  <i class="fas fa-calendar-alt"></i>
+                  <div class="fw-bold mt-2">ISF ULaval</div>
+                  <div class="small text-white-50">Événement</div>
+                </div>
+              </div>
+
+              <div class="event-badges">
+                <span v-if="currentEvent.category" class="pill">{{ currentEvent.category }}</span>
+                <span class="pill muted-pill">{{ formatDate(currentEvent.date) }}</span>
+                <span v-if="currentEvent.time" class="pill muted-pill">🕒 {{ currentEvent.time }}</span>
+              </div>
+            </div>
+
+            <div class="event-body">
+              <h3 class="event-title">{{ currentEvent.title }}</h3>
+
+              <p v-if="currentEvent.location" class="event-meta">
+                📍 {{ currentEvent.location }}
+              </p>
+
+              <p v-if="currentEvent.description" class="event-desc">
+                {{ currentEvent.description }}
+              </p>
+              <p v-else class="event-desc text-white-50">Détails à venir.</p>
+
+              <div class="event-actions">
+                <a
+                  v-if="currentEvent.link"
+                  class="btn btn-custom-primary btn-sm"
+                  :href="currentEvent.link"
+                  target="_blank"
+                  rel="noopener"
+                >
+                  En savoir plus
+                </a>
+
+                <span class="dots" aria-label="Position dans la liste">
+                  <button
+                    v-for="(e, i) in visibleUpcoming"
+                    :key="e.id"
+                    class="dot"
+                    :class="{ active: i === currentIndex }"
+                    @click="goTo(i)"
+                    :aria-label="`Aller à l'événement ${i + 1}`"
+                  />
+                </span>
+              </div>
+            </div>
+          </article>
+
+          <button
+            class="nav-btn"
+            @click="nextEvent(true)"
+            :disabled="visibleUpcoming.length <= 1"
+            aria-label="Événement suivant"
+          >
+            <i class="fas fa-chevron-right"></i>
+          </button>
         </div>
       </div>
     </section>
@@ -123,9 +200,7 @@
       <div class="container">
         <div class="text-center mb-4">
           <h2 class="display-5 fw-bold text-white">Comité exécutif</h2>
-          <p class="lead text-white-50 mb-0">
-            Découvre l’équipe qui coordonne ISF – Université Laval.
-          </p>
+          <p class="lead text-white-50 mb-0">Découvre l’équipe qui coordonne ISF – Université Laval.</p>
         </div>
 
         <div class="d-flex justify-content-center mt-4">
@@ -141,9 +216,7 @@
       <div class="container">
         <div class="text-center">
           <h2 class="display-5 fw-bold mb-3 text-white">Deviens membre !</h2>
-          <p class="lead mb-4 text-white-50">
-            Tous les programmes et tous les cycles sont les bienvenus.
-          </p>
+          <p class="lead mb-4 text-white-50">Tous les programmes et tous les cycles sont les bienvenus.</p>
 
           <div class="d-flex justify-content-center gap-3 flex-wrap">
             <router-link to="/devenir-membre" class="btn btn-primary btn-lg">
@@ -157,13 +230,148 @@
         </div>
       </div>
     </section>
-
   </div>
 </template>
 
 <script>
+import { collection, onSnapshot, orderBy, query } from "firebase/firestore";
+import { db } from "@/firebase";
+
 export default {
   name: "Home",
+
+  data() {
+    return {
+      loadingEvents: true,
+      events: [],
+      currentIndex: 0,
+      _unsub: null,
+
+      // Auto carousel
+      autoMs: 6000,
+      _paused: false,
+      _timer: null,
+    };
+  },
+
+  computed: {
+    visibleUpcoming() {
+      const today = this.todayYYYYMMDD();
+
+      const visible = this.events.filter((e) => e.isVisible !== false);
+      const upcoming = visible.filter((e) => (e.date || "") >= today);
+
+      upcoming.sort((a, b) => {
+        const da = a.date || "9999-99-99";
+        const dbb = b.date || "9999-99-99";
+        if (da !== dbb) return da.localeCompare(dbb);
+        return (a.order ?? 999) - (b.order ?? 999);
+      });
+
+      return upcoming;
+    },
+
+    currentEvent() {
+      if (this.visibleUpcoming.length === 0) return {};
+      const i = Math.max(0, Math.min(this.currentIndex, this.visibleUpcoming.length - 1));
+      return this.visibleUpcoming[i];
+    },
+  },
+
+  mounted() {
+    const q = query(collection(db, "events"), orderBy("order", "asc"));
+    this._unsub = onSnapshot(
+      q,
+      (snap) => {
+        this.events = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+        this.loadingEvents = false;
+
+        if (this.currentIndex > this.visibleUpcoming.length - 1) {
+          this.currentIndex = 0;
+        }
+      },
+      (err) => {
+        console.error("events load error:", err);
+        this.loadingEvents = false;
+      }
+    );
+
+    window.addEventListener("keydown", this.onKey);
+    this.startAuto();
+  },
+
+  beforeUnmount() {
+    if (this._unsub) this._unsub();
+    window.removeEventListener("keydown", this.onKey);
+    this.stopAuto();
+  },
+
+  methods: {
+    todayYYYYMMDD() {
+      return new Date().toLocaleDateString("fr-CA");
+    },
+
+    formatDate(yyyyMmDd) {
+      try {
+        const [y, m, d] = (yyyyMmDd || "").split("-").map(Number);
+        const dt = new Date(y, m - 1, d);
+        return dt.toLocaleDateString("fr-CA", { year: "numeric", month: "long", day: "numeric" });
+      } catch {
+        return yyyyMmDd || "";
+      }
+    },
+
+    startAuto() {
+      this.stopAuto();
+      this._timer = setInterval(() => {
+        if (!this._paused && this.visibleUpcoming.length > 1) {
+          this.nextEvent(false); // auto tick => pas besoin de reset
+        }
+      }, this.autoMs);
+    },
+
+    stopAuto() {
+      if (this._timer) clearInterval(this._timer);
+      this._timer = null;
+    },
+
+    pauseAuto() {
+      this._paused = true;
+    },
+
+    resumeAuto() {
+      this._paused = false;
+    },
+
+    resetAuto() {
+      this.startAuto();
+    },
+
+    nextEvent(reset = true) {
+      const n = this.visibleUpcoming.length;
+      if (n <= 1) return;
+      this.currentIndex = (this.currentIndex + 1) % n;
+      if (reset) this.resetAuto();
+    },
+
+    prevEvent(reset = true) {
+      const n = this.visibleUpcoming.length;
+      if (n <= 1) return;
+      this.currentIndex = (this.currentIndex - 1 + n) % n;
+      if (reset) this.resetAuto();
+    },
+
+    goTo(i) {
+      this.currentIndex = i;
+      this.resetAuto();
+    },
+
+    onKey(e) {
+      if (this.visibleUpcoming.length <= 1) return;
+      if (e.key === "ArrowRight") this.nextEvent(true);
+      if (e.key === "ArrowLeft") this.prevEvent(true);
+    },
+  },
 };
 </script>
 
@@ -173,7 +381,7 @@ export default {
   color: #fff;
 }
 
-/* HERO (BACKGROUND midiconf4) */
+/* HERO */
 .hero {
   position: relative;
   background-image: url("/activites/midiconf4.png");
@@ -182,7 +390,6 @@ export default {
   height: 70vh;
 }
 
-/* TEXTE SOUS HERO -> noir */
 .hero-content {
   background: #000;
   color: #fff;
@@ -225,7 +432,7 @@ export default {
   box-shadow: 0 14px 40px rgba(0, 0, 0, 0.35);
 }
 
-/* QUI SOMMES-NOUS (BANDES) */
+/* QUI SOMMES-NOUS */
 .who-we-are {
   background: #000;
   padding-bottom: 0;
@@ -265,16 +472,164 @@ export default {
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-/* ÉVÉNEMENTS */
+/* EVENTS */
 .events-home {
   background: #000;
 }
+
 .events-placeholder {
-  max-width: 900px;
+  max-width: 980px;
   margin: 0 auto;
   border: 1px dashed rgba(255, 255, 255, 0.18);
   border-radius: 16px;
   padding: 22px;
+  text-align: center;
+}
+
+.event-shell {
+  max-width: 980px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 52px 1fr 52px;
+  gap: 14px;
+  align-items: center;
+}
+
+.nav-btn {
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.06);
+  color: #fff;
+  font-weight: 900;
+  display: grid;
+  place-items: center;
+  transition: transform 0.15s ease, border-color 0.2s ease, background 0.2s ease;
+}
+.nav-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  border-color: rgba(249, 115, 22, 0.45);
+  background: rgba(249, 115, 22, 0.12);
+}
+.nav-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.event-card {
+  background: #0b0b0b;
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.35);
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  min-height: 320px;
+}
+
+.event-media {
+  position: relative;
+  background: #050505;
+}
+.event-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.event-img.fallback {
+  display: grid;
+  place-items: center;
+  height: 100%;
+  background:
+    radial-gradient(circle at 15% 20%, rgba(249,115,22,0.25), transparent 45%),
+    radial-gradient(circle at 80% 20%, rgba(255,255,255,0.08), transparent 40%),
+    #000;
+}
+.fallback-inner {
+  text-align: center;
+  color: rgba(255,255,255,0.9);
+}
+.fallback-inner i {
+  font-size: 34px;
+  color: rgba(249,115,22,0.9);
+}
+
+.event-badges {
+  position: absolute;
+  left: 14px;
+  top: 14px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.pill {
+  display: inline-block;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-weight: 900;
+  font-size: 13px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  color: #fff;
+  backdrop-filter: blur(6px);
+}
+.muted-pill {
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.event-body {
+  padding: 18px 18px 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.event-title {
+  font-weight: 900;
+  font-size: 22px;
+  margin: 0;
+}
+
+.event-meta {
+  margin: 0;
+  color: rgba(255,255,255,0.8);
+  font-weight: 700;
+}
+
+.event-desc {
+  margin: 0;
+  color: rgba(255,255,255,0.75);
+  line-height: 1.7;
+}
+
+.event-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.dots {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+}
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.25);
+  background: rgba(255,255,255,0.10);
+  cursor: pointer;
+}
+.dot.active {
+  background: rgba(249,115,22,0.9);
+  border-color: rgba(249,115,22,0.9);
 }
 
 /* COMITÉ EXÉCUTIF */
@@ -300,23 +655,35 @@ export default {
   color: #000;
 }
 @keyframes glowOrange {
-  0% { box-shadow: 0 0 0 rgba(249, 115, 22, 0.0); }
-  50% { box-shadow: 0 0 18px rgba(249, 115, 22, 0.55); }
-  100% { box-shadow: 0 0 0 rgba(249, 115, 22, 0.0); }
+  0% { box-shadow: 0 0 0 rgba(249,115,22,0.0); }
+  50% { box-shadow: 0 0 18px rgba(249,115,22,0.55); }
+  100% { box-shadow: 0 0 0 rgba(249,115,22,0.0); }
 }
 
-/* DEVIENS MEMBRE */
 .become-member {
   background: #000;
 }
 
-/* RESPONSIVE */
+/* Responsive */
+@media (max-width: 992px) {
+  .event-card {
+    grid-template-columns: 1fr;
+  }
+  .event-media {
+    height: 260px;
+  }
+  .event-shell {
+    grid-template-columns: 44px 1fr 44px;
+  }
+  .nav-btn {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+  }
+}
+
 @media (max-width: 768px) {
-  .section-title {
-    font-size: 2rem;
-  }
-  .band-inner {
-    padding: 0 8%;
-  }
+  .section-title { font-size: 2rem; }
+  .band-inner { padding: 0 8%; }
 }
 </style>

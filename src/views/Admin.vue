@@ -38,10 +38,10 @@
 
         <h2 class="h5 fw-bold mb-3">Gestion du site</h2>
         <div class="grid">
-          <router-link class="tile" to="/admin/activites">Activités</router-link>
-          <router-link class="tile" to="/admin/projets">Projets</router-link>
-          <router-link class="tile" to="/admin/evenements">Événements</router-link>
+          <router-link class="tile" to="/admin/activities">Activités</router-link>
+          <router-link class="tile" to="/admin/projects">Projets</router-link>
           <router-link class="tile" to="/admin/executif">Exécutif</router-link>
+          <router-link class="tile" to="/admin/events">Événements</router-link>
           <router-link class="tile" to="/admin/documents">Documents</router-link>
         </div>
 

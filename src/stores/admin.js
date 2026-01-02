@@ -1,37 +1,39 @@
 // src/stores/admin.js
 import { defineStore } from "pinia";
-import {
-  onAuthStateChanged,
-  signInWithEmailAndPassword,
-  signOut,
-} from "firebase/auth";
+import { onAuthStateChanged, signInWithEmailAndPassword, signOut } from "firebase/auth";
 import { auth } from "@/firebase";
 
 export const useAdminStore = defineStore("admin", {
   state: () => ({
     user: null,
     ready: false,
-    _initPromise: null, // ✅ pour ne pas init plusieurs fois
+    _initPromise: null,
   }),
 
   getters: {
     isLoggedIn: (s) => !!s.user,
-    isAdmin: (s) => !!s.user && s.user.uid === import.meta.env.VITE_ADMIN_UID,
+
+    isAdmin: (s) => {
+      const adminUid = import.meta.env.VITE_ADMIN_UID;
+      if (!adminUid) return false; // ✅ évite comparaison avec undefined
+      return !!s.user && s.user.uid === adminUid;
+    },
   },
 
   actions: {
     init() {
-      // ✅ si déjà prêt, on ne refait rien
       if (this.ready) return Promise.resolve(this.user);
-
-      // ✅ si init déjà lancé, on renvoie la même promesse
       if (this._initPromise) return this._initPromise;
 
       this._initPromise = new Promise((resolve) => {
-        onAuthStateChanged(auth, (u) => {
+        const unsubscribe = onAuthStateChanged(auth, (u) => {
           this.user = u || null;
           this.ready = true;
           resolve(this.user);
+
+          // ✅ on a récupéré l’état initial, on peut se désabonner
+          // (si tu veux suivre les changements live, enlève ces 2 lignes)
+          unsubscribe();
         });
       });
 
@@ -40,12 +42,10 @@ export const useAdminStore = defineStore("admin", {
 
     async login(email, password) {
       await signInWithEmailAndPassword(auth, email, password);
-      // l’état se mettra à jour via onAuthStateChanged
     },
 
     async logout() {
       await signOut(auth);
-      // l’état se mettra à jour via onAuthStateChanged
     },
   },
 });

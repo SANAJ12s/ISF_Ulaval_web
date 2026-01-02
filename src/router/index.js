@@ -20,6 +20,7 @@ import AdminActivities from "../views/admin/AdminActivities.vue";
 import { useAdminStore } from "@/stores/admin";
 
 const routes = [
+  // Public
   { path: "/", name: "Home", component: Home },
   { path: "/qui-sommes-nous", name: "QuiSommesNous", component: QuiSommesNous },
   { path: "/comite-executif", name: "ComiteExecutif", component: ComiteExecutif },
@@ -32,16 +33,25 @@ const routes = [
   { path: "/nous-joindre", name: "NousJoindre", component: NousJoindre },
   { path: "/articles-promotionnels", name: "ArticlesPromotionnels", component: ArticlesPromotionnels },
   { path: "/documents", name: "Documents", component: Documents },
-
   { path: "/activites", name: "Activites", component: () => import("../views/Activites.vue") },
 
   // Admin
   { path: "/admin/login", name: "AdminLogin", component: AdminLogin, meta: { public: true } },
-
-  // ✅ Un seul /admin -> dashboard
   { path: "/admin", name: "AdminDashboard", component: AdminDashboard, meta: { requiresAdmin: true } },
 
   { path: "/admin/activities", name: "AdminActivities", component: AdminActivities, meta: { requiresAdmin: true } },
+  { path: "/admin/events", name: "AdminEvents", component: () => import("../views/admin/AdminEvents.vue"), meta: { requiresAdmin: true } },
+  { path: "/admin/projects", name: "AdminProjects", component: () => import("../views/admin/AdminProjects.vue"), meta: { requiresAdmin: true } },
+  { path: "/admin/executif", name: "AdminExecutif", component: () => import("../views/admin/AdminExecutif.vue"), meta: { requiresAdmin: true } },
+  { path: "/admin/documents", name: "AdminDocuments", component: () => import("../views/admin/AdminDocuments.vue"), meta: { requiresAdmin: true } },
+
+  // ✅ Redirects (anciens liens FR)
+  { path: "/admin/activites", redirect: "/admin/activities" },
+  { path: "/admin/evenements", redirect: "/admin/events" },
+  { path: "/admin/projets", redirect: "/admin/projects" },
+
+  // ✅ Not found (évite page blanche)
+  { path: "/:pathMatch(.*)*", redirect: "/" },
 ];
 
 const router = createRouter({
@@ -52,7 +62,6 @@ const router = createRouter({
 router.beforeEach(async (to) => {
   const admin = useAdminStore();
 
-  // ✅ attendre l’état auth
   if (!admin.ready) await admin.init();
 
   if (to.meta.requiresAdmin) {

@@ -18,93 +18,98 @@
     <!-- LISTE DES PROJETS -->
     <section class="section-dark py-5">
       <div class="container">
-        <div v-for="(p, idx) in projects" :key="p.id" class="project-block">
-          <div class="row align-items-center g-4">
-            <!-- TEXTE -->
-            <div class="col-lg-6">
-              <div class="project-text">
-                <div class="project-kicker">Projet</div>
-                <h2 class="project-title">{{ p.title }}</h2>
+        <!-- loading / empty -->
+        <div v-if="loading" class="events-placeholder">
+          <p class="mb-0 text-white-50">Chargement…</p>
+        </div>
 
-                <div v-if="p.tag" class="project-tag">{{ p.tag }}</div>
+        <div v-else-if="projects.length === 0" class="events-placeholder">
+          <p class="mb-0 text-white-50">Aucun projet pour le moment.</p>
+        </div>
 
-                <p class="project-desc">
-                  {{ p.description }}
-                </p>
+        <div v-else>
+          <div v-for="(p, idx) in projects" :key="p.id" class="project-block">
+            <div class="row align-items-center g-4">
+              <!-- TEXTE -->
+              <div class="col-lg-6">
+                <div class="project-text">
+                  <div class="project-kicker">Projet</div>
+                  <h2 class="project-title">{{ p.title }}</h2>
 
-                <ul v-if="p.highlights?.length" class="project-highlights">
-                  <li v-for="(h, i) in p.highlights" :key="i">{{ h }}</li>
-                </ul>
+                  <div v-if="p.status" class="project-tag">{{ p.status }}</div>
 
-                <div v-if="p.cta?.href || hasImages(p)" class="mt-3 d-flex gap-3 flex-wrap">
-                  <a
-                    v-if="p.cta?.href"
-                    class="btn btn-warning btn-lg"
-                    :href="p.cta.href"
-                    target="_blank"
-                    rel="noopener"
-                  >
-                    <i class="fab fa-youtube me-2"></i>
-                    {{ p.cta.label }}
-                  </a>
+                  <p v-if="p.summary" class="project-desc">
+                    {{ p.summary }}
+                  </p>
 
-                  <button
-                    v-if="hasImages(p)"
-                    class="btn btn-outline-light btn-lg"
-                    type="button"
-                    @click="openGallery(idx, 0)"
-                  >
-                    <i class="fas fa-images me-2"></i>
-                    Voir les photos
-                  </button>
+                  <div class="mt-3 d-flex gap-3 flex-wrap">
+                    <a
+                      v-if="p.link"
+                      class="btn btn-warning btn-lg"
+                      :href="p.link"
+                      target="_blank"
+                      rel="noopener"
+                    >
+                      <i class="fas fa-link me-2"></i>
+                      Ouvrir le lien
+                    </a>
+
+                    <button
+                      v-if="hasImages(p)"
+                      class="btn btn-outline-light btn-lg"
+                      type="button"
+                      @click="openGallery(idx, 0)"
+                    >
+                      <i class="fas fa-images me-2"></i>
+                      Voir la photo
+                    </button>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <!-- PHOTO COVER -->
-            <div class="col-lg-6">
-              <!-- Si images -> cover cliquable -->
-              <button
-                v-if="hasImages(p)"
-                class="cover-btn"
-                type="button"
-                @click="openGallery(idx, 0)"
-                :aria-label="`Ouvrir les photos du projet ${p.title}`"
-              >
-                <div class="cover-card">
-                  <img
-                    class="cover-img"
-                    :src="p.images[0]"
-                    :alt="`Photo du projet ${p.title}`"
-                    loading="lazy"
-                  />
-                  <div class="cover-gradient"></div>
+              <!-- PHOTO COVER -->
+              <div class="col-lg-6">
+                <button
+                  v-if="hasImages(p)"
+                  class="cover-btn"
+                  type="button"
+                  @click="openGallery(idx, 0)"
+                  :aria-label="`Ouvrir la photo du projet ${p.title}`"
+                >
+                  <div class="cover-card">
+                    <img
+                      class="cover-img"
+                      :src="p.images[0]"
+                      :alt="`Photo du projet ${p.title}`"
+                      loading="lazy"
+                    />
+                    <div class="cover-gradient"></div>
 
-                  <div class="cover-caption">
-                    <div class="cover-caption-title">{{ p.title }}</div>
-                    <div class="cover-caption-sub">
-                      Cliquer pour agrandir • {{ p.images.length }} photo(s)
+                    <div class="cover-caption">
+                      <div class="cover-caption-title">{{ p.title }}</div>
+                      <div class="cover-caption-sub">
+                        Cliquer pour agrandir
+                      </div>
+                    </div>
+                  </div>
+                </button>
+
+                <div v-else class="cover-empty">
+                  <div class="cover-empty-inner">
+                    <div class="cover-empty-icon">
+                      <i class="fas fa-camera-retro"></i>
+                    </div>
+                    <div class="cover-empty-title">Photos à venir</div>
+                    <div class="cover-empty-sub">
+                      On ajoutera bientôt des images pour ce projet.
                     </div>
                   </div>
                 </div>
-              </button>
-
-              <!-- Sinon -> carte "photos à venir" (propre) -->
-              <div v-else class="cover-empty">
-                <div class="cover-empty-inner">
-                  <div class="cover-empty-icon">
-                    <i class="fas fa-camera-retro"></i>
-                  </div>
-                  <div class="cover-empty-title">Photos à venir</div>
-                  <div class="cover-empty-sub">
-                    On ajoutera bientôt des images pour ce projet.
-                  </div>
-                </div>
               </div>
             </div>
-          </div>
 
-          <hr v-if="idx !== projects.length - 1" class="divider" />
+            <hr v-if="idx !== projects.length - 1" class="divider" />
+          </div>
         </div>
       </div>
     </section>
@@ -151,81 +156,16 @@
 </template>
 
 <script>
+import { collection, onSnapshot, orderBy, query } from "firebase/firestore";
+import { db } from "@/firebase";
+
 export default {
   name: "NosProjets",
   data() {
     return {
-      projects: [
-        {
-          id: "puits-2024",
-          title: "Eau pour tous — Puits (2024)",
-          tag: "Mandat 2024–2025",
-          description:
-            "Le projet Eau pour tous visait la construction d’un puits de 1 270 $ à Njindaré, au Cameroun, afin d’offrir un accès durable à l’eau potable. La réalisation a été effectuée en collaboration avec un ancien étudiant de l’Université Laval, fondateur de Gather Charity, déjà à l’origine de trois projets similaires dans la région.",
-          highlights: [
-            "Lieu : Njindaré (Cameroun)",
-            "Objectif : accès durable à l’eau potable",
-            "Budget : 1 270 $",
-            "Partenaire : Gather Charity",
-          ],
-          images: [
-            "/projets/isfPuit.png",
-            "/projets/puit.jpg",
-            "/projets/puit2.jpg",
-            "/projets/puit7.jpg",
-            "/projets/puit8.jpg",
-            "/projets/puit_construction.jpg",
-            "/projets/puit_construction1.jpg",
-            "/projets/puit_construction2.jpg",
-            "/projets/puit_construction3.jpg",
-            "/projets/puit_construction4.jpg",
-            "/projets/puit_construction5.jpg",
-            "/projets/puit_construction6.jpg",
-            "/projets/puit_construction7.jpg",
-          ],
-        },
-
-        {
-          id: "interviews",
-          title: "Interviews d’ingénieurs",
-          tag: "Série vidéo",
-          description:
-            "Notre VP externe réalise des entrevues avec des ingénieurs et CPI aux parcours inspirants. Découvrez leurs témoignages, leurs conseils et leurs expériences directement sur notre chaîne YouTube.",
-          highlights: [
-            "Formats : témoignages, conseils, parcours",
-            "Public : étudiants, CPI, ingénieurs",
-          ],
-          cta: {
-            label: "Voir sur YouTube",
-            href: "https://www.youtube.com/@isf-ulaval",
-          },
-          images: [],
-        },
-
-        {
-          id: "madagascar-solaire",
-          title: "Panneaux solaires à Madagascar",
-          tag: "Mandat 2025–2026 (à venir)",
-          description:
-            "Le projet Panneaux solaires à Madagascar vise l’installation d’un système solaire dans une école accueillant 125 élèves. Cette initiative permettra de fournir une source d’énergie durable et fiable, essentielle au bon déroulement des activités scolaires. Actuellement en préparation, ce projet s’inscrit dans notre volonté de soutenir des infrastructures éducatives tout en promouvant des solutions énergétiques responsables.",
-          highlights: [
-            "Cible : école (125 élèves)",
-            "Objectif : énergie durable et fiable",
-            "Statut : en préparation",
-          ],
-          images: [],
-        },
-
-        {
-          id: "friperie",
-          title: "Friperie ISF",
-          tag: "Activité de financement",
-          description:
-            "Une friperie organisée par ISF Université Laval pour financer nos initiatives et renforcer l’esprit de communauté, tout en donnant une seconde vie à des vêtements.",
-          highlights: ["Objectif : financement", "Ambiance : fun & communautaire"],
-          images: ["/projets/friperie.png"],
-        },
-      ],
+      loading: true,
+      projects: [],
+      unsub: null,
 
       lightbox: {
         open: false,
@@ -235,6 +175,7 @@ export default {
       },
     };
   },
+
   computed: {
     currentProject() {
       return this.projects?.[this.lightbox.projectIndex] || null;
@@ -243,16 +184,51 @@ export default {
       return this.currentProject?.images?.[this.lightbox.imageIndex] || "";
     },
   },
+
   mounted() {
     window.addEventListener("keydown", this.onKeyDown);
+
+    // 🔥 Firestore live
+    const q = query(collection(db, "projects"), orderBy("order", "asc"));
+    this.unsub = onSnapshot(
+      q,
+      (snap) => {
+        const items = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+
+        // afficher seulement les visibles
+        this.projects = items
+          .filter((p) => p.isVisible !== false)
+          .map((p) => ({
+            id: p.id,
+            title: p.title || "Projet",
+            status: p.status || "",
+            summary: p.summary || "",
+            link: p.link || "",
+            // on garde la compatibilité avec ton UI images[]
+            images: p.image ? [p.image] : [],
+            order: p.order ?? 999,
+          }));
+
+        this.loading = false;
+      },
+      (e) => {
+        console.error(e);
+        this.loading = false;
+        this.projects = [];
+      }
+    );
   },
+
   beforeUnmount() {
     window.removeEventListener("keydown", this.onKeyDown);
+    if (this.unsub) this.unsub();
   },
+
   methods: {
     hasImages(p) {
       return !!(p?.images && p.images.length);
     },
+
     openGallery(projectIndex, imageIndex = 0) {
       this.lightbox.projectIndex = projectIndex;
       this.lightbox.imageIndex = imageIndex;
@@ -268,22 +244,26 @@ export default {
 
       document.body.style.overflow = "hidden";
     },
+
     closeGallery() {
       this.lightbox.open = false;
       document.body.style.overflow = "";
     },
+
     nextImage() {
       const imgs = this.currentProject?.images || [];
       if (!imgs.length) return;
       this.lightbox.imageIndex = (this.lightbox.imageIndex + 1) % imgs.length;
       this.triggerPop();
     },
+
     prevImage() {
       const imgs = this.currentProject?.images || [];
       if (!imgs.length) return;
       this.lightbox.imageIndex = (this.lightbox.imageIndex - 1 + imgs.length) % imgs.length;
       this.triggerPop();
     },
+
     triggerPop() {
       this.lightbox.pop = false;
       requestAnimationFrame(() => {
@@ -291,6 +271,7 @@ export default {
         setTimeout(() => (this.lightbox.pop = false), 220);
       });
     },
+
     onKeyDown(e) {
       if (!this.lightbox.open) return;
       if (e.key === "Escape") this.closeGallery();
@@ -302,6 +283,9 @@ export default {
 </script>
 
 <style scoped>
+/* ✅ J’ai gardé ton CSS tel quel, j’ai juste réutilisé "events-placeholder"
+   comme bloc propre pour loading/empty (tu peux renommer si tu veux). */
+
 .projects-page {
   background: #000;
   color: #fff;
@@ -341,6 +325,15 @@ export default {
   height: 1px;
   background: rgba(255, 255, 255, 0.08);
   margin: 34px 0 0;
+}
+
+/* petit placeholder propre */
+.events-placeholder {
+  max-width: 900px;
+  margin: 0 auto;
+  border: 1px dashed rgba(255, 255, 255, 0.18);
+  border-radius: 16px;
+  padding: 22px;
 }
 
 /* Texte */
@@ -383,16 +376,6 @@ export default {
   color: rgba(255, 255, 255, 0.78);
   line-height: 1.8;
   margin: 0 0 14px;
-}
-
-.project-highlights {
-  margin: 0;
-  padding-left: 18px;
-  color: rgba(255, 255, 255, 0.72);
-  line-height: 1.75;
-}
-.project-highlights li {
-  margin-bottom: 6px;
 }
 
 /* Cover image */
@@ -453,7 +436,7 @@ export default {
   margin-top: 4px;
 }
 
-/* Cover empty (sans message “ajoute des images…”) */
+/* Cover empty */
 .cover-empty {
   border-radius: 18px;
   border: 1px solid rgba(255, 255, 255, 0.10);

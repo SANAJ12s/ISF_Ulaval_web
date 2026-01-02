@@ -13,7 +13,7 @@
 
             <div class="hero-pill">
               <i class="fas fa-file-pdf me-2"></i>
-              <span>Charte ISF — 29 pages</span>
+              <span>{{ heroLabel }}</span>
             </div>
           </div>
         </div>
@@ -29,7 +29,7 @@
               <h2 class="h4 fw-bold mb-2 text-white">Documents officiels</h2>
               <p class="mb-0 text-white-50">
                 Cliquez sur un document pour l’ouvrir. Si ton navigateur bloque l’affichage PDF,
-                clique sur “Ouvrir dans Google”.
+                utilise <strong>PDF direct</strong> (ou <strong>Google</strong> si le lien est public).
               </p>
             </div>
           </div>
@@ -38,14 +38,23 @@
         <div class="row mt-4 g-4">
           <div class="col-lg-9 mx-auto">
             <div class="docs-grid">
-              <button class="doc-item" type="button" @click="openDoc(docs[0])">
+              <button
+                v-for="doc in docs"
+                :key="doc.id"
+                class="doc-item"
+                type="button"
+                @click="openDoc(doc)"
+              >
                 <div class="doc-left">
                   <div class="doc-icon">
                     <i class="fas fa-file-pdf"></i>
                   </div>
                   <div class="doc-meta">
-                    <div class="doc-title">Charte ISF</div>
-                    <div class="doc-sub">Document officiel — PDF — 29 pages</div>
+                    <div class="doc-title">{{ doc.title }}</div>
+                    <div class="doc-sub">
+                      {{ doc.subtitle }}
+                      <span v-if="doc.maxPages"> — {{ doc.maxPages }} pages</span>
+                    </div>
                   </div>
                 </div>
                 <div class="doc-right">
@@ -54,6 +63,10 @@
                   </span>
                 </div>
               </button>
+
+              <div v-if="docs.length === 0" class="empty">
+                Aucun document pour le moment.
+              </div>
             </div>
           </div>
         </div>
@@ -90,7 +103,9 @@
                     <i class="fas fa-search-plus"></i>
                   </button>
 
+                  <!-- Google viewer seulement si URL externe -->
                   <a
+                    v-if="activeDoc && activeDoc.src && activeDoc.src.startsWith('http')"
                     class="btn btn-sm btn-warning ms-2"
                     :href="googleViewerUrl"
                     target="_blank"
@@ -116,24 +131,38 @@
               </div>
 
               <div class="viewer-body">
-                <!-- 1) Viewer natif -->
+                <!-- Viewer natif -->
                 <iframe class="pdf-embed" :src="pdfUrl" title="PDF viewer (natif)"></iframe>
 
-                <!-- 2) Fallback: si natif ne marche pas, le user clique sur bouton Google -->
-                <div class="viewer-hint">
+                <!-- Hint overlay (fermeture possible) -->
+                <div v-if="showHint" class="viewer-hint">
                   <div class="hint-card">
                     <div class="fw-bold mb-1">Si tu ne vois rien :</div>
                     <div class="text-white-50 mb-3">
                       Ton navigateur bloque peut-être l’affichage PDF dans la page.
-                      Clique sur <strong>“Ouvrir dans Google”</strong> ou <strong>“PDF direct”</strong>.
+                      Utilise <strong>PDF direct</strong>
+                      <span v-if="activeDoc.src && activeDoc.src.startsWith('http')">
+                        ou <strong>Ouvrir dans Google</strong>
+                      </span>.
                     </div>
                     <div class="d-flex gap-2 flex-wrap">
-                      <a class="btn btn-warning btn-sm" :href="googleViewerUrl" target="_blank" rel="noopener">
-                        Ouvrir dans Google
-                      </a>
                       <a class="btn btn-outline-light btn-sm" :href="activeDoc.src" target="_blank" rel="noopener">
                         PDF direct
                       </a>
+
+                      <a
+                        v-if="activeDoc && activeDoc.src && activeDoc.src.startsWith('http')"
+                        class="btn btn-warning btn-sm"
+                        :href="googleViewerUrl"
+                        target="_blank"
+                        rel="noopener"
+                      >
+                        Ouvrir dans Google
+                      </a>
+
+                      <button class="btn btn-outline-light btn-sm" @click="showHint = false">
+                        OK
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -153,7 +182,7 @@
                   <button class="btn btn-sm btn-outline-light ms-2" @click="goToJump">Go</button>
                 </div>
                 <div class="text-white-50 small">
-                  Astuce : en prod, “Ouvrir dans Google” marche très bien (URL publique).
+                  Astuce : le rendu page/zoom dépend du navigateur (iframe PDF).
                 </div>
               </div>
             </div>
@@ -187,55 +216,82 @@
 </template>
 
 <script>
+import { useDocumentsStore } from "@/stores/documents";
+
 export default {
   name: "Documents",
   data() {
     return {
-      docs: [
-        {
-          id: "charte",
-          title: "Charte ISF",
-          src: "/documents/charte-isf.pdf", // ✅ TON NOUVEAU PATH
-          maxPages: 29,
-        },
-      ],
       activeDoc: null,
       page: 1,
       zoom: 1.0,
       jump: 1,
+      showHint: true,
     };
   },
+
   computed: {
+    store() {
+      return useDocumentsStore();
+    },
+
+    docs() {
+      return this.store.visibleDocs.map((d) => ({
+        id: d.id,
+        title: d.title,
+        subtitle: d.description || (d.category ? `${d.category} — PDF` : "Document — PDF"),
+        src: d.url,
+        maxPages: d.maxPages || 1,
+      }));
+    },
+
+    heroLabel() {
+      // Affiche le premier doc (ordre Firestore) si dispo, sinon texte neutre
+      const first = this.docs[0];
+      if (!first) return "Documents — PDF";
+      const pages = first.maxPages ? ` — ${first.maxPages} pages` : "";
+      return `${first.title}${pages}`;
+    },
+
     pdfUrl() {
       if (!this.activeDoc) return "";
       const z = Math.round(this.zoom * 100);
-      // FitH + scrollbar interne du iframe -> évite “portion invisible”
       return `${this.activeDoc.src}#page=${this.page}&zoom=${z}&view=FitH`;
     },
+
     googleViewerUrl() {
       if (!this.activeDoc) return "#";
-      const absolute = this.activeDoc.src.startsWith("http")
+      const absolute = this.activeDoc.src?.startsWith("http")
         ? this.activeDoc.src
         : `${window.location.origin}${this.activeDoc.src}`;
       return `https://drive.google.com/viewerng/viewer?embedded=true&url=${encodeURIComponent(absolute)}`;
     },
   },
+
+  created() {
+    this.store.subscribe();
+  },
+
   methods: {
     openDoc(doc) {
       this.activeDoc = doc;
       this.page = 1;
       this.zoom = 1.0;
       this.jump = 1;
+      this.showHint = true;
+
       this.$nextTick(() => {
         const el = document.querySelector(".viewer");
         if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
       });
     },
+
     closeDoc() {
       this.activeDoc = null;
       this.page = 1;
       this.jump = 1;
     },
+
     nextPage() {
       if (!this.activeDoc) return;
       if (this.page < this.activeDoc.maxPages) {
@@ -243,6 +299,7 @@ export default {
         this.jump = this.page;
       }
     },
+
     prevPage() {
       if (!this.activeDoc) return;
       if (this.page > 1) {
@@ -250,12 +307,15 @@ export default {
         this.jump = this.page;
       }
     },
+
     zoomIn() {
       this.zoom = Math.min(1.6, +(this.zoom + 0.1).toFixed(1));
     },
+
     zoomOut() {
       this.zoom = Math.max(0.6, +(this.zoom - 0.1).toFixed(1));
     },
+
     goToJump() {
       if (!this.activeDoc) return;
       const n = Number(this.jump);
@@ -338,6 +398,13 @@ export default {
 .doc-sub{ color:rgba(255,255,255,0.55); font-size:.92rem; }
 .doc-open{ color:rgba(255,255,255,0.85); font-weight:800; }
 
+.empty{
+  padding:16px 18px;
+  border-radius:16px;
+  border:1px dashed rgba(255,255,255,0.18);
+  color:rgba(255,255,255,0.7);
+}
+
 /* Viewer */
 .viewer{ overflow:hidden; }
 .viewer-head{
@@ -355,7 +422,6 @@ export default {
   background:#050505;
 }
 
-/* ✅ le PDF prend TOUT et scroll inside */
 .pdf-embed{
   width:100%;
   height:100%;
@@ -363,7 +429,7 @@ export default {
   border:0;
 }
 
-/* petit hint overlay (ne bloque pas les clics) */
+/* hint overlay */
 .viewer-hint{
   pointer-events:none;
   position:absolute;
