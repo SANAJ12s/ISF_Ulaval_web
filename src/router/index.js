@@ -1,4 +1,3 @@
-// src/router/index.js
 import { createRouter, createWebHistory } from "vue-router";
 
 import Home from "../views/Home.vue";
@@ -34,32 +33,15 @@ const routes = [
   { path: "/articles-promotionnels", name: "ArticlesPromotionnels", component: ArticlesPromotionnels },
   { path: "/documents", name: "Documents", component: Documents },
 
-  // Activités (lazy si tu veux)
-  {
-    path: "/activites",
-    name: "Activites",
-    component: () => import("../views/Activites.vue"),
-  },
+  { path: "/activites", name: "Activites", component: () => import("../views/Activites.vue") },
 
   // Admin
-  {
-    path: "/admin/login",
-    name: "AdminLogin",
-    component: AdminLogin,
-    meta: { public: true },
-  },
-  {
-    path: "/admin",
-    name: "AdminDashboard",
-    component: AdminDashboard,
-    meta: { requiresAdmin: true },
-  },
-  {
-    path: "/admin/activities",
-    name: "AdminActivities",
-    component: AdminActivities,
-    meta: { requiresAdmin: true },
-  },
+  { path: "/admin/login", name: "AdminLogin", component: AdminLogin, meta: { public: true } },
+
+  // ✅ Un seul /admin -> dashboard
+  { path: "/admin", name: "AdminDashboard", component: AdminDashboard, meta: { requiresAdmin: true } },
+
+  { path: "/admin/activities", name: "AdminActivities", component: AdminActivities, meta: { requiresAdmin: true } },
 ];
 
 const router = createRouter({
@@ -67,12 +49,11 @@ const router = createRouter({
   routes,
 });
 
-router.beforeEach((to) => {
+router.beforeEach(async (to) => {
   const admin = useAdminStore();
-  admin.init();
 
-  // tant que l’auth n’est pas prête, on laisse passer (ou tu peux bloquer avec un loader)
-  if (admin.loading) return true;
+  // ✅ attendre l’état auth
+  if (!admin.ready) await admin.init();
 
   if (to.meta.requiresAdmin) {
     if (!admin.user) return "/admin/login";

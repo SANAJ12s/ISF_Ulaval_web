@@ -1,39 +1,51 @@
+// src/stores/admin.js
 import { defineStore } from "pinia";
-import { onAuthStateChanged } from "firebase/auth";
+import {
+  onAuthStateChanged,
+  signInWithEmailAndPassword,
+  signOut,
+} from "firebase/auth";
 import { auth } from "@/firebase";
 
 export const useAdminStore = defineStore("admin", {
   state: () => ({
     user: null,
-    loading: true,
-    initialized: false,
+    ready: false,
+    _initPromise: null, // ✅ pour ne pas init plusieurs fois
   }),
 
   getters: {
-    adminUid() {
-      // Mets ton UID admin ici via .env (recommandé)
-      // VITE_ADMIN_UID=Tcgiu1FJg6XmXG1PAE8hEj08kg12
-      return import.meta.env.VITE_ADMIN_UID || "";
-    },
-    isLoggedIn(state) {
-      return !!state.user;
-    },
-    isAdmin(state) {
-      return !!state.user && !!this.adminUid && state.user.uid === this.adminUid;
-    },
+    isLoggedIn: (s) => !!s.user,
+    isAdmin: (s) => !!s.user && s.user.uid === import.meta.env.VITE_ADMIN_UID,
   },
 
   actions: {
     init() {
-      if (this.initialized) return;
+      // ✅ si déjà prêt, on ne refait rien
+      if (this.ready) return Promise.resolve(this.user);
 
-      this.initialized = true;
-      this.loading = true;
+      // ✅ si init déjà lancé, on renvoie la même promesse
+      if (this._initPromise) return this._initPromise;
 
-      onAuthStateChanged(auth, (user) => {
-        this.user = user || null;
-        this.loading = false;
+      this._initPromise = new Promise((resolve) => {
+        onAuthStateChanged(auth, (u) => {
+          this.user = u || null;
+          this.ready = true;
+          resolve(this.user);
+        });
       });
+
+      return this._initPromise;
+    },
+
+    async login(email, password) {
+      await signInWithEmailAndPassword(auth, email, password);
+      // l’état se mettra à jour via onAuthStateChanged
+    },
+
+    async logout() {
+      await signOut(auth);
+      // l’état se mettra à jour via onAuthStateChanged
     },
   },
 });
