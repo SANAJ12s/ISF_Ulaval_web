@@ -142,7 +142,7 @@
               <div class="event-badges">
                 <span v-if="currentEvent.category" class="pill">{{ currentEvent.category }}</span>
                 <span class="pill muted-pill">{{ formatDate(currentEvent.date) }}</span>
-                <span v-if="currentEvent.time" class="pill muted-pill">🕒 {{ currentEvent.time }}</span>
+                <span v-if="currentEvent.date" class="pill muted-pill"> {{ formatDate(currentEvent.date) }} </span>
               </div>
             </div>
 
@@ -258,7 +258,7 @@ export default {
     visibleUpcoming() {
       const today = this.todayYYYYMMDD();
 
-      const visible = this.events.filter((e) => e.isVisible !== false);
+      const visible = this.events.filter((e) => e.isVisible === true || e.isVisible === undefined);
       const upcoming = visible.filter((e) => (e.date || "") >= today);
 
       upcoming.sort((a, b) => {
@@ -308,8 +308,13 @@ export default {
 
   methods: {
     todayYYYYMMDD() {
-      return new Date().toLocaleDateString("fr-CA");
-    },
+      const d = new Date();
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, "0");
+      const day = String(d.getDate()).padStart(2, "0");
+      return `${y}-${m}-${day}`;
+}
+,
 
     formatDate(yyyyMmDd) {
       try {

@@ -4,10 +4,22 @@
       <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-4">
         <div>
           <h1 class="title">Gestion — Événements</h1>
-          <p class="subtitle">Crée et mets à jour les événements affichés sur la page d’accueil.</p>
+          <p class="subtitle">Crée, modifie et supprime les événements affichés sur la page d’accueil.</p>
         </div>
 
         <router-link class="btn-back" to="/admin">← Retour au dashboard</router-link>
+      </div>
+
+      <!-- Import initial (si collection vide) -->
+      <div class="card mb-4" v-if="!loading && events.length === 0">
+        <h2 class="h5 fw-bold mb-2">Importer des événements de base</h2>
+        <p class="muted mb-3">
+          Ta collection <code>events</code> est vide. Clique pour importer un exemple (tu peux en ajouter plusieurs).
+        </p>
+        <button class="btn-primary" @click="importInitial" :disabled="saving">
+          {{ saving ? "..." : "Importer maintenant" }}
+        </button>
+        <p v-if="error" class="mt-2 text-danger mb-0">{{ error }}</p>
       </div>
 
       <!-- Form -->
@@ -51,7 +63,12 @@
 
           <div class="col-12">
             <label class="form-label">Description (optionnel)</label>
-            <textarea v-model.trim="form.description" class="form-control" rows="3" placeholder="Infos, objectifs, inscription, etc."></textarea>
+            <textarea
+              v-model.trim="form.description"
+              class="form-control"
+              rows="3"
+              placeholder="Infos, objectifs, inscription, etc."
+            ></textarea>
           </div>
 
           <div class="col-md-6">
@@ -74,10 +91,13 @@
           </div>
 
           <div class="col-12 d-flex flex-wrap gap-2 align-items-center">
-            <button class="btn-primary" @click="save" :disabled="loading">
-              {{ editingId ? "Enregistrer" : "Ajouter" }}
+            <button class="btn-primary" @click="save" :disabled="saving">
+              {{ saving ? "..." : (editingId ? "Enregistrer" : "Ajouter") }}
             </button>
-            <button v-if="editingId" class="btn-ghost" @click="cancelEdit" :disabled="loading">Annuler</button>
+
+            <button v-if="editingId" class="btn-ghost" @click="cancelEdit" :disabled="saving">
+              Annuler
+            </button>
 
             <span v-if="error" class="text-danger ms-2">{{ error }}</span>
           </div>
@@ -91,7 +111,9 @@
           <span class="badge">{{ eventsSorted.length }} total</span>
         </div>
 
-        <div v-if="eventsSorted.length === 0" class="empty">
+        <div v-if="loading" class="empty">Chargement…</div>
+
+        <div v-else-if="eventsSorted.length === 0" class="empty">
           Aucun événement pour le moment. Ajoute-en un 👆
         </div>
 
@@ -103,9 +125,11 @@
                 <div class="meta">
                   <span v-if="e.category" class="pill">{{ e.category }}</span>
                   <span class="pill muted-pill">Ordre: {{ e.order ?? 999 }}</span>
+
                   <span class="pill muted-pill" v-if="e.date">
                     {{ formatDate(e.date) }} <span v-if="e.time">• {{ e.time }}</span>
                   </span>
+
                   <span class="pill" :class="e.isVisible ? 'ok' : 'off'">
                     {{ e.isVisible ? "Visible" : "Masqué" }}
                   </span>
@@ -122,14 +146,14 @@
             </div>
 
             <div class="actions">
-              <button class="btn-small" @click="edit(e)" :disabled="loading">Modifier</button>
-              <button class="btn-small danger" @click="removeEvent(e.id)" :disabled="loading">Supprimer</button>
+              <button class="btn-small" @click="edit(e)" :disabled="saving">Modifier</button>
+              <button class="btn-small danger" @click="removeEvent(e.id)" :disabled="saving">Supprimer</button>
             </div>
           </div>
         </div>
 
         <p class="hint">
-          ✅ Firestore branché (collection <code>events</code>). Home lira ces événements pour les afficher.
+          ✅ Firestore branché : <code>events</code> • Ajout / modif / suppression = persistant.
         </p>
       </div>
     </div>
@@ -137,7 +161,7 @@
 </template>
 
 <script setup>
-import { computed, onMounted, onUnmounted, reactive, ref } from "vue";
+import { computed, onMounted, onBeforeUnmount, reactive, ref } from "vue";
 import {
   addDoc,
   collection,
@@ -152,10 +176,12 @@ import {
 import { db } from "@/firebase";
 
 const events = ref([]);
-const loading = ref(false);
+const loading = ref(true);   // lecture snapshot
+const saving = ref(false);   // save/delete/import
 const error = ref("");
 
 const editingId = ref(null);
+let unsub = null;
 
 const form = reactive({
   title: "",
@@ -201,7 +227,7 @@ async function save() {
     return;
   }
 
-  loading.value = true;
+  saving.value = true;
   try {
     const payload = {
       title: form.title.trim(),
@@ -229,10 +255,10 @@ async function save() {
       resetForm();
     }
   } catch (e) {
-    error.value = e?.message || "Erreur Firestore";
     console.error(e);
+    error.value = e?.message || "Erreur Firestore";
   } finally {
-    loading.value = false;
+    saving.value = false;
   }
 }
 
@@ -258,23 +284,23 @@ function cancelEdit() {
 async function removeEvent(id) {
   error.value = "";
   if (!id) return;
+
   const ok = window.confirm("Supprimer cet événement ?");
   if (!ok) return;
 
-  loading.value = true;
+  saving.value = true;
   try {
     await deleteDoc(doc(db, "events", id));
     if (editingId.value === id) cancelEdit();
   } catch (e) {
-    error.value = e?.message || "Erreur suppression";
     console.error(e);
+    error.value = e?.message || "Erreur suppression";
   } finally {
-    loading.value = false;
+    saving.value = false;
   }
 }
 
 function formatDate(yyyyMmDd) {
-  // simple affichage FR
   try {
     const [y, m, d] = yyyyMmDd.split("-").map(Number);
     const dt = new Date(y, m - 1, d);
@@ -284,7 +310,41 @@ function formatDate(yyyyMmDd) {
   }
 }
 
-let unsub = null;
+/** Import 1 clic (si la collection est vide) */
+async function importInitial() {
+  error.value = "";
+  if (saving.value) return;
+  if (events.value.length > 0) return;
+
+  const initial = [
+    {
+      title: "Atelier CV — ISF ULaval",
+      category: "Atelier",
+      date: "2026-01-20",
+      time: "18:00",
+      location: "Université Laval",
+      description: "Atelier pour améliorer ton CV + conseils recrutement.",
+      link: "",
+      imageUrl: "",
+      order: 1,
+      isVisible: true,
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp(),
+    },
+  ];
+
+  saving.value = true;
+  try {
+    for (const item of initial) {
+      await addDoc(collection(db, "events"), item);
+    }
+  } catch (e) {
+    console.error(e);
+    error.value = e?.message || "Import impossible";
+  } finally {
+    saving.value = false;
+  }
+}
 
 onMounted(() => {
   loading.value = true;
@@ -303,187 +363,37 @@ onMounted(() => {
   );
 });
 
-onUnmounted(() => {
+onBeforeUnmount(() => {
   if (unsub) unsub();
 });
 </script>
 
 <style scoped>
-.admin {
-  background: #000;
-  min-height: 100vh;
-  color: #fff;
-  padding-top: 90px;
-}
-
-.title {
-  font-weight: 900;
-  margin: 0;
-}
-
-.subtitle {
-  margin: 6px 0 0;
-  color: rgba(255, 255, 255, 0.7);
-}
-
-.card {
-  background: #0b0b0b;
-  border: 1px solid rgba(255, 255, 255, 0.10);
-  border-radius: 18px;
-  padding: 20px;
-  box-shadow: 0 14px 40px rgba(0,0,0,0.35);
-}
-
-.btn-back {
-  text-decoration: none;
-  color: #fff;
-  font-weight: 800;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.10);
-  border-radius: 14px;
-  padding: 10px 14px;
-}
-
-.badge {
-  font-weight: 900;
-  padding: 8px 12px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.10);
-}
-
-.list {
-  display: grid;
-  gap: 12px;
-}
-
-.item {
-  display: flex;
-  gap: 14px;
-  justify-content: space-between;
-  align-items: flex-start;
-  padding: 14px;
-  border-radius: 14px;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-.info {
-  min-width: 0;
-  flex: 1;
-}
-
-.name {
-  font-weight: 900;
-  font-size: 18px;
-}
-
-.meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-top: 6px;
-  align-items: center;
-}
-
-.pill {
-  display: inline-block;
-  padding: 6px 10px;
-  border-radius: 999px;
-  font-weight: 900;
-  font-size: 13px;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.10);
-}
-
-.muted-pill {
-  color: rgba(255, 255, 255, 0.65);
-}
-
-.pill.ok {
-  background: rgba(34, 197, 94, 0.12);
-  border-color: rgba(34, 197, 94, 0.35);
-  color: #22c55e;
-}
-
-.pill.off {
-  background: rgba(239, 68, 68, 0.12);
-  border-color: rgba(239, 68, 68, 0.35);
-  color: #ef4444;
-}
-
-.desc {
-  margin: 10px 0 0;
-  color: rgba(255, 255, 255, 0.75);
-}
-
-.links {
-  margin-top: 10px;
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-  align-items: center;
-}
-
-.link {
-  color: #f97316;
-  font-weight: 800;
-  text-decoration: none;
-}
-
-.actions {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-  justify-content: flex-end;
-}
-
-.btn-primary {
-  border: none;
-  border-radius: 14px;
-  padding: 10px 14px;
-  font-weight: 900;
-  color: #000;
-  background: #f97316;
-}
-
-.btn-ghost {
-  border-radius: 14px;
-  padding: 10px 14px;
-  font-weight: 900;
-  color: #fff;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-}
-
-.btn-small {
-  border-radius: 12px;
-  padding: 8px 10px;
-  font-weight: 900;
-  color: #fff;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-}
-
-.btn-small.danger {
-  border-color: rgba(239, 68, 68, 0.45);
-  background: rgba(239, 68, 68, 0.12);
-}
-
-.empty {
-  padding: 16px;
-  border-radius: 14px;
-  border: 1px dashed rgba(255, 255, 255, 0.18);
-  color: rgba(255, 255, 255, 0.7);
-}
-
-.muted {
-  color: rgba(255, 255, 255, 0.6);
-  font-size: 13px;
-}
-.hint {
-  margin: 14px 0 0;
-  color: rgba(255, 255, 255, 0.65);
-  font-size: 14px;
-}
+/* (Ton style inchangé) */
+.admin { background:#000; min-height:100vh; color:#fff; padding-top:90px; }
+.title { font-weight:900; margin:0; }
+.subtitle { margin:6px 0 0; color:rgba(255,255,255,0.7); }
+.card { background:#0b0b0b; border:1px solid rgba(255,255,255,0.10); border-radius:18px; padding:20px; box-shadow:0 14px 40px rgba(0,0,0,0.35); }
+.btn-back { text-decoration:none; color:#fff; font-weight:800; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.10); border-radius:14px; padding:10px 14px; }
+.badge { font-weight:900; padding:8px 12px; border-radius:999px; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.10); }
+.list { display:grid; gap:12px; }
+.item { display:flex; gap:14px; justify-content:space-between; align-items:flex-start; padding:14px; border-radius:14px; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); }
+.info { min-width:0; flex:1; }
+.name { font-weight:900; font-size:18px; }
+.meta { display:flex; flex-wrap:wrap; gap:10px; margin-top:6px; align-items:center; }
+.pill { display:inline-block; padding:6px 10px; border-radius:999px; font-weight:900; font-size:13px; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.10); }
+.muted-pill { color:rgba(255,255,255,0.65); }
+.pill.ok { background:rgba(34,197,94,0.12); border-color:rgba(34,197,94,0.35); color:#22c55e; }
+.pill.off { background:rgba(239,68,68,0.12); border-color:rgba(239,68,68,0.35); color:#ef4444; }
+.desc { margin:10px 0 0; color:rgba(255,255,255,0.75); }
+.links { margin-top:10px; display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+.link { color:#f97316; font-weight:800; text-decoration:none; }
+.actions { display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end; }
+.btn-primary { border:none; border-radius:14px; padding:10px 14px; font-weight:900; color:#000; background:#f97316; }
+.btn-ghost { border-radius:14px; padding:10px 14px; font-weight:900; color:#fff; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.12); }
+.btn-small { border-radius:12px; padding:8px 10px; font-weight:900; color:#fff; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.12); }
+.btn-small.danger { border-color:rgba(239,68,68,0.45); background:rgba(239,68,68,0.12); }
+.empty { padding:16px; border-radius:14px; border:1px dashed rgba(255,255,255,0.18); color:rgba(255,255,255,0.7); }
+.muted { color:rgba(255,255,255,0.6); font-size:13px; }
+.hint { margin:14px 0 0; color:rgba(255,255,255,0.65); font-size:14px; }
 </style>

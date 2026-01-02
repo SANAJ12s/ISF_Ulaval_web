@@ -1,475 +1,302 @@
 <template>
-  <div class="documents-page">
+  <main class="docs-page">
     <!-- HERO -->
-    <section class="hero-section">
+    <section class="hero">
       <div class="hero-overlay"></div>
-      <div class="container hero-inner">
-        <div class="row align-items-center min-vh-75 py-5">
-          <div class="col-lg-9 mx-auto text-center">
-            <h1 class="display-4 fw-bold mb-3 text-white">Documents</h1>
-            <p class="lead mb-4 text-white-50">
-              Retrouvez ici nos documents officiels (charte, règlements, rapports, etc.).
-            </p>
-
-            <div class="hero-pill">
-              <i class="fas fa-file-pdf me-2"></i>
-              <span>{{ heroLabel }}</span>
-            </div>
-          </div>
-        </div>
+      <div class="container hero-inner text-center">
+        <h1 class="display-4 fw-bold text-white mb-2">Documents</h1>
+        <p class="lead text-white-50 mb-0">
+          Consulte nos documents officiels, rapports et ressources (PDF).
+        </p>
       </div>
     </section>
 
-    <!-- LISTE DOCS -->
-    <section class="py-5 section-dark">
+    <section class="section-dark py-5">
       <div class="container">
-        <div class="row">
-          <div class="col-lg-9 mx-auto">
-            <div class="intro-card card-dark">
-              <h2 class="h4 fw-bold mb-2 text-white">Documents officiels</h2>
-              <p class="mb-0 text-white-50">
-                Cliquez sur un document pour l’ouvrir. Si ton navigateur bloque l’affichage PDF,
-                utilise <strong>PDF direct</strong> (ou <strong>Google</strong> si le lien est public).
-              </p>
-            </div>
-          </div>
+        <!-- intro -->
+        <div class="intro">
+          <h2 class="intro-title">Bibliothèque de documents</h2>
+          <p class="intro-sub">
+            Clique sur un document pour l’ouvrir en plein écran. Tu peux aussi l’ouvrir dans un nouvel onglet.
+          </p>
         </div>
 
-        <div class="row mt-4 g-4">
-          <div class="col-lg-9 mx-auto">
-            <div class="docs-grid">
-              <button
-                v-for="doc in docs"
-                :key="doc.id"
-                class="doc-item"
-                type="button"
-                @click="openDoc(doc)"
-              >
-                <div class="doc-left">
-                  <div class="doc-icon">
-                    <i class="fas fa-file-pdf"></i>
-                  </div>
-                  <div class="doc-meta">
-                    <div class="doc-title">{{ doc.title }}</div>
-                    <div class="doc-sub">
-                      {{ doc.subtitle }}
-                      <span v-if="doc.maxPages"> — {{ doc.maxPages }} pages</span>
-                    </div>
-                  </div>
-                </div>
-                <div class="doc-right">
-                  <span class="doc-open">
-                    Ouvrir <i class="fas fa-arrow-right ms-2"></i>
-                  </span>
-                </div>
-              </button>
+        <!-- loading / empty -->
+        <div v-if="loading" class="placeholder">
+          <p class="mb-0 text-white-50">Chargement…</p>
+        </div>
 
-              <div v-if="docs.length === 0" class="empty">
-                Aucun document pour le moment.
+        <div v-else-if="docs.length === 0" class="placeholder">
+          <p class="mb-0 text-white-50">Aucun document pour le moment.</p>
+        </div>
+
+        <div v-else class="layout">
+          <!-- list -->
+          <aside class="list">
+            <button
+              v-for="d in docs"
+              :key="d.id"
+              class="doc-item"
+              :class="{ active: selected?.id === d.id }"
+              type="button"
+              @click="select(d)"
+            >
+              <div class="doc-title">{{ d.title }}</div>
+              <div class="doc-meta">
+                <span v-if="d.category" class="pill">{{ d.category }}</span>
+                <span class="pill muted-pill">Ordre: {{ d.order ?? 999 }}</span>
               </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
+              <p v-if="d.description" class="doc-desc">{{ d.description }}</p>
+            </button>
+          </aside>
 
-    <!-- VIEWER -->
-    <section v-if="activeDoc" class="py-5 section-dark">
-      <div class="container">
-        <div class="row">
-          <div class="col-lg-10 mx-auto">
-            <div class="viewer card-dark">
-              <div class="viewer-head">
+          <!-- viewer -->
+          <section class="viewer">
+            <div v-if="!selected" class="viewer-empty">
+              <p class="mb-0 text-white-50">Sélectionne un document à gauche 👈</p>
+            </div>
+
+            <div v-else class="viewer-card">
+              <div class="viewer-top">
                 <div class="viewer-title">
-                  <i class="fas fa-file-pdf me-2 text-danger"></i>
-                  <span class="fw-bold">{{ activeDoc.title }}</span>
-                  <span class="ms-2 text-white-50">— Page {{ page }} / {{ activeDoc.maxPages }}</span>
+                  <div class="big">{{ selected.title }}</div>
+                  <div class="small" v-if="selected.category">{{ selected.category }}</div>
                 </div>
 
                 <div class="viewer-actions">
-                  <button class="btn btn-sm btn-outline-light" @click="prevPage" :disabled="page <= 1">
-                    <i class="fas fa-chevron-left me-1"></i> Prev
-                  </button>
-                  <button class="btn btn-sm btn-outline-light" @click="nextPage" :disabled="page >= activeDoc.maxPages">
-                    Next <i class="fas fa-chevron-right ms-1"></i>
-                  </button>
-
-                  <div class="vr mx-2"></div>
-
-                  <button class="btn btn-sm btn-outline-warning" @click="zoomOut" :disabled="zoom <= 0.6">
-                    <i class="fas fa-search-minus"></i>
-                  </button>
-                  <button class="btn btn-sm btn-outline-warning" @click="zoomIn" :disabled="zoom >= 1.6">
-                    <i class="fas fa-search-plus"></i>
-                  </button>
-
-                  <!-- Google viewer seulement si URL externe -->
-                  <a
-                    v-if="activeDoc && activeDoc.src && activeDoc.src.startsWith('http')"
-                    class="btn btn-sm btn-warning ms-2"
-                    :href="googleViewerUrl"
-                    target="_blank"
-                    rel="noopener"
-                  >
-                    <i class="fas fa-external-link-alt me-1"></i> Ouvrir dans Google
+                  <a class="btn-open" :href="selected.url" target="_blank" rel="noreferrer">
+                    Ouvrir dans un onglet ↗
                   </a>
-
-                  <a
-                    class="btn btn-sm btn-outline-light ms-2"
-                    :href="activeDoc.src"
-                    target="_blank"
-                    rel="noopener"
-                    title="Ouvrir le PDF directement"
-                  >
-                    PDF direct
-                  </a>
-
-                  <button class="btn btn-sm btn-outline-light ms-2" @click="closeDoc" title="Fermer">
-                    <i class="fas fa-times"></i>
-                  </button>
                 </div>
               </div>
 
-              <div class="viewer-body">
-                <!-- Viewer natif -->
-                <iframe class="pdf-embed" :src="pdfUrl" title="PDF viewer (natif)"></iframe>
-
-                <!-- Hint overlay (fermeture possible) -->
-                <div v-if="showHint" class="viewer-hint">
-                  <div class="hint-card">
-                    <div class="fw-bold mb-1">Si tu ne vois rien :</div>
-                    <div class="text-white-50 mb-3">
-                      Ton navigateur bloque peut-être l’affichage PDF dans la page.
-                      Utilise <strong>PDF direct</strong>
-                      <span v-if="activeDoc.src && activeDoc.src.startsWith('http')">
-                        ou <strong>Ouvrir dans Google</strong>
-                      </span>.
-                    </div>
-                    <div class="d-flex gap-2 flex-wrap">
-                      <a class="btn btn-outline-light btn-sm" :href="activeDoc.src" target="_blank" rel="noopener">
-                        PDF direct
-                      </a>
-
-                      <a
-                        v-if="activeDoc && activeDoc.src && activeDoc.src.startsWith('http')"
-                        class="btn btn-warning btn-sm"
-                        :href="googleViewerUrl"
-                        target="_blank"
-                        rel="noopener"
-                      >
-                        Ouvrir dans Google
-                      </a>
-
-                      <button class="btn btn-outline-light btn-sm" @click="showHint = false">
-                        OK
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div class="viewer-foot">
-                <div class="page-jump">
-                  <label class="text-white-50 me-2 mb-0">Aller à :</label>
-                  <input
-                    type="number"
-                    class="form-control form-control-sm jump-input"
-                    :min="1"
-                    :max="activeDoc.maxPages"
-                    v-model.number="jump"
-                    @keyup.enter="goToJump"
-                  />
-                  <button class="btn btn-sm btn-outline-light ms-2" @click="goToJump">Go</button>
-                </div>
-                <div class="text-white-50 small">
-                  Astuce : le rendu page/zoom dépend du navigateur (iframe PDF).
+              <div class="viewer-frame">
+                <!-- embed iframe pdf -->
+                <iframe
+                  v-if="selected.url"
+                  :src="pdfSrc(selected.url)"
+                  title="PDF viewer"
+                  frameborder="0"
+                />
+                <div v-else class="viewer-empty">
+                  <p class="mb-0 text-white-50">⚠️ Aucun lien PDF fourni pour ce document.</p>
                 </div>
               </div>
             </div>
-
-            <div class="mt-3 text-center text-white-50 small">
-              Si tu es en <strong>localhost</strong>, Google viewer peut ne pas afficher.
-              Dans ce cas utilise <strong>PDF direct</strong>.
-            </div>
-          </div>
+          </section>
         </div>
+
+        <p class="hint">
+          📌 Les documents affichés viennent de Firestore (collection <code>documents</code>) et filtrent <code>isVisible</code>.
+        </p>
       </div>
     </section>
-
-    <!-- CTA -->
-    <section class="py-5 cta-section">
-      <div class="container">
-        <div class="row">
-          <div class="col-lg-9 mx-auto text-center">
-            <h2 class="display-6 fw-bold text-white mb-3">Besoin d’un document ?</h2>
-            <p class="lead text-white-50 mb-4">
-              Écris-nous et on pourra ajouter d’autres documents officiels sur cette page.
-            </p>
-            <router-link to="/nous-joindre" class="btn btn-light btn-lg">
-              <i class="fas fa-envelope me-2"></i> Nous contacter
-            </router-link>
-          </div>
-        </div>
-      </div>
-    </section>
-  </div>
+  </main>
 </template>
 
 <script>
-import { useDocumentsStore } from "@/stores/documents";
+import { collection, onSnapshot, orderBy, query } from "firebase/firestore";
+import { db } from "@/firebase";
 
 export default {
   name: "Documents",
   data() {
     return {
-      activeDoc: null,
-      page: 1,
-      zoom: 1.0,
-      jump: 1,
-      showHint: true,
+      loading: true,
+      raw: [],
+      selected: null,
+      unsub: null,
     };
   },
 
   computed: {
-    store() {
-      return useDocumentsStore();
-    },
-
     docs() {
-      return this.store.visibleDocs.map((d) => ({
-        id: d.id,
-        title: d.title,
-        subtitle: d.description || (d.category ? `${d.category} — PDF` : "Document — PDF"),
-        src: d.url,
-        maxPages: d.maxPages || 1,
-      }));
-    },
-
-    heroLabel() {
-      // Affiche le premier doc (ordre Firestore) si dispo, sinon texte neutre
-      const first = this.docs[0];
-      if (!first) return "Documents — PDF";
-      const pages = first.maxPages ? ` — ${first.maxPages} pages` : "";
-      return `${first.title}${pages}`;
-    },
-
-    pdfUrl() {
-      if (!this.activeDoc) return "";
-      const z = Math.round(this.zoom * 100);
-      return `${this.activeDoc.src}#page=${this.page}&zoom=${z}&view=FitH`;
-    },
-
-    googleViewerUrl() {
-      if (!this.activeDoc) return "#";
-      const absolute = this.activeDoc.src?.startsWith("http")
-        ? this.activeDoc.src
-        : `${window.location.origin}${this.activeDoc.src}`;
-      return `https://drive.google.com/viewerng/viewer?embedded=true&url=${encodeURIComponent(absolute)}`;
+      return (this.raw || [])
+        .filter((d) => d.isVisible !== false)
+        .sort((a, b) => (a.order ?? 999) - (b.order ?? 999))
+        .map((d) => ({
+          id: d.id,
+          title: d.title || "Document",
+          category: d.category || "",
+          url: d.url || "",
+          description: d.description || "",
+          order: d.order ?? 999,
+        }));
     },
   },
 
-  created() {
-    this.store.subscribe();
+  mounted() {
+    const q = query(collection(db, "documents"), orderBy("order", "asc"));
+    this.unsub = onSnapshot(
+      q,
+      (snap) => {
+        this.raw = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+        this.loading = false;
+
+        // auto-select first doc
+        if (!this.selected && this.docs.length) this.selected = this.docs[0];
+        // keep selection if deleted
+        if (this.selected && !this.docs.find((x) => x.id === this.selected.id)) {
+          this.selected = this.docs[0] || null;
+        }
+      },
+      (e) => {
+        console.error(e);
+        this.loading = false;
+        this.raw = [];
+      }
+    );
+  },
+
+  beforeUnmount() {
+    if (this.unsub) this.unsub();
   },
 
   methods: {
-    openDoc(doc) {
-      this.activeDoc = doc;
-      this.page = 1;
-      this.zoom = 1.0;
-      this.jump = 1;
-      this.showHint = true;
-
-      this.$nextTick(() => {
-        const el = document.querySelector(".viewer");
-        if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
-      });
+    select(d) {
+      this.selected = d;
     },
 
-    closeDoc() {
-      this.activeDoc = null;
-      this.page = 1;
-      this.jump = 1;
-    },
-
-    nextPage() {
-      if (!this.activeDoc) return;
-      if (this.page < this.activeDoc.maxPages) {
-        this.page += 1;
-        this.jump = this.page;
-      }
-    },
-
-    prevPage() {
-      if (!this.activeDoc) return;
-      if (this.page > 1) {
-        this.page -= 1;
-        this.jump = this.page;
-      }
-    },
-
-    zoomIn() {
-      this.zoom = Math.min(1.6, +(this.zoom + 0.1).toFixed(1));
-    },
-
-    zoomOut() {
-      this.zoom = Math.max(0.6, +(this.zoom - 0.1).toFixed(1));
-    },
-
-    goToJump() {
-      if (!this.activeDoc) return;
-      const n = Number(this.jump);
-      if (Number.isNaN(n)) return;
-      const clamped = Math.max(1, Math.min(this.activeDoc.maxPages, n));
-      this.page = clamped;
-      this.jump = clamped;
+    // Force PDF to show viewer (works for direct pdf links, and local /public)
+    pdfSrc(url) {
+      // basic: if you want page param you can append #page=1
+      return `${url}#toolbar=1&navpanes=0&scrollbar=1`;
     },
   },
 };
 </script>
 
 <style scoped>
-.documents-page { background:#000; color:#fff; }
+.docs-page { background:#000; color:#fff; min-height:100vh; }
 
-/* Hero */
-.hero-section{
-  position:relative;
-  padding-top:80px;
-  background:
-    radial-gradient(circle at 15% 20%, rgba(249,115,22,0.25), transparent 45%),
-    radial-gradient(circle at 80% 20%, rgba(255,255,255,0.08), transparent 40%),
-    #000;
+/* HERO */
+.hero {
+  position: relative;
+  padding: 120px 0 70px;
+  background-image: url("/ulaval.jpg");
+  background-size: cover;
+  background-position: center;
 }
-.hero-overlay{ position:absolute; inset:0; background:rgba(0,0,0,0.35); }
-.hero-inner{ position:relative; z-index:1; }
-.min-vh-75{ min-height:60vh; }
-.hero-pill{
-  display:inline-flex; align-items:center; gap:8px;
-  padding:10px 14px; border-radius:999px;
-  background:rgba(255,255,255,0.08);
-  border:1px solid rgba(255,255,255,0.12);
-  color:rgba(255,255,255,0.9);
-}
+.hero-overlay { position:absolute; inset:0; background: rgba(0,0,0,0.62); }
+.hero-inner { position:relative; z-index:1; }
 
-/* Sections */
-.section-dark{ background:#000; }
-.cta-section{
-  background: linear-gradient(135deg, rgba(249,115,22,0.30) 0%, rgba(0,0,0,1) 60%);
-  border-top:1px solid rgba(255,255,255,0.08);
-}
+.section-dark { background:#000; }
 
-/* Cards */
-.card-dark{
-  background:#0b0b0b;
-  border:1px solid rgba(255,255,255,0.08);
-  border-radius:16px;
-  box-shadow:0 14px 40px rgba(0,0,0,0.35);
+.intro{
+  max-width: 980px;
+  margin: 0 auto 26px;
+  text-align: center;
+}
+.intro-title{ font-weight: 900; font-size: 2rem; margin:0 0 8px; }
+.intro-sub{ margin:0; color: rgba(255,255,255,0.70); line-height: 1.8; }
+
+.placeholder{
+  max-width: 980px;
+  margin: 0 auto;
+  border: 1px dashed rgba(255,255,255,0.18);
+  border-radius: 16px;
+  padding: 22px;
+  text-align: center;
 }
 
-/* Intro */
-.intro-card{ padding:20px 22px; }
+.layout{
+  display:grid;
+  grid-template-columns: 380px 1fr;
+  gap: 16px;
+  align-items: start;
+}
 
-/* Docs list */
-.docs-grid{ display:grid; gap:14px; }
+.list{
+  display:grid;
+  gap: 12px;
+}
+
 .doc-item{
-  width:100%;
-  background:rgba(255,255,255,0.04);
-  border:1px solid rgba(255,255,255,0.10);
-  border-radius:16px;
-  padding:16px 18px;
-  display:flex; align-items:center; justify-content:space-between;
-  color:#fff; text-align:left;
-  transition:transform .2s ease, border-color .2s ease, background .2s ease;
+  text-align:left;
+  border-radius: 18px;
+  background: #0b0b0b;
+  border: 1px solid rgba(255,255,255,0.10);
+  padding: 14px;
+  color:#fff;
+  cursor:pointer;
+  transition: transform .15s ease, border-color .2s ease, background .2s ease;
 }
 .doc-item:hover{
-  transform:translateY(-2px);
-  background:rgba(255,255,255,0.06);
-  border-color:rgba(249,115,22,0.35);
+  transform: translateY(-2px);
+  border-color: rgba(249,115,22,0.40);
 }
-.doc-left{ display:flex; align-items:center; gap:14px; }
-.doc-icon{
-  width:44px; height:44px; border-radius:12px;
-  display:grid; place-items:center;
-  background:rgba(249,115,22,0.18);
-  border:1px solid rgba(249,115,22,0.25);
-  color:#ffb37a;
+.doc-item.active{
+  border-color: rgba(249,115,22,0.65);
+  background: rgba(249,115,22,0.10);
 }
-.doc-title{ font-weight:900; }
-.doc-sub{ color:rgba(255,255,255,0.55); font-size:.92rem; }
-.doc-open{ color:rgba(255,255,255,0.85); font-weight:800; }
+.doc-title{ font-weight: 900; font-size: 16px; }
+.doc-meta{ display:flex; flex-wrap:wrap; gap:8px; margin-top: 8px; }
+.pill{
+  display:inline-block;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-weight: 900;
+  font-size: 12px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.10);
+}
+.muted-pill{ color: rgba(255,255,255,0.70); }
+.doc-desc{ margin: 10px 0 0; color: rgba(255,255,255,0.72); line-height: 1.65; }
 
-.empty{
-  padding:16px 18px;
-  border-radius:16px;
-  border:1px dashed rgba(255,255,255,0.18);
-  color:rgba(255,255,255,0.7);
+.viewer{ position: sticky; top: 96px; }
+.viewer-empty{
+  border-radius: 18px;
+  border: 1px dashed rgba(255,255,255,0.18);
+  padding: 22px;
+  text-align:center;
 }
 
-/* Viewer */
-.viewer{ overflow:hidden; }
-.viewer-head{
-  display:flex; align-items:center; justify-content:space-between;
-  gap:14px;
-  padding:14px 16px;
-  border-bottom:1px solid rgba(255,255,255,0.08);
+.viewer-card{
+  border-radius: 18px;
+  background: #0b0b0b;
+  border: 1px solid rgba(255,255,255,0.10);
+  overflow:hidden;
+  box-shadow: 0 14px 40px rgba(0,0,0,0.35);
 }
-.viewer-title{ display:flex; align-items:center; flex-wrap:wrap; gap:6px; }
-.viewer-actions{ display:flex; align-items:center; flex-wrap:wrap; gap:8px; }
 
-.viewer-body{
-  position:relative;
-  height:min(85vh, 950px);
+.viewer-top{
+  padding: 14px 14px 12px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  display:flex;
+  align-items:center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.viewer-title .big{ font-weight: 900; font-size: 16px; }
+.viewer-title .small{ color: rgba(255,255,255,0.65); font-weight: 800; margin-top: 2px; font-size: 12px; }
+
+.btn-open{
+  color:#000;
+  background:#f97316;
+  font-weight: 900;
+  text-decoration:none;
+  padding: 10px 12px;
+  border-radius: 14px;
+}
+
+.viewer-frame{
+  height: min(78vh, 760px);
   background:#050505;
 }
-
-.pdf-embed{
-  width:100%;
-  height:100%;
-  display:block;
-  border:0;
+.viewer-frame iframe{
+  width: 100%;
+  height: 100%;
+  border: 0;
 }
 
-/* hint overlay */
-.viewer-hint{
-  pointer-events:none;
-  position:absolute;
-  inset:0;
-  display:flex;
-  align-items:flex-end;
-  justify-content:center;
-  padding:14px;
-}
-.hint-card{
-  pointer-events:auto;
-  width:min(720px, 100%);
-  background:rgba(0,0,0,0.72);
-  border:1px solid rgba(255,255,255,0.14);
-  border-radius:14px;
-  padding:12px 14px;
-  backdrop-filter: blur(6px);
+.hint{
+  margin: 18px 0 0;
+  text-align:center;
+  color: rgba(255,255,255,0.65);
 }
 
-.viewer-foot{
-  padding:12px 16px;
-  border-top:1px solid rgba(255,255,255,0.08);
-  display:flex; align-items:center; justify-content:space-between;
-  gap:12px; flex-wrap:wrap;
-}
-.page-jump{ display:flex; align-items:center; }
-.jump-input{
-  width:90px;
-  background:rgba(255,255,255,0.06);
-  border:1px solid rgba(255,255,255,0.12);
-  color:#fff;
-}
-.jump-input:focus{
-  box-shadow:none;
-  border-color:rgba(249,115,22,0.45);
-}
-
-@media (max-width:768px){
-  .hero-section{ padding-top:60px; }
-  .display-4{ font-size:2rem; }
-  .viewer-body{ height:75vh; }
+@media (max-width: 992px){
+  .layout{ grid-template-columns: 1fr; }
+  .viewer{ position: static; }
 }
 </style>

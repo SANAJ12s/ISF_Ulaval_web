@@ -15,7 +15,7 @@ export const useAdminStore = defineStore("admin", {
 
     isAdmin: (s) => {
       const adminUid = import.meta.env.VITE_ADMIN_UID;
-      if (!adminUid) return false; // ✅ évite comparaison avec undefined
+      if (!adminUid) return false; 
       return !!s.user && s.user.uid === adminUid;
     },
   },
@@ -31,8 +31,6 @@ export const useAdminStore = defineStore("admin", {
           this.ready = true;
           resolve(this.user);
 
-          // ✅ on a récupéré l’état initial, on peut se désabonner
-          // (si tu veux suivre les changements live, enlève ces 2 lignes)
           unsubscribe();
         });
       });

@@ -16,7 +16,10 @@
         <p class="muted mb-3">
           Ta base Firestore est vide. Clique pour importer la charte (et autres docs si tu en ajoutes).
         </p>
-        <button class="btn-primary" @click="importInitial">Importer maintenant</button>
+        <button class="btn-primary" @click="importInitial" :disabled="saving">
+          {{ saving ? "..." : "Importer maintenant" }}
+        </button>
+        <p v-if="error" class="mt-2 text-danger mb-0">{{ error }}</p>
       </div>
 
       <!-- Form -->
@@ -31,29 +34,44 @@
 
           <div class="col-md-6">
             <label class="form-label">Catégorie (optionnel)</label>
-            <input v-model.trim="form.category" class="form-control" placeholder="Ex: Officiel / Recrutement / Rapports" />
+            <input
+              v-model.trim="form.category"
+              class="form-control"
+              placeholder="Ex: Officiel / Recrutement / Rapports"
+            />
           </div>
 
           <div class="col-12">
             <label class="form-label">Lien du PDF (URL)</label>
-            <input v-model.trim="form.url" class="form-control" placeholder="https://..." />
+            <input v-model.trim="form.url" class="form-control" placeholder="https://... ou /documents/charte-isf.pdf" />
             <small class="muted">
-              Pour l’instant: colle un lien public (Drive/Dropbox/site) OU un fichier local (ex: /documents/charte-isf.pdf).
+              Pour l’instant : colle un lien public (Drive/Dropbox/site) OU un fichier local (ex: /documents/charte-isf.pdf).
             </small>
           </div>
 
           <div class="col-12">
             <label class="form-label">Description (optionnel)</label>
-            <textarea v-model.trim="form.description" class="form-control" rows="3" placeholder="Une phrase pour expliquer le document..."></textarea>
+            <textarea
+              v-model.trim="form.description"
+              class="form-control"
+              rows="3"
+              placeholder="Une phrase pour expliquer le document..."
+            ></textarea>
           </div>
 
-          <div class="col-md-6">
+          <div class="col-md-4">
             <label class="form-label">Ordre d’affichage</label>
             <input v-model.number="form.order" type="number" class="form-control" placeholder="1" />
             <small class="muted">Plus petit = affiché en premier.</small>
           </div>
 
-          <div class="col-md-6">
+          <div class="col-md-4">
+            <label class="form-label">Pages (optionnel)</label>
+            <input v-model.number="form.maxPages" type="number" class="form-control" placeholder="29" />
+            <small class="muted">Utile si tu affiches “Page X / Y”.</small>
+          </div>
+
+          <div class="col-md-4">
             <label class="form-label">Afficher sur la page</label>
             <select v-model="form.isVisible" class="form-select">
               <option :value="true">Oui</option>
@@ -63,9 +81,11 @@
 
           <div class="col-12 d-flex flex-wrap gap-2">
             <button class="btn-primary" @click="save" :disabled="saving">
-              {{ editingId ? "Enregistrer" : "Ajouter" }}
+              {{ saving ? "..." : (editingId ? "Enregistrer" : "Ajouter") }}
             </button>
-            <button v-if="editingId" class="btn-ghost" @click="cancelEdit">Annuler</button>
+            <button v-if="editingId" class="btn-ghost" @click="cancelEdit" :disabled="saving">
+              Annuler
+            </button>
           </div>
 
           <p v-if="error" class="mt-2 text-danger mb-0">{{ error }}</p>
@@ -93,6 +113,7 @@
                 <div class="meta">
                   <span v-if="d.category" class="pill">{{ d.category }}</span>
                   <span class="pill muted-pill">Ordre: {{ d.order ?? 999 }}</span>
+                  <span v-if="d.maxPages" class="pill muted-pill">Pages: {{ d.maxPages }}</span>
                   <span class="pill" :class="d.isVisible ? 'ok' : 'off'">
                     {{ d.isVisible ? "Visible" : "Masqué" }}
                   </span>
@@ -114,9 +135,7 @@
           </div>
         </div>
 
-        <p class="hint">
-          ✅ Maintenant c’est persistant : ajout / modification / suppression = Firestore.
-        </p>
+        <p class="hint">✅ Persistant : ajout / modification / suppression = Firestore.</p>
       </div>
     </div>
   </main>
@@ -134,6 +153,7 @@ import {
   query,
   orderBy,
   updateDoc,
+  serverTimestamp,
 } from "firebase/firestore";
 
 const loading = ref(true);
@@ -151,6 +171,7 @@ const form = reactive({
   url: "",
   description: "",
   order: 1,
+  maxPages: null,
   isVisible: true,
 });
 
@@ -164,6 +185,7 @@ function resetForm() {
   form.url = "";
   form.description = "";
   form.order = 1;
+  form.maxPages = null;
   form.isVisible = true;
 }
 
@@ -177,7 +199,7 @@ onMounted(() => {
     },
     (e) => {
       console.error(e);
-      error.value = "Erreur Firestore (documents). Vérifie les règles/permissions.";
+      error.value = "Erreur Firestore (documents). Vérifie rules + config Firebase.";
       loading.value = false;
     }
   );
@@ -189,7 +211,10 @@ onBeforeUnmount(() => {
 
 async function save() {
   error.value = "";
-  if (!form.title) return;
+  if (!form.title) {
+    error.value = "Le titre est obligatoire.";
+    return;
+  }
 
   saving.value = true;
   try {
@@ -199,7 +224,9 @@ async function save() {
       url: form.url || "",
       description: form.description || "",
       order: Number.isFinite(form.order) ? form.order : 999,
+      maxPages: Number.isFinite(form.maxPages) ? form.maxPages : null,
       isVisible: !!form.isVisible,
+      updatedAt: serverTimestamp(),
     };
 
     if (editingId.value) {
@@ -207,7 +234,10 @@ async function save() {
       editingId.value = null;
       resetForm();
     } else {
-      await addDoc(collection(db, "documents"), payload);
+      await addDoc(collection(db, "documents"), {
+        ...payload,
+        createdAt: serverTimestamp(),
+      });
       resetForm();
     }
   } catch (e) {
@@ -225,6 +255,7 @@ function edit(d) {
   form.url = d.url || "";
   form.description = d.description || "";
   form.order = Number.isFinite(d.order) ? d.order : 999;
+  form.maxPages = Number.isFinite(d.maxPages) ? d.maxPages : null;
   form.isVisible = d.isVisible !== false;
 }
 
@@ -244,18 +275,23 @@ async function removeDoc(id) {
   }
 }
 
-/** ✅ Import 1 clic des docs existants (ajoute tes docs ici) */
+/** Import 1 clic (anti-doublon simple) */
 async function importInitial() {
   error.value = "";
+  if (saving.value) return;
+  if (documents.value.length > 0) return;
+
   const initial = [
     {
       title: "Charte ISF",
       category: "Officiel",
-      url: "/documents/charte-isf.pdf", // ton PDF local (public/)
+      url: "/documents/charte-isf.pdf",
       description: "Document officiel — Charte ISF ULaval",
       order: 1,
       isVisible: true,
-      maxPages: 29, // optionnel si tu veux
+      maxPages: 29,
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp(),
     },
   ];
 

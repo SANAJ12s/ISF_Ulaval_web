@@ -29,9 +29,33 @@
             </select>
           </div>
 
-          <div class="col-md-6">
-            <label class="form-label">Image (URL)</label>
-            <input v-model.trim="form.image" class="form-control" placeholder="https://..." />
+          <!-- ✅ Images[] -->
+          <div class="col-12">
+            <label class="form-label">Images (URLs)</label>
+
+            <div class="d-flex gap-2 flex-wrap">
+              <input
+                v-model.trim="imageInput"
+                class="form-control"
+                placeholder="https://... ou /projets/photo.jpg"
+              />
+              <button class="btn-primary" type="button" @click="addImage" :disabled="saving">
+                Ajouter
+              </button>
+            </div>
+
+            <small class="muted d-block mt-2">
+              Tu peux ajouter plusieurs images. La 1re sera utilisée comme “cover”.
+            </small>
+
+            <div v-if="form.images.length" class="img-list mt-3">
+              <div v-for="(img, i) in form.images" :key="img + i" class="img-item">
+                <span class="muted">🖼️ {{ shorten(img) }}</span>
+                <button class="btn-small danger" type="button" @click="removeImage(i)" :disabled="saving">
+                  Supprimer
+                </button>
+              </div>
+            </div>
           </div>
 
           <div class="col-md-6">
@@ -107,7 +131,11 @@
 
               <div class="links">
                 <a v-if="p.link" class="link" :href="p.link" target="_blank" rel="noreferrer">Ouvrir le lien</a>
-                <span v-if="p.image" class="muted">🖼️ Image: {{ shorten(p.image) }}</span>
+
+                <span v-if="firstImage(p)" class="muted">🖼️ Cover: {{ shorten(firstImage(p)) }}</span>
+                <span v-if="(p.images?.length || 0) > 1" class="muted">
+                  + {{ p.images.length - 1 }} autres image(s)
+                </span>
               </div>
             </div>
 
@@ -128,7 +156,17 @@
 
 <script setup>
 import { computed, onBeforeUnmount, onMounted, reactive, ref } from "vue";
-import { addDoc, collection, deleteDoc, doc, onSnapshot, orderBy, query, serverTimestamp, updateDoc } from "firebase/firestore";
+import {
+  addDoc,
+  collection,
+  deleteDoc,
+  doc,
+  onSnapshot,
+  orderBy,
+  query,
+  serverTimestamp,
+  updateDoc,
+} from "firebase/firestore";
 import { db } from "@/firebase";
 
 const loading = ref(true);
@@ -140,11 +178,13 @@ let unsub = null;
 
 const editingId = ref(null);
 
+const imageInput = ref("");
+
 const form = reactive({
   title: "",
   status: "En cours",
   summary: "",
-  image: "",
+  images: [], // ✅ images[]
   link: "",
   order: 1,
   isVisible: true,
@@ -158,10 +198,11 @@ function resetForm() {
   form.title = "";
   form.status = "En cours";
   form.summary = "";
-  form.image = "";
+  form.images = [];
   form.link = "";
   form.order = 1;
   form.isVisible = true;
+  imageInput.value = "";
 }
 
 onMounted(() => {
@@ -169,7 +210,12 @@ onMounted(() => {
   unsub = onSnapshot(
     q,
     (snap) => {
-      projects.value = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+      projects.value = snap.docs.map((d) => {
+        const data = d.data() || {};
+        // ✅ compat: si ancien champ image existe, on le met dans images[]
+        const imgs = Array.isArray(data.images) ? data.images : (data.image ? [data.image] : []);
+        return { id: d.id, ...data, images: imgs };
+      });
       loading.value = false;
     },
     (e) => {
@@ -184,21 +230,43 @@ onBeforeUnmount(() => {
   if (unsub) unsub();
 });
 
+function addImage() {
+  err.value = "";
+  const url = (imageInput.value || "").trim();
+  if (!url) return;
+
+  // éviter doublons exacts
+  if (form.images.includes(url)) {
+    imageInput.value = "";
+    return;
+  }
+
+  form.images.push(url);
+  imageInput.value = "";
+}
+
+function removeImage(i) {
+  form.images.splice(i, 1);
+}
+
 async function save() {
   err.value = "";
-  if (!form.title) {
+  if (!form.title?.trim()) {
     err.value = "Le titre est obligatoire.";
     return;
   }
 
   saving.value = true;
 
+  // ✅ payload : images[]
   const payload = {
-    title: form.title,
+    title: form.title.trim(),
     status: form.status,
-    summary: form.summary,
-    image: form.image,
-    link: form.link,
+    summary: form.summary?.trim() || "",
+    images: Array.isArray(form.images) ? form.images : [],
+    // compat optionnelle : on garde aussi "image" = 1re image (utile si d’autres views l’utilisent encore)
+    image: (form.images?.[0] || ""),
+    link: form.link?.trim() || "",
     order: Number.isFinite(form.order) ? form.order : 999,
     isVisible: !!form.isVisible,
     updatedAt: serverTimestamp(),
@@ -209,7 +277,6 @@ async function save() {
       await updateDoc(doc(db, "projects", editingId.value), payload);
       editingId.value = null;
       resetForm();
-      saving.value = false;
       return;
     }
 
@@ -232,10 +299,12 @@ function edit(p) {
   form.title = p.title || "";
   form.status = p.status || "En cours";
   form.summary = p.summary || "";
-  form.image = p.image || "";
+  // ✅ compat lecture
+  form.images = Array.isArray(p.images) ? [...p.images] : (p.image ? [p.image] : []);
   form.link = p.link || "";
   form.order = Number.isFinite(p.order) ? p.order : 999;
   form.isVisible = p.isVisible !== false;
+  imageInput.value = "";
 }
 
 function cancelEdit() {
@@ -257,6 +326,13 @@ async function remove(id) {
 function shorten(url) {
   if (!url) return "";
   return url.length > 40 ? url.slice(0, 40) + "…" : url;
+}
+
+function firstImage(p) {
+  if (!p) return "";
+  if (Array.isArray(p.images) && p.images.length) return p.images[0];
+  if (p.image) return p.image;
+  return "";
 }
 </script>
 
@@ -435,14 +511,24 @@ function shorten(url) {
   color: rgba(255, 255, 255, 0.7);
 }
 
-.muted {
-  color: rgba(255, 255, 255, 0.6);
-  font-size: 13px;
-}
-
 .hint {
   margin: 14px 0 0;
   color: rgba(255, 255, 255, 0.65);
   font-size: 14px;
+}
+
+/* ✅ mini liste images */
+.img-list {
+  display: grid;
+  gap: 8px;
+}
+.img-item {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
 }
 </style>
