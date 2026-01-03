@@ -61,7 +61,7 @@
                       @click="openGallery(idx, 0)"
                     >
                       <i class="fas fa-images me-2"></i>
-                      Voir la photo
+                      Voir {{ (p.images?.length || 0) > 1 ? "les photos" : "la photo" }}
                     </button>
                   </div>
                 </div>
@@ -79,7 +79,7 @@
                   <div class="cover-card">
                     <img
                       class="cover-img"
-                      :src="p.images[0]"
+                      :src="coverOf(p)"
                       :alt="`Photo du projet ${p.title}`"
                       loading="lazy"
                     />
@@ -161,6 +161,7 @@ import { db } from "@/firebase";
 
 export default {
   name: "NosProjets",
+
   data() {
     return {
       loading: true,
@@ -193,7 +194,9 @@ export default {
             "/projets/puit_construction6.jpg",
             "/projets/puit_construction7.jpg",
           ],
+          cover: "/projets/isfPuit.png",
           order: 1,
+          isVisible: true,
         },
         {
           id: "interviews",
@@ -203,7 +206,9 @@ export default {
             "Notre VP externe réalise des entrevues avec des ingénieurs et CPI aux parcours inspirants. Découvrez leurs témoignages, leurs conseils et leurs expériences directement sur notre chaîne YouTube.",
           link: "https://www.youtube.com/@isf-ulaval",
           images: [],
+          cover: "",
           order: 2,
+          isVisible: true,
         },
         {
           id: "madagascar-solaire",
@@ -213,7 +218,9 @@ export default {
             "Le projet Panneaux solaires à Madagascar vise l’installation d’un système solaire dans une école accueillant 125 élèves. Cette initiative permettra de fournir une source d’énergie durable et fiable, essentielle au bon déroulement des activités scolaires. Actuellement en préparation, ce projet s’inscrit dans notre volonté de soutenir des infrastructures éducatives tout en promouvant des solutions énergétiques responsables.",
           link: "",
           images: [],
+          cover: "",
           order: 3,
+          isVisible: true,
         },
         {
           id: "friperie",
@@ -223,7 +230,9 @@ export default {
             "Une friperie organisée par ISF Université Laval pour financer nos initiatives et renforcer l’esprit de communauté, tout en donnant une seconde vie à des vêtements.",
           link: "",
           images: ["/projets/friperie.png"],
+          cover: "/projets/friperie.png",
           order: 4,
+          isVisible: true,
         },
       ],
 
@@ -260,21 +269,27 @@ export default {
       (snap) => {
         const items = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
 
-        // ✅ Visible + compatible images[]
+        // ✅ Visible + compat images[] + cover + ancien champ image
         this.projectsDb = items
           .filter((p) => p.isVisible !== false)
-          .map((p) => ({
-            id: p.id,
-            title: p.title || "Projet",
-            status: p.status || "",
-            summary: p.summary || "",
-            link: p.link || "",
-            // compat: si images[] existe on garde, sinon on transforme image -> images[]
-            images: Array.isArray(p.images) ? p.images : (p.image ? [p.image] : []),
-            order: p.order ?? 999,
-          }));
+          .map((p) => {
+            const images = Array.isArray(p.images) ? p.images : p.image ? [p.image] : [];
+            const cover = p.cover || images[0] || p.image || "";
+            return {
+              id: p.id,
+              title: p.title || "Projet",
+              status: p.status || "",
+              summary: p.summary || "",
+              link: p.link || "",
+              images,
+              cover,
+              order: p.order ?? 999,
+              isVisible: p.isVisible !== false,
+            };
+          });
 
         this.loading = false;
+
         if (this.lightbox.projectIndex > this.projectsToShow.length - 1) {
           this.lightbox.projectIndex = 0;
           this.lightbox.imageIndex = 0;
@@ -297,6 +312,16 @@ export default {
   methods: {
     hasImages(p) {
       return !!(p?.images && p.images.length);
+    },
+
+    coverOf(p) {
+      // cover > images[0] > image (ancien) > placeholder
+      return (
+        p?.cover ||
+        (Array.isArray(p?.images) && p.images[0]) ||
+        p?.image ||
+        "/projets/placeholder.jpg"
+      );
     },
 
     openGallery(projectIndex, imageIndex = 0) {

@@ -1,3 +1,4 @@
+<!-- src/views/admin/AdminDocuments.vue -->
 <template>
   <main class="admin">
     <div class="container py-5">
@@ -41,11 +42,32 @@
             />
           </div>
 
+          <!-- ✅ Upload PDF -->
+          <div class="col-12">
+            <label class="form-label">PDF (upload)</label>
+            <input
+              class="form-control"
+              type="file"
+              accept="application/pdf"
+              @change="onPdfFile"
+              :disabled="saving"
+            />
+            <small class="muted">
+              Choisis un PDF → upload vers Firebase Storage → l’URL sera ajoutée automatiquement.
+            </small>
+
+            <div v-if="uploading" class="muted mt-2">Upload en cours…</div>
+          </div>
+
           <div class="col-12">
             <label class="form-label">Lien du PDF (URL)</label>
-            <input v-model.trim="form.url" class="form-control" placeholder="https://... ou /documents/charte-isf.pdf" />
+            <input
+              v-model.trim="form.url"
+              class="form-control"
+              placeholder="https://... ou /documents/charte-isf.pdf"
+            />
             <small class="muted">
-              Pour l’instant : colle un lien public (Drive/Dropbox/site) OU un fichier local (ex: /documents/charte-isf.pdf).
+              Ce champ se remplit automatiquement après upload (tu peux aussi coller un lien direct).
             </small>
           </div>
 
@@ -80,10 +102,10 @@
           </div>
 
           <div class="col-12 d-flex flex-wrap gap-2">
-            <button class="btn-primary" @click="save" :disabled="saving">
+            <button class="btn-primary" @click="save" :disabled="saving || uploading">
               {{ saving ? "..." : (editingId ? "Enregistrer" : "Ajouter") }}
             </button>
-            <button v-if="editingId" class="btn-ghost" @click="cancelEdit" :disabled="saving">
+            <button v-if="editingId" class="btn-ghost" @click="cancelEdit" :disabled="saving || uploading">
               Annuler
             </button>
           </div>
@@ -129,8 +151,8 @@
             </div>
 
             <div class="actions">
-              <button class="btn-small" @click="edit(d)">Modifier</button>
-              <button class="btn-small danger" @click="removeDoc(d.id)">Supprimer</button>
+              <button class="btn-small" @click="edit(d)" :disabled="saving || uploading">Modifier</button>
+              <button class="btn-small danger" @click="removeDoc(d.id)" :disabled="saving || uploading">Supprimer</button>
             </div>
           </div>
         </div>
@@ -143,7 +165,7 @@
 
 <script setup>
 import { computed, reactive, ref, onMounted, onBeforeUnmount } from "vue";
-import { db } from "@/firebase";
+import { db, storage } from "@/firebase";
 import {
   addDoc,
   collection,
@@ -155,9 +177,11 @@ import {
   updateDoc,
   serverTimestamp,
 } from "firebase/firestore";
+import { ref as sRef, uploadBytes, getDownloadURL } from "firebase/storage";
 
 const loading = ref(true);
 const saving = ref(false);
+const uploading = ref(false);
 const error = ref("");
 
 const documents = ref([]);
@@ -209,22 +233,61 @@ onBeforeUnmount(() => {
   if (unsub) unsub();
 });
 
+async function onPdfFile(e) {
+  const file = e.target.files?.[0];
+  if (!file) return;
+
+  error.value = "";
+
+  if (file.type !== "application/pdf") {
+    error.value = "Veuillez choisir un fichier PDF.";
+    e.target.value = "";
+    return;
+  }
+
+  uploading.value = true;
+  try {
+    const safeName = (file.name || "document.pdf").replace(/\s+/g, "_");
+    const path = `documents/${Date.now()}_${safeName}`;
+    const fileRef = sRef(storage, path);
+
+    await uploadBytes(fileRef, file);
+    const url = await getDownloadURL(fileRef);
+
+    form.url = url;
+    if (!form.title?.trim()) {
+      // optionnel: pré-remplit le titre avec le nom du fichier sans extension
+      form.title = safeName.replace(/\.pdf$/i, "");
+    }
+  } catch (err) {
+    console.error(err);
+    error.value = err?.message || "Upload impossible (Storage).";
+  } finally {
+    uploading.value = false;
+    e.target.value = "";
+  }
+}
+
 async function save() {
   error.value = "";
-  if (!form.title) {
+  if (!form.title?.trim()) {
     error.value = "Le titre est obligatoire.";
+    return;
+  }
+  if (!form.url?.trim()) {
+    error.value = "Le lien du PDF est obligatoire (colle une URL ou upload un PDF).";
     return;
   }
 
   saving.value = true;
   try {
     const payload = {
-      title: form.title,
-      category: form.category || "",
-      url: form.url || "",
-      description: form.description || "",
-      order: Number.isFinite(form.order) ? form.order : 999,
-      maxPages: Number.isFinite(form.maxPages) ? form.maxPages : null,
+      title: form.title.trim(),
+      category: form.category?.trim() || "",
+      url: form.url.trim(),
+      description: form.description?.trim() || "",
+      order: Number.isFinite(form.order) ? Number(form.order) : 999,
+      maxPages: Number.isFinite(form.maxPages) ? Number(form.maxPages) : null,
       isVisible: !!form.isVisible,
       updatedAt: serverTimestamp(),
     };
@@ -254,8 +317,8 @@ function edit(d) {
   form.category = d.category || "";
   form.url = d.url || "";
   form.description = d.description || "";
-  form.order = Number.isFinite(d.order) ? d.order : 999;
-  form.maxPages = Number.isFinite(d.maxPages) ? d.maxPages : null;
+  form.order = Number.isFinite(d.order) ? Number(d.order) : 999;
+  form.maxPages = Number.isFinite(d.maxPages) ? Number(d.maxPages) : null;
   form.isVisible = d.isVisible !== false;
 }
 
@@ -266,6 +329,9 @@ function cancelEdit() {
 
 async function removeDoc(id) {
   error.value = "";
+  const ok = window.confirm("Supprimer ce document ?");
+  if (!ok) return;
+
   try {
     await deleteDoc(doc(db, "documents", id));
     if (editingId.value === id) cancelEdit();

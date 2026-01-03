@@ -184,7 +184,7 @@ function resetForm() {
 }
 
 onMounted(() => {
-  const q = query(collection(db, "executif"), orderBy("order", "asc"));
+  const q = query(collection(db, "executif"));
   unsub = onSnapshot(
     q,
     (snap) => {

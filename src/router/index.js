@@ -1,5 +1,8 @@
+// src/router/index.js
 import { createRouter, createWebHistory } from "vue-router";
+import { useAdminStore } from "@/stores/admin";
 
+// Public
 import Home from "../views/Home.vue";
 import QuiSommesNous from "../views/QuiSommesNous.vue";
 import ComiteExecutif from "../views/ComiteExecutif.vue";
@@ -13,13 +16,13 @@ import NousJoindre from "../views/NousJoindre.vue";
 import ArticlesPromotionnels from "../views/ArticlesPromotionnels.vue";
 import Documents from "../views/Documents.vue";
 
+// Admin
 import AdminLogin from "../views/admin/AdminLogin.vue";
 import AdminDashboard from "../views/admin/AdminDashboard.vue";
 import AdminActivities from "../views/admin/AdminActivities.vue";
 
-import { useAdminStore } from "@/stores/admin";
-
 const routes = [
+  // Public
   { path: "/", name: "Home", component: Home },
   { path: "/qui-sommes-nous", name: "QuiSommesNous", component: QuiSommesNous },
   { path: "/comite-executif", name: "ComiteExecutif", component: ComiteExecutif },
@@ -34,7 +37,8 @@ const routes = [
   { path: "/documents", name: "Documents", component: Documents },
   { path: "/activites", name: "Activites", component: () => import("../views/Activites.vue") },
 
-  { path: "/admin/login", name: "AdminLogin", component: AdminLogin, meta: { public: true } },
+  // Admin
+  { path: "/admin/login", name: "AdminLogin", component: AdminLogin, meta: { publicAdmin: true } },
   { path: "/admin", name: "AdminDashboard", component: AdminDashboard, meta: { requiresAdmin: true } },
 
   { path: "/admin/activities", name: "AdminActivities", component: AdminActivities, meta: { requiresAdmin: true } },
@@ -43,6 +47,7 @@ const routes = [
   { path: "/admin/executif", name: "AdminExecutif", component: () => import("../views/admin/AdminExecutif.vue"), meta: { requiresAdmin: true } },
   { path: "/admin/documents", name: "AdminDocuments", component: () => import("../views/admin/AdminDocuments.vue"), meta: { requiresAdmin: true } },
 
+  // Redirects FR (anciens liens)
   { path: "/admin/activites", redirect: "/admin/activities" },
   { path: "/admin/evenements", redirect: "/admin/events" },
   { path: "/admin/projets", redirect: "/admin/projects" },
@@ -57,12 +62,15 @@ const router = createRouter({
 
 router.beforeEach(async (to) => {
   const admin = useAdminStore();
+  await admin.init();
 
-  if (!admin.ready) await admin.init();
+  // Login accessible
+  if (to.meta.publicAdmin) return true;
 
+  // Pages protégées
   if (to.meta.requiresAdmin) {
-    if (!admin.user) return "/admin/login";
-    if (!admin.isAdmin) return "/";
+    if (!admin.user) return { path: "/admin/login" };
+    if (!admin.isAdmin) return { path: "/" };
   }
 
   return true;

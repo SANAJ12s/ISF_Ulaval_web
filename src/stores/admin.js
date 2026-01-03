@@ -1,23 +1,21 @@
-// src/stores/admin.js
 import { defineStore } from "pinia";
 import { onAuthStateChanged, signInWithEmailAndPassword, signOut } from "firebase/auth";
 import { auth } from "@/firebase";
+
+// ⚠️ Doit matcher tes rules Firestore
+const ADMIN_UID = "Tcgiu1FJg6XmXG1PAE8hEj08kg12";
 
 export const useAdminStore = defineStore("admin", {
   state: () => ({
     user: null,
     ready: false,
+    isAdminValue: false,
     _initPromise: null,
   }),
 
   getters: {
     isLoggedIn: (s) => !!s.user,
-
-    isAdmin: (s) => {
-      const adminUid = import.meta.env.VITE_ADMIN_UID;
-      if (!adminUid) return false; 
-      return !!s.user && s.user.uid === adminUid;
-    },
+    isAdmin: (s) => !!s.user && s.isAdminValue,
   },
 
   actions: {
@@ -26,12 +24,11 @@ export const useAdminStore = defineStore("admin", {
       if (this._initPromise) return this._initPromise;
 
       this._initPromise = new Promise((resolve) => {
-        const unsubscribe = onAuthStateChanged(auth, (u) => {
+        onAuthStateChanged(auth, (u) => {
           this.user = u || null;
+          this.isAdminValue = !!u && u.uid === ADMIN_UID;
           this.ready = true;
           resolve(this.user);
-
-          unsubscribe();
         });
       });
 
@@ -40,10 +37,22 @@ export const useAdminStore = defineStore("admin", {
 
     async login(email, password) {
       await signInWithEmailAndPassword(auth, email, password);
+      // attendre que user/isAdmin soient en place
+      await this.init();
+
+      if (!this.isAdmin) {
+        await signOut(auth);
+        this.user = null;
+        this.isAdminValue = false;
+        throw new Error("Compte non autorisé (UID différent).");
+      }
     },
 
     async logout() {
       await signOut(auth);
+      this.user = null;
+      this.isAdminValue = false;
+      // ready reste true
     },
   },
 });

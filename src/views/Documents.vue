@@ -95,7 +95,7 @@
 </template>
 
 <script>
-import { collection, onSnapshot, orderBy, query } from "firebase/firestore";
+import { collection, onSnapshot, query } from "firebase/firestore";
 import { db } from "@/firebase";
 
 export default {
@@ -126,7 +126,7 @@ export default {
   },
 
   mounted() {
-    const q = query(collection(db, "documents"), orderBy("order", "asc"));
+    const q = query(collection(db, "documents"));
     this.unsub = onSnapshot(
       q,
       (snap) => {

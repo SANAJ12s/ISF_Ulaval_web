@@ -83,7 +83,7 @@ export default {
   },
 
   mounted() {
-    const q = query(collection(db, "executif"), orderBy("order", "asc"));
+    const q = query(collection(db, "executif"));
     this.unsub = onSnapshot(
       q,
       (snap) => {

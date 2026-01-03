@@ -29,33 +29,48 @@
             </select>
           </div>
 
-          <!-- ✅ Images[] -->
+          <!-- ✅ Upload (Storage) -->
           <div class="col-12">
-            <label class="form-label">Images (URLs)</label>
+            <label class="form-label">Images (upload)</label>
+            <input class="form-control" type="file" multiple accept="image/*" @change="onFiles" :disabled="saving" />
 
+            <small class="muted d-block mt-2">
+              Tu peux choisir plusieurs photos. La 1re image de la liste sert de “cover” (images[0]).
+            </small>
+
+            <div v-if="uploading" class="muted mt-2">Upload en cours…</div>
+
+            <!-- preview + remove -->
+            <div v-if="form.images.length" class="img-grid mt-3">
+              <div v-for="(img, i) in form.images" :key="img + i" class="img-card">
+                <img :src="img" alt="" class="img-preview" />
+                <div class="img-actions">
+                  <span class="muted small">{{ i === 0 ? "Cover" : `Image ${i + 1}` }}</span>
+                  <button class="btn-small danger" type="button" @click="removeImage(i)" :disabled="saving || uploading">
+                    Retirer
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ✅ Add by URL -->
+          <div class="col-12">
+            <label class="form-label">Ajouter une image par URL (optionnel)</label>
             <div class="d-flex gap-2 flex-wrap">
               <input
                 v-model.trim="imageInput"
                 class="form-control"
                 placeholder="https://... ou /projets/photo.jpg"
+                :disabled="saving || uploading"
               />
-              <button class="btn-primary" type="button" @click="addImage" :disabled="saving">
+              <button class="btn-primary" type="button" @click="addImage" :disabled="saving || uploading">
                 Ajouter
               </button>
             </div>
-
             <small class="muted d-block mt-2">
-              Tu peux ajouter plusieurs images. La 1re sera utilisée comme “cover”.
+              Si tu ajoutes une URL, elle sera ajoutée à la liste d’images.
             </small>
-
-            <div v-if="form.images.length" class="img-list mt-3">
-              <div v-for="(img, i) in form.images" :key="img + i" class="img-item">
-                <span class="muted">🖼️ {{ shorten(img) }}</span>
-                <button class="btn-small danger" type="button" @click="removeImage(i)" :disabled="saving">
-                  Supprimer
-                </button>
-              </div>
-            </div>
           </div>
 
           <div class="col-md-6">
@@ -88,10 +103,12 @@
           </div>
 
           <div class="col-12 d-flex flex-wrap gap-2">
-            <button class="btn-primary" @click="save" :disabled="saving">
-              {{ saving ? "..." : (editingId ? "Enregistrer" : "Ajouter") }}
+            <!-- ✅ IMPORTANT: désactivé seulement pendant saving/uploading -->
+            <button class="btn-primary" type="button" @click="save" :disabled="saving || uploading">
+              {{ uploading ? "Upload…" : (saving ? "..." : (editingId ? "Enregistrer" : "Ajouter")) }}
             </button>
-            <button v-if="editingId" class="btn-ghost" @click="cancelEdit" :disabled="saving">
+
+            <button v-if="editingId" class="btn-ghost" type="button" @click="cancelEdit" :disabled="saving || uploading">
               Annuler
             </button>
           </div>
@@ -140,8 +157,10 @@
             </div>
 
             <div class="actions">
-              <button class="btn-small" @click="edit(p)">Modifier</button>
-              <button class="btn-small danger" @click="remove(p.id)">Supprimer</button>
+              <button class="btn-small" type="button" @click="edit(p)" :disabled="saving || uploading">Modifier</button>
+              <button class="btn-small danger" type="button" @click="remove(p.id)" :disabled="saving || uploading">
+                Supprimer
+              </button>
             </div>
           </div>
         </div>
@@ -167,24 +186,25 @@ import {
   serverTimestamp,
   updateDoc,
 } from "firebase/firestore";
-import { db } from "@/firebase";
+import { ref as sRef, uploadBytes, getDownloadURL } from "firebase/storage";
+import { db, storage } from "@/firebase";
 
 const loading = ref(true);
 const saving = ref(false);
+const uploading = ref(false);
 const err = ref("");
 
 const projects = ref([]);
 let unsub = null;
 
 const editingId = ref(null);
-
 const imageInput = ref("");
 
 const form = reactive({
   title: "",
   status: "En cours",
   summary: "",
-  images: [], // ✅ images[]
+  images: [],
   link: "",
   order: 1,
   isVisible: true,
@@ -203,6 +223,7 @@ function resetForm() {
   form.order = 1;
   form.isVisible = true;
   imageInput.value = "";
+  err.value = "";
 }
 
 onMounted(() => {
@@ -212,7 +233,6 @@ onMounted(() => {
     (snap) => {
       projects.value = snap.docs.map((d) => {
         const data = d.data() || {};
-        // ✅ compat: si ancien champ image existe, on le met dans images[]
         const imgs = Array.isArray(data.images) ? data.images : (data.image ? [data.image] : []);
         return { id: d.id, ...data, images: imgs };
       });
@@ -235,7 +255,6 @@ function addImage() {
   const url = (imageInput.value || "").trim();
   if (!url) return;
 
-  // éviter doublons exacts
   if (form.images.includes(url)) {
     imageInput.value = "";
     return;
@@ -249,6 +268,39 @@ function removeImage(i) {
   form.images.splice(i, 1);
 }
 
+/** ✅ Upload images vers Firebase Storage */
+async function onFiles(e) {
+  err.value = "";
+  const files = Array.from(e.target.files || []);
+  if (!files.length) return;
+
+  uploading.value = true;
+  try {
+    const urls = [];
+
+    for (const file of files) {
+      const path = `projects/${Date.now()}_${file.name}`;
+      const storageRef = sRef(storage, path);
+
+      await uploadBytes(storageRef, file); // peut échouer si rules/auth
+      const url = await getDownloadURL(storageRef);
+      urls.push(url);
+    }
+
+    // append sans doublons
+    for (const u of urls) {
+      if (!form.images.includes(u)) form.images.push(u);
+    }
+  } catch (e2) {
+    console.error(e2);
+    // ✅ sinon ça "reste bloqué" et tu crois que le bouton ne marche pas
+    err.value = e2?.message || "Erreur upload Storage (permissions / auth / rules).";
+  } finally {
+    uploading.value = false;
+    e.target.value = "";
+  }
+}
+
 async function save() {
   err.value = "";
   if (!form.title?.trim()) {
@@ -256,16 +308,21 @@ async function save() {
     return;
   }
 
+  // si upload toujours en cours, on bloque (pour éviter projet sans images complètes)
+  if (uploading.value) {
+    err.value = "Attends la fin de l’upload avant d’enregistrer.";
+    return;
+  }
+
   saving.value = true;
 
-  // ✅ payload : images[]
   const payload = {
     title: form.title.trim(),
     status: form.status,
     summary: form.summary?.trim() || "",
     images: Array.isArray(form.images) ? form.images : [],
-    // compat optionnelle : on garde aussi "image" = 1re image (utile si d’autres views l’utilisent encore)
-    image: (form.images?.[0] || ""),
+    // compat
+    image: form.images?.[0] || "",
     link: form.link?.trim() || "",
     order: Number.isFinite(form.order) ? form.order : 999,
     isVisible: !!form.isVisible,
@@ -286,9 +343,9 @@ async function save() {
     });
 
     resetForm();
-  } catch (e) {
-    console.error(e);
-    err.value = e?.message || "Erreur lors de l’enregistrement.";
+  } catch (e1) {
+    console.error(e1);
+    err.value = e1?.message || "Erreur lors de l’enregistrement.";
   } finally {
     saving.value = false;
   }
@@ -299,12 +356,12 @@ function edit(p) {
   form.title = p.title || "";
   form.status = p.status || "En cours";
   form.summary = p.summary || "";
-  // ✅ compat lecture
   form.images = Array.isArray(p.images) ? [...p.images] : (p.image ? [p.image] : []);
   form.link = p.link || "";
   form.order = Number.isFinite(p.order) ? p.order : 999;
   form.isVisible = p.isVisible !== false;
   imageInput.value = "";
+  err.value = "";
 }
 
 function cancelEdit() {
@@ -343,16 +400,8 @@ function firstImage(p) {
   color: #fff;
   padding-top: 90px;
 }
-
-.title {
-  font-weight: 900;
-  margin: 0;
-}
-
-.subtitle {
-  margin: 6px 0 0;
-  color: rgba(255, 255, 255, 0.7);
-}
+.title { font-weight: 900; margin: 0; }
+.subtitle { margin: 6px 0 0; color: rgba(255, 255, 255, 0.7); }
 
 .card {
   background: #0b0b0b;
@@ -380,10 +429,7 @@ function firstImage(p) {
   border: 1px solid rgba(255, 255, 255, 0.10);
 }
 
-.list {
-  display: grid;
-  gap: 12px;
-}
+.list { display: grid; gap: 12px; }
 
 .item {
   display: flex;
@@ -396,15 +442,8 @@ function firstImage(p) {
   border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-.info {
-  min-width: 0;
-  flex: 1;
-}
-
-.name {
-  font-weight: 900;
-  font-size: 18px;
-}
+.info { min-width: 0; flex: 1; }
+.name { font-weight: 900; font-size: 18px; }
 
 .meta {
   display: flex;
@@ -424,53 +463,22 @@ function firstImage(p) {
   color: #f97316;
   font-size: 13px;
 }
-
 .muted-pill {
   background: rgba(255, 255, 255, 0.06);
   border-color: rgba(255, 255, 255, 0.10);
   color: rgba(255, 255, 255, 0.75);
 }
+.pill.ok { background: rgba(34, 197, 94, 0.12); border-color: rgba(34, 197, 94, 0.35); color: #22c55e; }
+.pill.off { background: rgba(239, 68, 68, 0.12); border-color: rgba(239, 68, 68, 0.35); color: #ef4444; }
 
-.pill.ok {
-  background: rgba(34, 197, 94, 0.12);
-  border-color: rgba(34, 197, 94, 0.35);
-  color: #22c55e;
-}
+.desc { margin: 10px 0 0; color: rgba(255, 255, 255, 0.75); }
+.links { margin-top: 10px; display: grid; gap: 6px; }
 
-.pill.off {
-  background: rgba(239, 68, 68, 0.12);
-  border-color: rgba(239, 68, 68, 0.35);
-  color: #ef4444;
-}
+.link { color: #f97316; font-weight: 800; text-decoration: none; }
+.muted { color: rgba(255, 255, 255, 0.55); font-size: 13px; }
+.muted.small { font-size: 12px; }
 
-.desc {
-  margin: 10px 0 0;
-  color: rgba(255, 255, 255, 0.75);
-}
-
-.links {
-  margin-top: 10px;
-  display: grid;
-  gap: 6px;
-}
-
-.link {
-  color: #f97316;
-  font-weight: 800;
-  text-decoration: none;
-}
-
-.muted {
-  color: rgba(255, 255, 255, 0.55);
-  font-size: 13px;
-}
-
-.actions {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-  justify-content: flex-end;
-}
+.actions { display: flex; gap: 10px; flex-wrap: wrap; justify-content: flex-end; }
 
 .btn-primary {
   border: none;
@@ -480,7 +488,6 @@ function firstImage(p) {
   color: #000;
   background: #f97316;
 }
-
 .btn-ghost {
   border-radius: 14px;
   padding: 10px 14px;
@@ -489,7 +496,6 @@ function firstImage(p) {
   background: rgba(255, 255, 255, 0.08);
   border: 1px solid rgba(255, 255, 255, 0.12);
 }
-
 .btn-small {
   border-radius: 12px;
   padding: 8px 10px;
@@ -498,37 +504,44 @@ function firstImage(p) {
   background: rgba(255, 255, 255, 0.08);
   border: 1px solid rgba(255, 255, 255, 0.12);
 }
-
 .btn-small.danger {
   border-color: rgba(239, 68, 68, 0.45);
   background: rgba(239, 68, 68, 0.12);
 }
-
 .empty {
   padding: 16px;
   border-radius: 14px;
   border: 1px dashed rgba(255, 255, 255, 0.18);
   color: rgba(255, 255, 255, 0.7);
 }
+.hint { margin: 14px 0 0; color: rgba(255, 255, 255, 0.65); font-size: 14px; }
 
-.hint {
-  margin: 14px 0 0;
-  color: rgba(255, 255, 255, 0.65);
-  font-size: 14px;
-}
-
-/* ✅ mini liste images */
-.img-list {
+/* ✅ preview images */
+.img-grid {
   display: grid;
-  gap: 8px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
 }
-.img-item {
+.img-card {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.10);
+  border-radius: 14px;
+  overflow: hidden;
+}
+.img-preview {
+  width: 100%;
+  height: 140px;
+  object-fit: cover;
+  display: block;
+}
+.img-actions {
   display: flex;
   justify-content: space-between;
-  gap: 12px;
-  padding: 10px 12px;
-  border-radius: 12px;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+}
+@media (max-width: 900px) {
+  .img-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 </style>

@@ -16,13 +16,16 @@
       <div class="list">
         <div v-for="a in activities" :key="a.id" class="item">
           <div class="left">
-            <div class="cover" v-if="a.coverUrl">
-              <img :src="a.coverUrl" :alt="a.title" />
+            <div class="cover" v-if="a.cover">
+              <img :src="a.cover" :alt="a.title" />
             </div>
             <div class="meta">
               <div class="name">{{ a.title }}</div>
               <div class="small">
-                {{ (a.imageUrls?.length || 0) }} image(s) • order: {{ a.order ?? "-" }}
+                {{ (a.images?.length || 0) }} image(s) • order: {{ a.order ?? "-" }} •
+                <span :style="{ color: a.isVisible ? '#22c55e' : '#ef4444' }">
+                  {{ a.isVisible ? "Visible" : "Masqué" }}
+                </span>
               </div>
             </div>
           </div>
@@ -44,7 +47,7 @@
 
           <div class="modal-body">
             <label class="label">Titre</label>
-            <input class="input" v-model="form.title" placeholder="Ex: Gala" />
+            <input class="input" v-model.trim="form.title" placeholder="Ex: Gala" />
 
             <label class="label">Order (tri d’affichage)</label>
             <input class="input" type="number" v-model.number="form.order" />
@@ -54,8 +57,8 @@
 
             <div v-if="uploading" class="info">Upload en cours…</div>
 
-            <div class="preview" v-if="form.imageUrls.length">
-              <div v-for="(u, i) in form.imageUrls" :key="u" class="pimg">
+            <div class="preview" v-if="form.images.length">
+              <div v-for="(u, i) in form.images" :key="u + i" class="pimg">
                 <img :src="u" alt="" />
                 <button class="del" @click="removeImg(i)" type="button">Retirer</button>
               </div>
@@ -63,8 +66,8 @@
 
             <div class="row">
               <label class="checkbox">
-                <input type="checkbox" v-model="form.published" />
-                Publié
+                <input type="checkbox" v-model="form.isVisible" />
+                Visible sur le site
               </label>
             </div>
           </div>
@@ -83,19 +86,19 @@
 </template>
 
 <script>
-import {
+  import {
   collection,
   addDoc,
   updateDoc,
   deleteDoc,
   doc,
-  getDocs,
+  onSnapshot,
   query,
   orderBy,
   serverTimestamp,
 } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { db, storage } from "../../firebase";
+import { db, storage } from "@/firebase"; 
 
 export default {
   name: "AdminActivities",
@@ -103,40 +106,71 @@ export default {
     return {
       activities: [],
       modal: { open: false, mode: "create", id: null },
+
+      // ✅ nouveau schéma
       form: {
         title: "",
         order: 10,
-        published: true,
-        imageUrls: [],
-        coverUrl: "",
+        isVisible: true,
+        images: [],
+        cover: "",
       },
+
       uploading: false,
       saving: false,
+      _unsub: null,
     };
   },
-  async mounted() {
-    await this.load();
-  },
-  methods: {
-    async load() {
-      const q = query(collection(db, "activities"), orderBy("order", "asc"));
-      const snap = await getDocs(q);
-      this.activities = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
-    },
 
+  mounted() {
+    // ✅ live updates
+    const q = query(collection(db, "activities"), orderBy("order", "asc"));
+    this._unsub = onSnapshot(q, (snap) => {
+      this.activities = snap.docs.map((d) => {
+        const data = d.data() || {};
+
+        // ✅ compat lecture ancien schéma
+        const images =
+          (Array.isArray(data.images) && data.images) ||
+          (Array.isArray(data.imageUrls) && data.imageUrls) ||
+          [];
+
+        const cover = data.cover || data.coverUrl || images[0] || "";
+
+        const isVisible =
+          data.isVisible !== undefined ? !!data.isVisible : (data.published !== false);
+
+        return {
+          id: d.id,
+          title: data.title || "",
+          order: Number.isFinite(data.order) ? data.order : 999,
+          images,
+          cover,
+          isVisible,
+        };
+      });
+    });
+  },
+
+  beforeUnmount() {
+    if (this._unsub) this._unsub();
+  },
+
+  methods: {
     openCreate() {
       this.modal = { open: true, mode: "create", id: null };
-      this.form = { title: "", order: 10, published: true, imageUrls: [], coverUrl: "" };
+      this.form = { title: "", order: 10, isVisible: true, images: [], cover: "" };
     },
 
     openEdit(a) {
       this.modal = { open: true, mode: "edit", id: a.id };
+
       this.form = {
         title: a.title || "",
-        order: a.order ?? 10,
-        published: a.published ?? true,
-        imageUrls: a.imageUrls || [],
-        coverUrl: a.coverUrl || (a.imageUrls?.[0] || ""),
+        order: Number.isFinite(a.order) ? a.order : 10,
+        isVisible: a.isVisible !== false,
+        images: Array.isArray(a.images) ? [...a.images] : [],
+        cover: a.cover || (a.images?.[0] || ""),
       };
     },
 
@@ -158,8 +192,9 @@ export default {
           const url = await getDownloadURL(storageRef);
           urls.push(url);
         }
-        this.form.imageUrls = [...this.form.imageUrls, ...urls];
-        if (!this.form.coverUrl) this.form.coverUrl = this.form.imageUrls[0] || "";
+
+        this.form.images = [...this.form.images, ...urls];
+        if (!this.form.cover) this.form.cover = this.form.images[0] || "";
       } finally {
         this.uploading = false;
         e.target.value = "";
@@ -167,22 +202,41 @@ export default {
     },
 
     removeImg(i) {
-      this.form.imageUrls.splice(i, 1);
-      if (this.form.coverUrl && this.form.coverUrl === this.form.imageUrls[i]) {
-        this.form.coverUrl = this.form.imageUrls[0] || "";
+      // ✅ bugfix: on garde l'url supprimée avant splice
+      const removedUrl = this.form.images[i];
+      this.form.images.splice(i, 1);
+
+      // si cover était celle supprimée → cover devient 1ère restante
+      if (this.form.cover && this.form.cover === removedUrl) {
+        this.form.cover = this.form.images[0] || "";
       }
-      if (!this.form.coverUrl) this.form.coverUrl = this.form.imageUrls[0] || "";
+
+      // si cover vide → fallback
+      if (!this.form.cover) this.form.cover = this.form.images[0] || "";
     },
 
     async save() {
       this.saving = true;
       try {
+        const images = Array.isArray(this.form.images) ? this.form.images : [];
+        const cover = this.form.cover || images[0] || "";
+        const isVisible = !!this.form.isVisible;
+
+        // ✅ payload standard + compat temporaire
         const payload = {
-          title: this.form.title,
-          order: this.form.order ?? 10,
-          published: !!this.form.published,
-          imageUrls: this.form.imageUrls || [],
-          coverUrl: this.form.coverUrl || (this.form.imageUrls?.[0] || ""),
+          title: (this.form.title || "").trim(),
+          order: Number.isFinite(this.form.order) ? this.form.order : 999,
+
+          // nouveau schéma
+          images,
+          cover,
+          isVisible,
+
+          // compat temporaire (pour anciens codes)
+          imageUrls: images,
+          coverUrl: cover,
+          published: isVisible,
+
           updatedAt: serverTimestamp(),
         };
 
@@ -193,7 +247,6 @@ export default {
           await updateDoc(doc(db, "activities", this.modal.id), payload);
         }
 
-        await this.load();
         this.closeModal();
       } finally {
         this.saving = false;
@@ -204,13 +257,13 @@ export default {
       const ok = confirm(`Supprimer "${a.title}" ?`);
       if (!ok) return;
       await deleteDoc(doc(db, "activities", a.id));
-      await this.load();
     },
   },
 };
 </script>
 
 <style scoped>
+/* (CSS inchangé – je garde ton style) */
 .admin-page {
   min-height: 100vh;
   background: #000;

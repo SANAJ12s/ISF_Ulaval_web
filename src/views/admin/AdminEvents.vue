@@ -348,7 +348,7 @@ async function importInitial() {
 
 onMounted(() => {
   loading.value = true;
-  const q = query(collection(db, "events"), orderBy("order", "asc"));
+  const q = query(collection(db, "events"));
   unsub = onSnapshot(
     q,
     (snap) => {

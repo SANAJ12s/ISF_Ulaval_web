@@ -1,34 +1,56 @@
 <template>
   <main class="admin">
-    <h1>Admin ISF ULaval</h1>
+    <div class="container py-5">
+      <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-4">
+        <div>
+          <h1 class="title">Dashboard Admin</h1>
+          <p class="subtitle">Gère le contenu du site.</p>
+        </div>
 
-    <section class="cards">
-      <router-link to="/admin/activities">Activités</router-link>
-      <router-link to="/admin/projects">Projets</router-link>
-      <router-link to="/admin/events">Événements</router-link>
-      <router-link to="/admin/executif">Exécutif</router-link>
-      <router-link to="/admin/documents">Documents</router-link>
-    </section>
+        <button class="btn-ghost" @click="logout">Se déconnecter</button>
+      </div>
+
+      <div class="card">
+        <p class="muted">UID: <code>{{ uid }}</code></p>
+        <p class="muted">Admin: <strong>{{ isAdmin ? "Oui" : "Non" }}</strong></p>
+
+        <div class="grid">
+          <router-link class="tile" to="/admin/projects">Projets</router-link>
+          <router-link class="tile" to="/admin/events">Événements</router-link>
+          <router-link class="tile" to="/admin/activities">Activités</router-link>
+          <router-link class="tile" to="/admin/executif">Comité</router-link>
+          <router-link class="tile" to="/admin/documents">Documents</router-link>
+        </div>
+      </div>
+    </div>
   </main>
 </template>
 
-<script setup></script>
+<script setup>
+import { computed } from "vue";
+import { useRouter } from "vue-router";
+import { useAdminStore } from "@/stores/admin";
+
+const router = useRouter();
+const admin = useAdminStore();
+
+const uid = computed(() => admin.user?.uid || "—");
+const isAdmin = computed(() => admin.isAdmin);
+
+async function logout() {
+  await admin.logout();
+  router.replace("/admin/login");
+}
+</script>
 
 <style scoped>
-.admin {
-  padding: 120px 40px;
-}
-.cards {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 20px;
-}
-a {
-  padding: 20px;
-  background: #111;
-  color: white;
-  border-radius: 12px;
-  text-decoration: none;
-  font-weight: 900;
-}
+.admin { background:#000; min-height:100vh; color:#fff; padding-top:90px; }
+.title { font-weight: 900; margin: 0; }
+.subtitle { margin: 6px 0 0; color: rgba(255,255,255,.7); }
+.card { background:#0b0b0b; border:1px solid rgba(255,255,255,.10); border-radius:18px; padding:20px; }
+.muted { color: rgba(255,255,255,.7); }
+.btn-ghost { border-radius:14px; padding:10px 14px; font-weight:900; color:#fff; background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.12); }
+.grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap:12px; margin-top:16px; }
+.tile { display:block; padding:14px; border-radius:14px; font-weight:900; text-decoration:none; color:#fff;
+  background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.10); }
 </style>

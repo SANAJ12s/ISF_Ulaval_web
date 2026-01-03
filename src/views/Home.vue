@@ -141,7 +141,6 @@
 
               <div class="event-badges">
                 <span v-if="currentEvent.category" class="pill">{{ currentEvent.category }}</span>
-                <span class="pill muted-pill">{{ formatDate(currentEvent.date) }}</span>
                 <span v-if="currentEvent.date" class="pill muted-pill"> {{ formatDate(currentEvent.date) }} </span>
               </div>
             </div>
@@ -234,7 +233,7 @@
 </template>
 
 <script>
-import { collection, onSnapshot, orderBy, query } from "firebase/firestore";
+import { collection, onSnapshot, query } from "firebase/firestore";
 import { db } from "@/firebase";
 
 export default {
@@ -279,8 +278,7 @@ export default {
   },
 
   mounted() {
-    const q = query(collection(db, "events"), orderBy("order", "asc"));
-    this._unsub = onSnapshot(
+    const q = query(collection(db, "events"));    this._unsub = onSnapshot(
       q,
       (snap) => {
         this.events = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
