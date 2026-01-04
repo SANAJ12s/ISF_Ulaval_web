@@ -20,6 +20,8 @@
           <router-link class="tile" to="/admin/activities">Activités</router-link>
           <router-link class="tile" to="/admin/executif">Comité</router-link>
           <router-link class="tile" to="/admin/documents">Documents</router-link>
+          <router-link class="tile" to="/admin/merch">Merch</router-link>
+
         </div>
       </div>
     </div>

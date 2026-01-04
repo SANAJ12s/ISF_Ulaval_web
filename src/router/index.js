@@ -40,7 +40,7 @@ const routes = [
   // Admin
   { path: "/admin/login", name: "AdminLogin", component: AdminLogin, meta: { publicAdmin: true } },
   { path: "/admin", name: "AdminDashboard", component: AdminDashboard, meta: { requiresAdmin: true } },
-
+  { path: "/admin/merch", name: "AdminMerch", component: () => import("../views/admin/AdminMerch.vue"), meta: { requiresAdmin: true } },
   { path: "/admin/activities", name: "AdminActivities", component: AdminActivities, meta: { requiresAdmin: true } },
   { path: "/admin/events", name: "AdminEvents", component: () => import("../views/admin/AdminEvents.vue"), meta: { requiresAdmin: true } },
   { path: "/admin/projects", name: "AdminProjects", component: () => import("../views/admin/AdminProjects.vue"), meta: { requiresAdmin: true } },

@@ -12,9 +12,10 @@
             </p>
 
             <a
-              href="https://forms.gle/AmjDeCcUneTFepcT7"
+              :href="orderLink"
               target="_blank"
               class="btn btn-donate btn-lg"
+              rel="noreferrer"
             >
               <i class="fas fa-external-link-alt me-2"></i>
               Commander via le formulaire
@@ -24,20 +25,27 @@
       </div>
     </section>
 
-    <!-- Image annonce (au début) -->
+    <!-- Image annonce (au début) : Firestore -->
     <section class="py-5 section-dark">
       <div class="container">
         <div class="announce-card">
           <img
-            src="/membres/AnnonceDesArticlesEtQRCode.png"
-            alt="Annonce des articles et QR Code"
+            v-if="hero.imageUrl"
+            :src="hero.imageUrl"
+            alt="Annonce des articles"
             class="announce-img"
           />
+          <div v-else class="announce-fallback">
+            <div class="fallback-inner">
+              <div class="fw-bold">Merch ISF</div>
+              <div class="text-white-50">Ajoute une image “Hero” dans l’admin.</div>
+            </div>
+          </div>
         </div>
       </div>
     </section>
 
-    <!-- Produits (display tous, fond noir, cartes plus clean) -->
+    <!-- Produits (Firestore) -->
     <section class="py-5 section-dark">
       <div class="container">
         <div class="row">
@@ -49,85 +57,46 @@
           </div>
         </div>
 
-        <div class="row g-4">
-          <!-- Pull (devant) -->
-          <div class="col-lg-4 col-md-6">
-            <article class="card card-dark card-hover h-100 product-card" @click="openLightbox(0)">
-              <div class="product-media">
-                <img src="/membres/tottePull.png" alt="Pull ISF (devant)" class="product-img" />
-              </div>
-              <div class="card-body p-4">
-                <h5 class="fw-bold text-white mb-2">Pull ISF</h5>
-                <p class="text-white-50 mb-0">Photo : tottePull.png</p>
-              </div>
-            </article>
-          </div>
+        <!-- Loading / Empty -->
+        <div v-if="loading" class="events-placeholder">
+          <p class="mb-0 text-white-50">Chargement des articles…</p>
+        </div>
 
-          <!-- Pull (dos) -->
-          <div class="col-lg-4 col-md-6">
-            <article class="card card-dark card-hover h-100 product-card" @click="openLightbox(1)">
-              <div class="product-media">
-                <img src="/membres/backpull.png" alt="Pull ISF (dos)" class="product-img" />
-              </div>
-              <div class="card-body p-4">
-                <h5 class="fw-bold text-white mb-2">Pull ISF (dos)</h5>
-                <p class="text-white-50 mb-0">Photo : backpull.png</p>
-              </div>
-            </article>
-          </div>
+        <div v-else-if="visibleItems.length === 0" class="events-placeholder">
+          <p class="mb-0 text-white-50">Aucun article pour le moment.</p>
+        </div>
 
-          <!-- Tote bag -->
-          <div class="col-lg-4 col-md-6">
-            <article class="card card-dark card-hover h-100 product-card" @click="openLightbox(2)">
-              <div class="product-media">
-                <img src="/membres/tottebag.png" alt="Tote bag ISF" class="product-img" />
-              </div>
-              <div class="card-body p-4">
-                <h5 class="fw-bold text-white mb-2">Tote bag ISF</h5>
-                <p class="text-white-50 mb-0">Photo : tottebag.png</p>
-              </div>
-            </article>
-          </div>
-
-          <!-- Combo Pull + tote -->
-          <div class="col-lg-4 col-md-6">
-            <article class="card card-dark card-hover h-100 product-card" @click="openLightbox(3)">
+        <div v-else class="row g-4">
+          <div
+            v-for="(p, idx) in visibleItems"
+            :key="p.id"
+            class="col-lg-4 col-md-6"
+          >
+            <article
+              class="card card-dark card-hover h-100 product-card"
+              @click="openLightbox(idx)"
+            >
               <div class="product-media">
                 <img
-                  src="/membres/pullbackettotte.png"
-                  alt="Pull + tote bag"
+                  v-if="p.imageUrl"
+                  :src="p.imageUrl"
+                  :alt="p.title"
                   class="product-img"
                 />
+                <div v-else class="product-img fallback">
+                  <div class="fallback-inner">
+                    <i class="fas fa-image"></i>
+                    <div class="fw-bold mt-2">Image manquante</div>
+                  </div>
+                </div>
               </div>
-              <div class="card-body p-4">
-                <h5 class="fw-bold text-white mb-2">Combo Pull + Tote</h5>
-                <p class="text-white-50 mb-0">Photo : pullbackettotte.png</p>
-              </div>
-            </article>
-          </div>
 
-          <!-- Patch -->
-          <div class="col-lg-4 col-md-6">
-            <article class="card card-dark card-hover h-100 product-card" @click="openLightbox(4)">
-              <div class="product-media">
-                <img src="/membres/patch.png" alt="Patch ISF" class="product-img" />
-              </div>
               <div class="card-body p-4">
-                <h5 class="fw-bold text-white mb-2">Patch ISF</h5>
-                <p class="text-white-50 mb-0">Photo : patch.png</p>
-              </div>
-            </article>
-          </div>
-
-          <!-- Patches -->
-          <div class="col-lg-4 col-md-6">
-            <article class="card card-dark card-hover h-100 product-card" @click="openLightbox(5)">
-              <div class="product-media">
-                <img src="/membres/patchs.png" alt="Patches ISF" class="product-img" />
-              </div>
-              <div class="card-body p-4">
-                <h5 class="fw-bold text-white mb-2">Patches ISF</h5>
-                <p class="text-white-50 mb-0">Photo : patchs.png</p>
+                <h5 class="fw-bold text-white mb-2">{{ p.title }}</h5>
+                <p class="text-white-50 mb-0">
+                  <span v-if="p.price">Prix : {{ p.price }}</span>
+                  <span v-else>—</span>
+                </p>
               </div>
             </article>
           </div>
@@ -136,9 +105,10 @@
         <!-- CTA en bas -->
         <div class="text-center mt-5">
           <a
-            href="https://forms.gle/AmjDeCcUneTFepcT7"
+            :href="orderLink"
             target="_blank"
             class="btn btn-donate btn-lg"
+            rel="noreferrer"
           >
             <i class="fas fa-shopping-cart me-2"></i>
             Commander maintenant
@@ -157,27 +127,45 @@
             <i class="fas fa-times"></i>
           </button>
 
-          <button class="lb-nav lb-prev" @click="prevImage" aria-label="Précédent">
+          <button
+            class="lb-nav lb-prev"
+            @click="prevImage"
+            aria-label="Précédent"
+            :disabled="visibleItems.length <= 1"
+          >
             <i class="fas fa-chevron-left"></i>
           </button>
 
           <div class="lb-content">
-            <img :src="products[currentIndex].src" :alt="products[currentIndex].title" class="lb-img" />
+            <img
+              :src="currentLightbox.imageUrl"
+              :alt="currentLightbox.title"
+              class="lb-img"
+            />
             <div class="lb-caption">
-              <div class="lb-title">{{ products[currentIndex].title }}</div>
-              <div class="lb-sub">{{ products[currentIndex].sub }}</div>
+              <div class="lb-title">{{ currentLightbox.title }}</div>
+              <div class="lb-sub">
+                <span v-if="currentLightbox.price">Prix : {{ currentLightbox.price }}</span>
+                <span v-else>—</span>
+              </div>
             </div>
           </div>
 
-          <button class="lb-nav lb-next" @click="nextImage" aria-label="Suivant">
+          <button
+            class="lb-nav lb-next"
+            @click="nextImage"
+            aria-label="Suivant"
+            :disabled="visibleItems.length <= 1"
+          >
             <i class="fas fa-chevron-right"></i>
           </button>
 
           <div class="lb-actions">
             <a
-              href="https://forms.gle/AmjDeCcUneTFepcT7"
+              :href="currentLightbox.buyUrl || orderLink"
               target="_blank"
               class="btn btn-donate"
+              rel="noreferrer"
             >
               <i class="fas fa-external-link-alt me-2"></i>
               Commander
@@ -190,29 +178,89 @@
 </template>
 
 <script>
+import { doc, onSnapshot, collection, query, orderBy } from "firebase/firestore";
+import { db } from "@/firebase";
+
 export default {
   name: "ArticlesPromotionnels",
   data() {
     return {
+      // Global order link (fallback)
+      orderLink: "https://forms.gle/AmjDeCcUneTFepcT7",
+
+      // Firestore
+      loading: true,
+      hero: { imageUrl: "", title: "", subtitle: "" },
+      itemsRaw: [],
+      unsubHero: null,
+      unsubItems: null,
+
+      // Lightbox
       lightboxOpen: false,
       currentIndex: 0,
-      products: [
-        { title: "Pull ISF", sub: "tottePull.png", src: "/membres/tottePull.png" },
-        { title: "Pull ISF (dos)", sub: "backpull.png", src: "/membres/backpull.png" },
-        { title: "Tote bag ISF", sub: "tottebag.png", src: "/membres/tottebag.png" },
-        { title: "Combo Pull + Tote", sub: "pullbackettotte.png", src: "/membres/pullbackettotte.png" },
-        { title: "Patch ISF", sub: "patch.png", src: "/membres/patch.png" },
-        { title: "Patches ISF", sub: "patchs.png", src: "/membres/patchs.png" },
-      ],
     };
   },
+
+  computed: {
+    visibleItems() {
+      return (this.itemsRaw || [])
+        .filter((x) => x.isVisible !== false)
+        .sort((a, b) => (a.order ?? 999) - (b.order ?? 999))
+        .map((x) => ({
+          id: x.id,
+          title: x.title || "Article",
+          price: x.price || "",
+          imageUrl: x.imageUrl || "",
+          buyUrl: x.buyUrl || "",
+          order: x.order ?? 999,
+        }));
+    },
+
+    currentLightbox() {
+      const list = this.visibleItems;
+      if (!list.length) return { title: "", price: "", imageUrl: "", buyUrl: "" };
+      const i = Math.max(0, Math.min(this.currentIndex, list.length - 1));
+      return list[i];
+    },
+  },
+
   mounted() {
     window.addEventListener("keydown", this.onKeydown);
+
+    // HERO: merchHero/main
+    this.unsubHero = onSnapshot(
+      doc(db, "merchHero", "main"),
+      (snap) => {
+        this.hero = snap.exists() ? snap.data() : { imageUrl: "", title: "", subtitle: "" };
+      },
+      (e) => console.error("merchHero error:", e)
+    );
+
+    // ITEMS: merchItems
+    const q = query(collection(db, "merchItems"), orderBy("order", "asc"));
+    this.unsubItems = onSnapshot(
+      q,
+      (snap) => {
+        this.itemsRaw = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+        this.loading = false;
+
+        // Si index invalide après update
+        if (this.currentIndex > this.visibleItems.length - 1) this.currentIndex = 0;
+      },
+      (e) => {
+        console.error("merchItems error:", e);
+        this.loading = false;
+      }
+    );
   },
+
   beforeUnmount() {
     window.removeEventListener("keydown", this.onKeydown);
     document.body.classList.remove("modal-open");
+    if (this.unsubHero) this.unsubHero();
+    if (this.unsubItems) this.unsubItems();
   },
+
   methods: {
     openLightbox(index) {
       this.currentIndex = index;
@@ -224,14 +272,17 @@ export default {
       document.body.classList.remove("modal-open");
     },
     nextImage() {
-      this.currentIndex = (this.currentIndex + 1) % this.products.length;
+      const n = this.visibleItems.length;
+      if (n <= 1) return;
+      this.currentIndex = (this.currentIndex + 1) % n;
     },
     prevImage() {
-      this.currentIndex = (this.currentIndex - 1 + this.products.length) % this.products.length;
+      const n = this.visibleItems.length;
+      if (n <= 1) return;
+      this.currentIndex = (this.currentIndex - 1 + n) % n;
     },
     onKeydown(e) {
       if (!this.lightboxOpen) return;
-
       if (e.key === "Escape") this.closeLightbox();
       if (e.key === "ArrowRight") this.nextImage();
       if (e.key === "ArrowLeft") this.prevImage();
@@ -242,86 +293,87 @@ export default {
 
 <style scoped>
 /* Global dark */
-.articles-promotionnels {
-  background: #000;
-  color: #fff;
-}
-.section-dark {
-  background: #000;
-}
+.articles-promotionnels { background:#000; color:#fff; }
+.section-dark { background:#000; }
 
 /* HERO */
-.hero-section {
+.hero-section{
   position: relative;
   padding-top: 80px;
-  background: radial-gradient(circle at 20% 10%, rgba(249,115,22,0.22), transparent 45%),
-              radial-gradient(circle at 80% 30%, rgba(255,255,255,0.08), transparent 40%),
-              #000;
+  background:
+    radial-gradient(circle at 20% 10%, rgba(249,115,22,0.22), transparent 45%),
+    radial-gradient(circle at 80% 30%, rgba(255,255,255,0.08), transparent 40%),
+    #000;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
-.hero-overlay {
-  position: absolute;
-  inset: 0;
-  background: rgba(0,0,0,0.35);
-}
-.hero-inner {
-  position: relative;
-  z-index: 1;
-}
-.min-vh-75 {
-  min-height: 60vh;
-}
+.hero-overlay{ position:absolute; inset:0; background: rgba(0,0,0,0.35); }
+.hero-inner{ position: relative; z-index:1; }
+.min-vh-75{ min-height: 60vh; }
 
 /* Annonce */
-.announce-card {
+.announce-card{
   border-radius: 18px;
   overflow: hidden;
   border: 1px solid rgba(255,255,255,0.10);
   background: rgba(255,255,255,0.03);
   box-shadow: 0 18px 45px rgba(0,0,0,0.35);
 }
-.announce-img {
-  width: 100%;
-  height: auto;
-  display: block;
+.announce-img{ width:100%; height:auto; display:block; }
+
+.announce-fallback{
+  padding: 48px 18px;
+  display: grid;
+  place-items: center;
+  background:
+    radial-gradient(circle at 15% 20%, rgba(249,115,22,0.20), transparent 45%),
+    #050505;
+}
+.fallback-inner{
+  text-align:center;
 }
 
 /* Cards dark */
-.card-dark {
+.card-dark{
   background: #0b0b0b;
   color: #fff;
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 16px;
 }
-.card-hover {
-  transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+.card-hover{
+  transition: transform .22s ease, box-shadow .22s ease, border-color .22s ease;
   cursor: pointer;
 }
-.card-hover:hover {
+.card-hover:hover{
   transform: translateY(-4px);
-  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.35);
-  border-color: rgba(249, 115, 22, 0.35);
+  box-shadow: 0 18px 45px rgba(0,0,0,0.35);
+  border-color: rgba(249,115,22,0.35);
 }
 
 /* Product media */
-.product-media {
+.product-media{
   height: 280px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: radial-gradient(circle at 30% 20%, rgba(249,115,22,0.18), transparent 55%),
-              #050505;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:
+    radial-gradient(circle at 30% 20%, rgba(249,115,22,0.18), transparent 55%),
+    #050505;
   border-bottom: 1px solid rgba(255,255,255,0.08);
 }
-.product-img {
+.product-img{
   width: 100%;
   height: 100%;
   object-fit: contain;
   padding: 20px;
 }
+.product-img.fallback{
+  display:grid;
+  place-items:center;
+  color: rgba(255,255,255,0.75);
+}
 
 /* Buttons */
-.btn-donate {
+.btn-donate{
   background: #f97316;
   color: #000;
   border: none;
@@ -329,34 +381,40 @@ export default {
   border-radius: 14px;
   padding: 12px 20px;
 }
-.btn-donate:hover {
+.btn-donate:hover{
   background: #ff8a3d;
   box-shadow: 0 0 16px rgba(249, 115, 22, 0.45);
   color: #000;
 }
 
-/* LIGHTBOX */
-:global(body.modal-open) {
-  overflow: hidden;
+/* Small placeholder (reuse style) */
+.events-placeholder{
+  max-width: 980px;
+  margin: 0 auto;
+  border: 1px dashed rgba(255, 255, 255, 0.18);
+  border-radius: 16px;
+  padding: 22px;
+  text-align: center;
 }
 
-.lb-backdrop {
-  position: fixed;
-  inset: 0;
+/* LIGHTBOX */
+:global(body.modal-open){ overflow:hidden; }
+
+.lb-backdrop{
+  position: fixed; inset:0;
   background: rgba(0,0,0,0.78);
   backdrop-filter: blur(3px);
   -webkit-backdrop-filter: blur(3px);
   z-index: 2000;
 }
-.lb-modal {
-  position: fixed;
-  inset: 0;
+.lb-modal{
+  position: fixed; inset:0;
   z-index: 2001;
-  display: grid;
-  place-items: center;
+  display:grid;
+  place-items:center;
   padding: 18px;
 }
-.lb-content {
+.lb-content{
   max-width: 980px;
   width: min(980px, 92vw);
   background: #0b0b0b;
@@ -365,80 +423,66 @@ export default {
   overflow: hidden;
   box-shadow: 0 22px 70px rgba(0,0,0,0.55);
 }
-.lb-img {
+.lb-img{
   width: 100%;
   height: min(70vh, 640px);
   object-fit: contain;
   background: #050505;
-  display: block;
+  display:block;
 }
-.lb-caption {
+.lb-caption{
   padding: 14px 16px 16px;
   border-top: 1px solid rgba(255,255,255,0.08);
 }
-.lb-title {
-  font-weight: 900;
-  color: #fff;
-}
-.lb-sub {
-  color: rgba(255,255,255,0.65);
-  margin-top: 4px;
-  font-size: 0.95rem;
-}
+.lb-title{ font-weight:900; color:#fff; }
+.lb-sub{ color: rgba(255,255,255,0.65); margin-top:4px; font-size: .95rem; }
 
-.lb-close {
-  position: fixed;
-  top: 18px;
-  right: 18px;
-  width: 44px;
-  height: 44px;
-  border-radius: 999px;
-  border: 1px solid rgba(255,255,255,0.18);
+.lb-close{
+  position: fixed; top:18px; right:18px;
+  width:44px; height:44px;
+  border-radius:999px;
+  border:1px solid rgba(255,255,255,0.18);
   background: rgba(0,0,0,0.35);
-  color: #fff;
-  display: grid;
-  place-items: center;
+  color:#fff;
+  display:grid;
+  place-items:center;
   z-index: 2002;
 }
 
-.lb-nav {
+.lb-nav{
   position: fixed;
-  top: 50%;
+  top:50%;
   transform: translateY(-50%);
-  width: 48px;
-  height: 48px;
-  border-radius: 999px;
-  border: 1px solid rgba(255,255,255,0.18);
+  width:48px; height:48px;
+  border-radius:999px;
+  border:1px solid rgba(255,255,255,0.18);
   background: rgba(0,0,0,0.35);
-  color: #fff;
-  display: grid;
-  place-items: center;
+  color:#fff;
+  display:grid;
+  place-items:center;
   z-index: 2002;
 }
-.lb-prev { left: 18px; }
-.lb-next { right: 18px; }
+.lb-nav:disabled{
+  opacity: .35;
+  cursor: not-allowed;
+}
+.lb-prev{ left:18px; }
+.lb-next{ right:18px; }
 
-.lb-actions {
+.lb-actions{
   position: fixed;
-  bottom: 18px;
-  left: 0;
-  right: 0;
+  bottom:18px;
+  left:0; right:0;
   z-index: 2002;
-  display: flex;
-  justify-content: center;
+  display:flex;
+  justify-content:center;
   padding: 0 18px;
 }
 
 /* Responsive */
-@media (max-width: 768px) {
-  .hero-section {
-    padding-top: 60px;
-  }
-  .display-4 {
-    font-size: 2rem;
-  }
-  .product-media {
-    height: 240px;
-  }
+@media (max-width: 768px){
+  .hero-section{ padding-top: 60px; }
+  .display-4{ font-size: 2rem; }
+  .product-media{ height: 240px; }
 }
 </style>
