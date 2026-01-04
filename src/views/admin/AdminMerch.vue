@@ -25,7 +25,11 @@
 
           <div class="col-md-6">
             <label class="form-label">Image annonce (URL)</label>
-            <input v-model.trim="settingsForm.announceImageUrl" class="form-control" placeholder="/membres/Annonce...png" />
+            <input
+              v-model.trim="settingsForm.announceImageUrl"
+              class="form-control"
+              placeholder="/membres/Annonce...png"
+            />
           </div>
 
           <div class="col-12 d-flex gap-2 flex-wrap align-items-center">
@@ -129,7 +133,7 @@
         </div>
 
         <p class="hint">
-          🔧 Firestore : <code>settings/merch</code> + collection <code>merch_items</code>
+          🔧 Firestore : <code>settings/merch</code> + collection <code>merchItems</code>
         </p>
       </div>
     </div>
@@ -174,7 +178,6 @@ async function loadSettingsOnce() {
       settingsForm.orderFormUrl = d.orderFormUrl || settingsForm.orderFormUrl;
       settingsForm.announceImageUrl = d.announceImageUrl || settingsForm.announceImageUrl;
     } else {
-      // crée un doc par défaut
       await setDoc(refDoc, {
         orderFormUrl: settingsForm.orderFormUrl,
         announceImageUrl: settingsForm.announceImageUrl,
@@ -225,6 +228,9 @@ const form = reactive({
 
 let unsub = null;
 
+// ✅ Collection unique partout (admin + public)
+const MERCH_COLLECTION = "merchItems";
+
 const itemsSorted = computed(() =>
   [...items.value].sort((a, b) => (a.order ?? 999) - (b.order ?? 999))
 );
@@ -274,15 +280,15 @@ async function saveItem() {
     };
 
     if (editingId.value) {
-      await updateDoc(doc(db, "merch_items", editingId.value), payload);
+      await updateDoc(doc(db, MERCH_COLLECTION, editingId.value), payload);
       cancelEdit();
     } else {
-      await addDoc(collection(db, "merch_items"), { ...payload, createdAt: serverTimestamp() });
+      await addDoc(collection(db, MERCH_COLLECTION), { ...payload, createdAt: serverTimestamp() });
       resetForm();
     }
   } catch (e) {
     console.error(e);
-    itemError.value = e?.message || "Erreur Firestore merch_items";
+    itemError.value = e?.message || `Erreur Firestore (${MERCH_COLLECTION})`;
   } finally {
     savingItem.value = false;
   }
@@ -293,7 +299,7 @@ async function removeItem(id) {
   if (!ok) return;
 
   try {
-    await deleteDoc(doc(db, "merch_items", id));
+    await deleteDoc(doc(db, MERCH_COLLECTION, id));
     if (editingId.value === id) cancelEdit();
   } catch (e) {
     console.error(e);
@@ -305,7 +311,7 @@ onMounted(async () => {
   await loadSettingsOnce();
 
   loadingItems.value = true;
-  const q = query(collection(db, "merch_items"), orderBy("order", "asc"));
+  const q = query(collection(db, MERCH_COLLECTION), orderBy("order", "asc"));
   unsub = onSnapshot(
     q,
     (snap) => {
@@ -314,7 +320,7 @@ onMounted(async () => {
     },
     (e) => {
       console.error(e);
-      itemError.value = "Erreur Firestore (merch_items). Vérifie rules + config.";
+      itemError.value = `Erreur Firestore (${MERCH_COLLECTION}). Vérifie login admin (UID) + rules publiées.`;
       loadingItems.value = false;
     }
   );

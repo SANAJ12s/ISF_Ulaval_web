@@ -18,12 +18,8 @@
     <!-- LISTE DES PROJETS -->
     <section class="section-dark py-5">
       <div class="container">
-        <!-- loading / empty -->
-        <div v-if="loading" class="events-placeholder">
-          <p class="mb-0 text-white-50">Chargement…</p>
-        </div>
-
-        <div v-else-if="projectsToShow.length === 0" class="events-placeholder">
+        <!-- empty -->
+        <div v-if="projectsToShow.length === 0" class="events-placeholder">
           <p class="mb-0 text-white-50">Aucun projet pour le moment.</p>
         </div>
 
@@ -156,22 +152,13 @@
 </template>
 
 <script>
-import { collection, onSnapshot, orderBy, query } from "firebase/firestore";
-import { db } from "@/firebase";
-
 export default {
   name: "NosProjets",
 
   data() {
     return {
-      loading: true,
-
-      // 🔥 Données Firestore (source principale quand non vide)
-      projectsDb: [],
-      unsub: null,
-
-      // ✅ Fallback = tes projets existants avant migration
-      fallbackProjects: [
+      // ✅ Hardcoded (sans Firestore)
+      projects: [
         {
           id: "puits-2024",
           title: "Eau pour tous — Puits (2024)",
@@ -182,7 +169,7 @@ export default {
           images: [
             "/projets/isfPuit.png",
             "/projets/puit.jpg",
-            "/projets/puit2.jpg",
+            "/projets/puits.jpg",
             "/projets/puit7.jpg",
             "/projets/puit8.jpg",
             "/projets/puit_construction.jpg",
@@ -222,18 +209,6 @@ export default {
           order: 3,
           isVisible: true,
         },
-        {
-          id: "friperie",
-          title: "Friperie ISF",
-          status: "Activité de financement",
-          summary:
-            "Une friperie organisée par ISF Université Laval pour financer nos initiatives et renforcer l’esprit de communauté, tout en donnant une seconde vie à des vêtements.",
-          link: "",
-          images: ["/projets/friperie.png"],
-          cover: "/projets/friperie.png",
-          order: 4,
-          isVisible: true,
-        },
       ],
 
       lightbox: {
@@ -247,8 +222,9 @@ export default {
 
   computed: {
     projectsToShow() {
-      const src = this.projectsDb.length ? this.projectsDb : this.fallbackProjects;
-      return [...src].sort((a, b) => (a.order ?? 999) - (b.order ?? 999));
+      return [...this.projects]
+        .filter((p) => p?.isVisible !== false)
+        .sort((a, b) => (a.order ?? 999) - (b.order ?? 999));
     },
 
     currentProject() {
@@ -262,51 +238,11 @@ export default {
 
   mounted() {
     window.addEventListener("keydown", this.onKeyDown);
-
-    const q = query(collection(db, "projects"), orderBy("order", "asc"));
-    this.unsub = onSnapshot(
-      q,
-      (snap) => {
-        const items = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
-
-        // ✅ Visible + compat images[] + cover + ancien champ image
-        this.projectsDb = items
-          .filter((p) => p.isVisible !== false)
-          .map((p) => {
-            const images = Array.isArray(p.images) ? p.images : p.image ? [p.image] : [];
-            const cover = p.cover || images[0] || p.image || "";
-            return {
-              id: p.id,
-              title: p.title || "Projet",
-              status: p.status || "",
-              summary: p.summary || "",
-              link: p.link || "",
-              images,
-              cover,
-              order: p.order ?? 999,
-              isVisible: p.isVisible !== false,
-            };
-          });
-
-        this.loading = false;
-
-        if (this.lightbox.projectIndex > this.projectsToShow.length - 1) {
-          this.lightbox.projectIndex = 0;
-          this.lightbox.imageIndex = 0;
-        }
-      },
-      (e) => {
-        console.error(e);
-        // ❗️En cas d'erreur rules, on garde le fallback au lieu de tout vider
-        this.projectsDb = [];
-        this.loading = false;
-      }
-    );
   },
 
   beforeUnmount() {
     window.removeEventListener("keydown", this.onKeyDown);
-    if (this.unsub) this.unsub();
+    document.body.style.overflow = "";
   },
 
   methods: {
@@ -315,12 +251,11 @@ export default {
     },
 
     coverOf(p) {
-      // cover > images[0] > image (ancien) > placeholder
+      // cover > images[0] > fallback safe existant
       return (
         p?.cover ||
         (Array.isArray(p?.images) && p.images[0]) ||
-        p?.image ||
-        "/projets/placeholder.jpg"
+        "/ulaval.jpg"
       );
     },
 

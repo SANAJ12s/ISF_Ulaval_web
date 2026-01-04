@@ -24,7 +24,7 @@
           class="nav-link"
           :to="admin.isAdmin ? '/admin' : '/admin/login'"
         >
-          {{ admin.isAdmin ? "Admin" : "Connexion admin" }}
+          {{ admin.isAdmin ? "Admin" : "admin" }}
         </router-link>
 
         <!-- ✅ Déconnexion visible seulement si admin -->
@@ -65,7 +65,7 @@
         :to="admin.isAdmin ? '/admin' : '/admin/login'"
         @click="closeMobile"
       >
-        {{ admin.isAdmin ? "Admin" : "Connexion admin" }}
+        {{ admin.isAdmin ? "Admin" : "admin" }}
       </router-link>
 
       <!-- ✅ Logout si admin -->

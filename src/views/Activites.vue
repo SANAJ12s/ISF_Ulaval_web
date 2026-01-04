@@ -49,11 +49,10 @@
               @keydown.space.prevent="openGallery(idx, 0)"
             >
               <img
-              class="activity-img"
-              :src="a.images?.[0] || a.cover"
-              :alt="`Photo - ${a.title}`"
+                class="activity-img"
+                :src="a.images?.[0] || a.cover"
+                :alt="`Photo - ${a.title}`"
               />
-
 
               <div class="activity-badge">
                 <i class="fas fa-camera me-2"></i>
@@ -77,7 +76,7 @@
               <div class="thumbs">
                 <button
                   v-for="(img, i) in a.images.slice(0, 10)"
-                  :key="img"
+                  :key="img + i"
                   class="thumb"
                   @click="openGallery(idx, i)"
                   type="button"
@@ -129,7 +128,7 @@
         <div class="lb-dots">
           <button
             v-for="(img, i) in currentActivity?.images || []"
-            :key="img"
+            :key="img + i"
             class="dot"
             :class="{ active: i === lightbox.index }"
             type="button"
@@ -147,14 +146,71 @@
 </template>
 
 <script>
-import { collection, onSnapshot, orderBy, query } from "firebase/firestore";
-import { db } from "@/firebase";
-
 export default {
   name: "Activites",
   data() {
     return {
-      activities: [],
+      // ✅ HARD CODE (sans Firestore)
+      activities: [
+        {
+          id: "chalet",
+          title: "Sortie Chalet",
+          cover: "/activites/chalet1.png",
+          images: [
+            "/activites/chalet1.png",
+            "/activites/chalet2.png",
+            "/activites/chalet3.png",
+            "/activites/chalet4.png",
+            "/activites/chalet5.png",
+            "/activites/chalet6.png",
+            "/activites/chalet7.png",
+            "/activites/chalet8.png",
+          ],
+        },
+        {
+          id: "gala",
+          title: "Gala",
+          cover: "/activites/Gala1.png",
+          images: [
+            "/activites/Gala1.png",
+            "/activites/Gala2.png",
+            "/activites/Gala3.png",
+            "/activites/Gala4.png",
+            "/activites/Gala5.png",
+            "/activites/Gala6.png",
+          ],
+        },
+        {
+          id: "midiconf",
+          title: "Midi-conférence",
+          cover: "/activites/midiconf1.png",
+          images: [
+            "/activites/midiconf1.png",
+            "/activites/midiconf2.png",
+            "/activites/midiconf3.png",
+            "/activites/midiconf4.png",
+          ],
+        },
+        {
+          id: "visite-david",
+          title: "Visite (David)",
+          cover: "/activites/visiteDavid1.png",
+          images: [
+            "/activites/visiteDavid1.png",
+            "/activites/visiteDavid2.png",
+            "/activites/visiteDavid3.png",
+            "/activites/visiteDavid4.png",
+          ],
+        },
+
+        // ✅ Friperie déplacée ici (pas dans Projets)
+        {
+          id: "friperie",
+          title: "Friperie ISF",
+          cover: "/activites/visiteDavid3.png",
+          images: ["/activites/visiteDavid3.png"],
+        },
+      ],
 
       // lightbox
       lightbox: {
@@ -162,11 +218,6 @@ export default {
         activityIndex: 0,
         index: 0,
       },
-
-      // firestore
-      _unsub: null,
-      loading: true,
-      err: "",
     };
   },
 
@@ -180,7 +231,6 @@ export default {
   },
 
   methods: {
-    // --- UI actions ---
     scrollTo(id) {
       this.$nextTick(() => {
         const el = document.getElementById(id);
@@ -223,79 +273,16 @@ export default {
       if (e.key === "ArrowRight") this.nextImg();
       if (e.key === "ArrowLeft") this.prevImg();
     },
-    normalizeActivity(docId, data = {}) {
-      // compat champs
-      const images =
-        (Array.isArray(data.images) && data.images) ||
-        (Array.isArray(data.imageUrls) && data.imageUrls) ||
-        [];
-
-      const cover =
-        data.cover ||
-        data.coverUrl ||
-        images[0] ||
-        // placeholder si aucune image
-        "/activites/visiteDavid3.png";
-
-      const isVisible =
-        data.isVisible !== undefined ? !!data.isVisible : data.published !== false;
-
-      // id stable pour scroll (si pas de slug)
-      const safeId = data.slug || docId;
-
-      return {
-        id: safeId,
-        _docId: docId,
-        title: data.title || "Sans titre",
-        order: Number.isFinite(data.order) ? data.order : 999,
-        isVisible,
-        cover,
-        images: images.length ? images : [cover], // ✅ garantit au moins 1 image pour ton UI
-      };
-    },
-
-    subscribeActivities() {
-      this.err = "";
-      this.loading = true;
-
-      // ✅ On garde orderBy si tes docs ont order, sinon retire orderBy
-      const q = query(collection(db, "activities"), orderBy("order", "asc"));
-
-      this._unsub = onSnapshot(
-        q,
-        (snap) => {
-          const list = snap.docs
-            .map((d) => this.normalizeActivity(d.id, d.data()))
-            // ✅ filtrer visibilité (compat isVisible/published)
-            .filter((a) => a.isVisible);
-
-          // si tu veux un tri côté front aussi (safe)
-          list.sort((a, b) => (a.order ?? 999) - (b.order ?? 999));
-
-          this.activities = list;
-          this.loading = false;
-        },
-        (e) => {
-          console.error(e);
-          this.err = e?.message || "Erreur Firestore (activities)";
-          this.loading = false;
-        }
-      );
-    },
   },
 
-  mounted() {
-    this.subscribeActivities();
-  },
+  mounted() {},
 
   beforeUnmount() {
     window.removeEventListener("keydown", this.onKey);
     document.body.style.overflow = "";
-    if (this._unsub) this._unsub();
   },
 };
 </script>
-
 
 <style scoped>
 .activities-page {

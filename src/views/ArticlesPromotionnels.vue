@@ -1,6 +1,6 @@
 <template>
-  <div class="articles-promotionnels">
-    <!-- HERO (fond noir, style cohérent) -->
+  <main class="articles-promotionnels">
+    <!-- HERO -->
     <section class="hero-section">
       <div class="hero-overlay"></div>
       <div class="container hero-inner">
@@ -11,12 +11,7 @@
               Découvre nos articles officiels ISF Université Laval
             </p>
 
-            <a
-              :href="orderLink"
-              target="_blank"
-              class="btn btn-donate btn-lg"
-              rel="noreferrer"
-            >
+            <a :href="orderLink" target="_blank" class="btn btn-donate btn-lg" rel="noreferrer">
               <i class="fas fa-external-link-alt me-2"></i>
               Commander via le formulaire
             </a>
@@ -25,64 +20,40 @@
       </div>
     </section>
 
-    <!-- Image annonce (au début) : Firestore -->
+    <!-- ANNONCE -->
     <section class="py-5 section-dark">
       <div class="container">
         <div class="announce-card">
-          <img
-            v-if="hero.imageUrl"
-            :src="hero.imageUrl"
-            alt="Annonce des articles"
-            class="announce-img"
-          />
+          <img v-if="announceImage" :src="announceImage" alt="Annonce des articles" class="announce-img" />
           <div v-else class="announce-fallback">
             <div class="fallback-inner">
               <div class="fw-bold">Merch ISF</div>
-              <div class="text-white-50">Ajoute une image “Hero” dans l’admin.</div>
+              <div class="text-white-50">Ajoute une image d’annonce dans /public/membres/</div>
             </div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- Produits (Firestore) -->
+    <!-- PRODUITS -->
     <section class="py-5 section-dark">
       <div class="container">
         <div class="row">
           <div class="col-lg-8 mx-auto text-center mb-5">
             <h2 class="display-6 fw-bold mb-2 text-white">Nos articles</h2>
-            <p class="lead text-white-50 mb-0">
-              Clique sur un article pour voir la photo en grand.
-            </p>
+            <p class="lead text-white-50 mb-0">Clique sur un article pour voir la photo en grand.</p>
           </div>
         </div>
 
-        <!-- Loading / Empty -->
-        <div v-if="loading" class="events-placeholder">
-          <p class="mb-0 text-white-50">Chargement des articles…</p>
-        </div>
-
-        <div v-else-if="visibleItems.length === 0" class="events-placeholder">
+        <div v-if="items.length === 0" class="events-placeholder">
           <p class="mb-0 text-white-50">Aucun article pour le moment.</p>
         </div>
 
         <div v-else class="row g-4">
-          <div
-            v-for="(p, idx) in visibleItems"
-            :key="p.id"
-            class="col-lg-4 col-md-6"
-          >
-            <article
-              class="card card-dark card-hover h-100 product-card"
-              @click="openLightbox(idx)"
-            >
+          <div v-for="(p, idx) in items" :key="p.id" class="col-lg-4 col-md-6">
+            <article class="card card-dark card-hover h-100 product-card" @click="openLightbox(idx)">
               <div class="product-media">
-                <img
-                  v-if="p.imageUrl"
-                  :src="p.imageUrl"
-                  :alt="p.title"
-                  class="product-img"
-                />
+                <img v-if="p.imageUrl" :src="p.imageUrl" :alt="p.title" class="product-img" />
                 <div v-else class="product-img fallback">
                   <div class="fallback-inner">
                     <i class="fas fa-image"></i>
@@ -102,14 +73,9 @@
           </div>
         </div>
 
-        <!-- CTA en bas -->
+        <!-- CTA -->
         <div class="text-center mt-5">
-          <a
-            :href="orderLink"
-            target="_blank"
-            class="btn btn-donate btn-lg"
-            rel="noreferrer"
-          >
+          <a :href="orderLink" target="_blank" class="btn btn-donate btn-lg" rel="noreferrer">
             <i class="fas fa-shopping-cart me-2"></i>
             Commander maintenant
           </a>
@@ -127,21 +93,12 @@
             <i class="fas fa-times"></i>
           </button>
 
-          <button
-            class="lb-nav lb-prev"
-            @click="prevImage"
-            aria-label="Précédent"
-            :disabled="visibleItems.length <= 1"
-          >
+          <button class="lb-nav lb-prev" @click="prevImage" aria-label="Précédent" :disabled="items.length <= 1">
             <i class="fas fa-chevron-left"></i>
           </button>
 
           <div class="lb-content">
-            <img
-              :src="currentLightbox.imageUrl"
-              :alt="currentLightbox.title"
-              class="lb-img"
-            />
+            <img :src="currentLightbox.imageUrl" :alt="currentLightbox.title" class="lb-img" />
             <div class="lb-caption">
               <div class="lb-title">{{ currentLightbox.title }}</div>
               <div class="lb-sub">
@@ -151,22 +108,12 @@
             </div>
           </div>
 
-          <button
-            class="lb-nav lb-next"
-            @click="nextImage"
-            aria-label="Suivant"
-            :disabled="visibleItems.length <= 1"
-          >
+          <button class="lb-nav lb-next" @click="nextImage" aria-label="Suivant" :disabled="items.length <= 1">
             <i class="fas fa-chevron-right"></i>
           </button>
 
           <div class="lb-actions">
-            <a
-              :href="currentLightbox.buyUrl || orderLink"
-              target="_blank"
-              class="btn btn-donate"
-              rel="noreferrer"
-            >
+            <a :href="orderLink" target="_blank" class="btn btn-donate" rel="noreferrer">
               <i class="fas fa-external-link-alt me-2"></i>
               Commander
             </a>
@@ -174,51 +121,70 @@
         </div>
       </div>
     </teleport>
-  </div>
+  </main>
 </template>
 
 <script>
-import { doc, onSnapshot, collection, query, orderBy } from "firebase/firestore";
-import { db } from "@/firebase";
-
 export default {
   name: "ArticlesPromotionnels",
+
   data() {
     return {
-      // Global order link (fallback)
       orderLink: "https://forms.gle/AmjDeCcUneTFepcT7",
 
-      // Firestore
-      loading: true,
-      hero: { imageUrl: "", title: "", subtitle: "" },
-      itemsRaw: [],
-      unsubHero: null,
-      unsubItems: null,
+      // ✅ Image annonce (met ce fichier dans /public/membres/)
+      // si tu préfères, mets: "/membres/AnnonceDesArticlesEtQRCode.png"
+      announceImage: "/membres/AnnonceDesArticlesEtQRCode.png",
 
-      // Lightbox
+      // ✅ Produits hardcodés (mets les bons prix si tu veux)
+      items: [
+        {
+          id: "patch",
+          title: "Patch ISF",
+          price: "",
+          imageUrl: "/membres/patch.png",
+        },
+        {
+          id: "patch1",
+          title: "Patch ISF (variante)",
+          price: "",
+          imageUrl: "/membres/patch1.png",
+        },
+        {
+          id: "pull",
+          title: "Pull ISF",
+          price: "",
+          imageUrl: "/membres/pull.png",
+        },
+        {
+          id: "pull1",
+          title: "Pull ISF (variante)",
+          price: "",
+          imageUrl: "/membres/pull1.png",
+        },
+        {
+          id: "totte",
+          title: "Totebag ISF",
+          price: "",
+          imageUrl: "/membres/totte.png",
+        },
+        {
+          id: "totte1",
+          title: "Totebag ISF (variante)",
+          price: "",
+          imageUrl: "/membres/totte1.png",
+        },
+      ],
+
       lightboxOpen: false,
       currentIndex: 0,
     };
   },
 
   computed: {
-    visibleItems() {
-      return (this.itemsRaw || [])
-        .filter((x) => x.isVisible !== false)
-        .sort((a, b) => (a.order ?? 999) - (b.order ?? 999))
-        .map((x) => ({
-          id: x.id,
-          title: x.title || "Article",
-          price: x.price || "",
-          imageUrl: x.imageUrl || "",
-          buyUrl: x.buyUrl || "",
-          order: x.order ?? 999,
-        }));
-    },
-
     currentLightbox() {
-      const list = this.visibleItems;
-      if (!list.length) return { title: "", price: "", imageUrl: "", buyUrl: "" };
+      const list = this.items;
+      if (!list.length) return { title: "", price: "", imageUrl: "" };
       const i = Math.max(0, Math.min(this.currentIndex, list.length - 1));
       return list[i];
     },
@@ -226,39 +192,11 @@ export default {
 
   mounted() {
     window.addEventListener("keydown", this.onKeydown);
-
-    // HERO: merchHero/main
-    this.unsubHero = onSnapshot(
-      doc(db, "merchHero", "main"),
-      (snap) => {
-        this.hero = snap.exists() ? snap.data() : { imageUrl: "", title: "", subtitle: "" };
-      },
-      (e) => console.error("merchHero error:", e)
-    );
-
-    // ITEMS: merchItems
-    const q = query(collection(db, "merchItems"), orderBy("order", "asc"));
-    this.unsubItems = onSnapshot(
-      q,
-      (snap) => {
-        this.itemsRaw = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
-        this.loading = false;
-
-        // Si index invalide après update
-        if (this.currentIndex > this.visibleItems.length - 1) this.currentIndex = 0;
-      },
-      (e) => {
-        console.error("merchItems error:", e);
-        this.loading = false;
-      }
-    );
   },
 
   beforeUnmount() {
     window.removeEventListener("keydown", this.onKeydown);
     document.body.classList.remove("modal-open");
-    if (this.unsubHero) this.unsubHero();
-    if (this.unsubItems) this.unsubItems();
   },
 
   methods: {
@@ -272,12 +210,12 @@ export default {
       document.body.classList.remove("modal-open");
     },
     nextImage() {
-      const n = this.visibleItems.length;
+      const n = this.items.length;
       if (n <= 1) return;
       this.currentIndex = (this.currentIndex + 1) % n;
     },
     prevImage() {
-      const n = this.visibleItems.length;
+      const n = this.items.length;
       if (n <= 1) return;
       this.currentIndex = (this.currentIndex - 1 + n) % n;
     },
@@ -292,7 +230,6 @@ export default {
 </script>
 
 <style scoped>
-/* Global dark */
 .articles-promotionnels { background:#000; color:#fff; }
 .section-dark { background:#000; }
 
@@ -328,11 +265,9 @@ export default {
     radial-gradient(circle at 15% 20%, rgba(249,115,22,0.20), transparent 45%),
     #050505;
 }
-.fallback-inner{
-  text-align:center;
-}
+.fallback-inner{ text-align:center; }
 
-/* Cards dark */
+/* Cards */
 .card-dark{
   background: #0b0b0b;
   color: #fff;
@@ -349,7 +284,7 @@ export default {
   border-color: rgba(249,115,22,0.35);
 }
 
-/* Product media */
+/* Media */
 .product-media{
   height: 280px;
   display:flex;
@@ -387,7 +322,6 @@ export default {
   color: #000;
 }
 
-/* Small placeholder (reuse style) */
 .events-placeholder{
   max-width: 980px;
   margin: 0 auto;
@@ -462,10 +396,7 @@ export default {
   place-items:center;
   z-index: 2002;
 }
-.lb-nav:disabled{
-  opacity: .35;
-  cursor: not-allowed;
-}
+.lb-nav:disabled{ opacity: .35; cursor: not-allowed; }
 .lb-prev{ left:18px; }
 .lb-next{ right:18px; }
 
@@ -479,7 +410,6 @@ export default {
   padding: 0 18px;
 }
 
-/* Responsive */
 @media (max-width: 768px){
   .hero-section{ padding-top: 60px; }
   .display-4{ font-size: 2rem; }

@@ -1,34 +1,41 @@
+// src/stores/admin.js
 import { defineStore } from "pinia";
-import { onAuthStateChanged, signInWithEmailAndPassword, signOut } from "firebase/auth";
 import { auth } from "@/firebase";
+import { onAuthStateChanged, signInWithEmailAndPassword, signOut } from "firebase/auth";
 
-// ⚠️ Doit matcher tes rules Firestore
 const ADMIN_UID = "Tcgiu1FJg6XmXG1PAE8hEj08kg12";
 
 export const useAdminStore = defineStore("admin", {
   state: () => ({
     user: null,
     ready: false,
-    isAdminValue: false,
+
+    // internes
+    _unsub: null,
     _initPromise: null,
   }),
 
   getters: {
     isLoggedIn: (s) => !!s.user,
-    isAdmin: (s) => !!s.user && s.isAdminValue,
+    isAdmin: (s) => !!s.user && s.user.uid === ADMIN_UID,
   },
 
   actions: {
     init() {
-      if (this.ready) return Promise.resolve(this.user);
+      // ✅ Important: on attend le PREMIER callback onAuthStateChanged
       if (this._initPromise) return this._initPromise;
 
       this._initPromise = new Promise((resolve) => {
-        onAuthStateChanged(auth, (u) => {
+        if (this._unsub) this._unsub();
+
+        this._unsub = onAuthStateChanged(auth, (u) => {
           this.user = u || null;
-          this.isAdminValue = !!u && u.uid === ADMIN_UID;
           this.ready = true;
-          resolve(this.user);
+
+          // Debug utile pendant la livraison:
+          // console.log("[admin] auth ready:", this.user?.uid || null);
+
+          resolve(true);
         });
       });
 
@@ -37,22 +44,12 @@ export const useAdminStore = defineStore("admin", {
 
     async login(email, password) {
       await signInWithEmailAndPassword(auth, email, password);
-      // attendre que user/isAdmin soient en place
-      await this.init();
-
-      if (!this.isAdmin) {
-        await signOut(auth);
-        this.user = null;
-        this.isAdminValue = false;
-        throw new Error("Compte non autorisé (UID différent).");
-      }
+      // user sera mis à jour via onAuthStateChanged
     },
 
     async logout() {
       await signOut(auth);
-      this.user = null;
-      this.isAdminValue = false;
-      // ready reste true
+      // user sera mis à jour via onAuthStateChanged
     },
   },
 });

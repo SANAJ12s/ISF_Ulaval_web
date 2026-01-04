@@ -17,20 +17,11 @@
         <div class="intro">
           <h2 class="intro-title">Bibliothèque de documents</h2>
           <p class="intro-sub">
-            Clique sur un document pour l’ouvrir en plein écran. Tu peux aussi l’ouvrir dans un nouvel onglet.
+            Clique sur un document pour l’ouvrir. Tu peux l’afficher en plein écran ou dans un nouvel onglet.
           </p>
         </div>
 
-        <!-- loading / empty -->
-        <div v-if="loading" class="placeholder">
-          <p class="mb-0 text-white-50">Chargement…</p>
-        </div>
-
-        <div v-else-if="docs.length === 0" class="placeholder">
-          <p class="mb-0 text-white-50">Aucun document pour le moment.</p>
-        </div>
-
-        <div v-else class="layout">
+        <div class="layout">
           <!-- list -->
           <aside class="list">
             <button
@@ -64,14 +55,17 @@
                 </div>
 
                 <div class="viewer-actions">
+                  <button class="btn-ghost" type="button" @click="openFullscreen">
+                    Plein écran
+                  </button>
+
                   <a class="btn-open" :href="selected.url" target="_blank" rel="noreferrer">
-                    Ouvrir dans un onglet ↗
+                    Onglet ↗
                   </a>
                 </div>
               </div>
 
               <div class="viewer-frame">
-                <!-- embed iframe pdf -->
                 <iframe
                   v-if="selected.url"
                   :src="pdfSrc(selected.url)"
@@ -85,71 +79,77 @@
             </div>
           </section>
         </div>
-
-        <p class="hint">
-          📌 Les documents affichés viennent de Firestore (collection <code>documents</code>) et filtrent <code>isVisible</code>.
-        </p>
       </div>
     </section>
+
+    <!-- FULLSCREEN MODAL -->
+    <teleport to="body">
+      <div v-if="fsOpen" class="fs-backdrop" @click.self="closeFullscreen" role="dialog" aria-modal="true">
+        <div class="fs-modal">
+          <div class="fs-top">
+            <div class="fs-left">
+              <div class="fs-title">{{ selected?.title }}</div>
+              <div class="fs-sub" v-if="selected?.category">{{ selected.category }}</div>
+            </div>
+
+            <div class="fs-actions">
+              <a v-if="selected?.url" class="btn-open" :href="selected.url" target="_blank" rel="noreferrer">
+                Onglet ↗
+              </a>
+              <button class="btn-ghost" type="button" @click="closeFullscreen">
+                Fermer
+              </button>
+            </div>
+          </div>
+
+          <div class="fs-frame">
+            <iframe
+              v-if="selected?.url"
+              :src="pdfSrc(selected.url)"
+              title="PDF fullscreen viewer"
+              frameborder="0"
+            />
+          </div>
+        </div>
+      </div>
+    </teleport>
   </main>
 </template>
 
 <script>
-import { collection, onSnapshot, query } from "firebase/firestore";
-import { db } from "@/firebase";
-
 export default {
   name: "Documents",
   data() {
     return {
-      loading: true,
-      raw: [],
+      // ✅ HARD CODE (sans Firestore)
+      docs: [
+        {
+          id: "charte",
+          title: "Charte ISF — Université Laval",
+          category: "Document officiel",
+          description: "La charte officielle de la section ISF Université Laval.",
+          url: "/documents/charte-isf.pdf",
+          order: 1,
+          isVisible: true,
+        },
+      ],
+
       selected: null,
-      unsub: null,
+      fsOpen: false,
     };
   },
 
-  computed: {
-    docs() {
-      return (this.raw || [])
-        .filter((d) => d.isVisible !== false)
-        .sort((a, b) => (a.order ?? 999) - (b.order ?? 999))
-        .map((d) => ({
-          id: d.id,
-          title: d.title || "Document",
-          category: d.category || "",
-          url: d.url || "",
-          description: d.description || "",
-          order: d.order ?? 999,
-        }));
-    },
-  },
-
   mounted() {
-    const q = query(collection(db, "documents"));
-    this.unsub = onSnapshot(
-      q,
-      (snap) => {
-        this.raw = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
-        this.loading = false;
+    // auto-select first visible doc
+    const first = (this.docs || []).filter((d) => d.isVisible !== false).sort((a, b) => (a.order ?? 999) - (b.order ?? 999))[0];
+    this.selected = first || null;
 
-        // auto-select first doc
-        if (!this.selected && this.docs.length) this.selected = this.docs[0];
-        // keep selection if deleted
-        if (this.selected && !this.docs.find((x) => x.id === this.selected.id)) {
-          this.selected = this.docs[0] || null;
-        }
-      },
-      (e) => {
-        console.error(e);
-        this.loading = false;
-        this.raw = [];
-      }
-    );
+    window.addEventListener("keydown", this.onKey);
   },
 
   beforeUnmount() {
-    if (this.unsub) this.unsub();
+    window.removeEventListener("keydown", this.onKey);
+    document.body.style.overflow = "";
   },
 
   methods: {
@@ -157,10 +157,25 @@ export default {
       this.selected = d;
     },
 
-    // Force PDF to show viewer (works for direct pdf links, and local /public)
     pdfSrc(url) {
-      // basic: if you want page param you can append #page=1
+      // Viewer PDF (toolbar ok, nav/scroll ok)
       return `${url}#toolbar=1&navpanes=0&scrollbar=1`;
+    },
+
+    openFullscreen() {
+      if (!this.selected?.url) return;
+      this.fsOpen = true;
+      document.body.style.overflow = "hidden";
+    },
+
+    closeFullscreen() {
+      this.fsOpen = false;
+      document.body.style.overflow = "";
+    },
+
+    onKey(e) {
+      if (!this.fsOpen) return;
+      if (e.key === "Escape") this.closeFullscreen();
     },
   },
 };
@@ -190,15 +205,6 @@ export default {
 .intro-title{ font-weight: 900; font-size: 2rem; margin:0 0 8px; }
 .intro-sub{ margin:0; color: rgba(255,255,255,0.70); line-height: 1.8; }
 
-.placeholder{
-  max-width: 980px;
-  margin: 0 auto;
-  border: 1px dashed rgba(255,255,255,0.18);
-  border-radius: 16px;
-  padding: 22px;
-  text-align: center;
-}
-
 .layout{
   display:grid;
   grid-template-columns: 380px 1fr;
@@ -206,10 +212,7 @@ export default {
   align-items: start;
 }
 
-.list{
-  display:grid;
-  gap: 12px;
-}
+.list{ display:grid; gap: 12px; }
 
 .doc-item{
   text-align:left;
@@ -270,6 +273,13 @@ export default {
 .viewer-title .big{ font-weight: 900; font-size: 16px; }
 .viewer-title .small{ color: rgba(255,255,255,0.65); font-weight: 800; margin-top: 2px; font-size: 12px; }
 
+.viewer-actions{
+  display:flex;
+  gap: 10px;
+  align-items:center;
+  flex-wrap: wrap;
+}
+
 .btn-open{
   color:#000;
   background:#f97316;
@@ -277,6 +287,16 @@ export default {
   text-decoration:none;
   padding: 10px 12px;
   border-radius: 14px;
+  border: none;
+}
+
+.btn-ghost{
+  border-radius: 14px;
+  padding: 10px 12px;
+  font-weight: 900;
+  color: #fff;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
 }
 
 .viewer-frame{
@@ -293,6 +313,58 @@ export default {
   margin: 18px 0 0;
   text-align:center;
   color: rgba(255,255,255,0.65);
+}
+
+/* FULLSCREEN */
+.fs-backdrop{
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.86);
+  z-index: 10000;
+  display: grid;
+  place-items: center;
+  padding: 12px;
+}
+
+.fs-modal{
+  width: min(1200px, 98vw);
+  height: min(92vh, 900px);
+  background: #0b0b0b;
+  border: 1px solid rgba(255,255,255,0.10);
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 22px 70px rgba(0,0,0,0.55);
+  display: flex;
+  flex-direction: column;
+}
+
+.fs-top{
+  padding: 12px 14px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  display:flex;
+  align-items:center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.fs-title{ font-weight: 900; color:#fff; }
+.fs-sub{ color: rgba(255,255,255,0.65); font-weight: 800; font-size: 12px; margin-top: 2px; }
+
+.fs-actions{
+  display:flex;
+  gap: 10px;
+  align-items:center;
+  flex-wrap: wrap;
+}
+
+.fs-frame{
+  flex: 1;
+  background:#050505;
+}
+.fs-frame iframe{
+  width: 100%;
+  height: 100%;
+  border: 0;
 }
 
 @media (max-width: 992px){

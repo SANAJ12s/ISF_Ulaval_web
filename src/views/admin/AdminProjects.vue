@@ -29,18 +29,40 @@
             </select>
           </div>
 
-          <!-- ✅ Upload (Storage) -->
+          <!-- ✅ Upload images -->
           <div class="col-12">
             <label class="form-label">Images (upload)</label>
-            <input class="form-control" type="file" multiple accept="image/*" @change="onFiles" :disabled="saving" />
+
+            <input
+              ref="fileInput"
+              class="form-control"
+              type="file"
+              multiple
+              accept="image/*"
+              @change="onFiles"
+              :disabled="saving || uploading"
+            />
 
             <small class="muted d-block mt-2">
-              Tu peux choisir plusieurs photos. La 1re image de la liste sert de “cover” (images[0]).
+              ✅ Les images seront uploadées après avoir cliqué sur <b>Ajouter/Enregistrer projet</b>.
+              <br />
+              Si Storage bloque, le projet est quand même enregistré (sans photo) et tu verras une erreur claire.
             </small>
 
-            <div v-if="uploading" class="muted mt-2">Upload en cours…</div>
+            <!-- Pending previews -->
+            <div v-if="pendingPreviews.length" class="img-grid mt-3">
+              <div v-for="(p, i) in pendingPreviews" :key="p.url" class="img-card">
+                <img :src="p.url" alt="" class="img-preview" />
+                <div class="img-actions">
+                  <span class="muted small">{{ i === 0 ? "Cover (pending)" : `Pending ${i + 1}` }}</span>
+                  <button class="btn-small danger" type="button" @click="removePending(i)" :disabled="saving || uploading">
+                    Retirer
+                  </button>
+                </div>
+              </div>
+            </div>
 
-            <!-- preview + remove -->
+            <!-- Uploaded previews -->
             <div v-if="form.images.length" class="img-grid mt-3">
               <div v-for="(img, i) in form.images" :key="img + i" class="img-card">
                 <img :src="img" alt="" class="img-preview" />
@@ -52,25 +74,21 @@
                 </div>
               </div>
             </div>
-          </div>
 
-          <!-- ✅ Add by URL -->
-          <div class="col-12">
-            <label class="form-label">Ajouter une image par URL (optionnel)</label>
-            <div class="d-flex gap-2 flex-wrap">
-              <input
-                v-model.trim="imageInput"
-                class="form-control"
-                placeholder="https://... ou /projets/photo.jpg"
-                :disabled="saving || uploading"
-              />
-              <button class="btn-primary" type="button" @click="addImage" :disabled="saving || uploading">
-                Ajouter
+            <!-- Upload progress -->
+            <div v-if="uploading" class="uploadBox mt-3">
+              <div class="muted">
+                Upload en cours… {{ uploadDone }}/{{ uploadTotal }} ({{ uploadProgressPct }}%)
+              </div>
+
+              <div class="progressLine">
+                <div class="progressFill" :style="{ width: uploadProgressPct + '%' }"></div>
+              </div>
+
+              <button class="btn-small danger mt-2" type="button" @click="cancelUpload" :disabled="saving">
+                Annuler l’upload
               </button>
             </div>
-            <small class="muted d-block mt-2">
-              Si tu ajoutes une URL, elle sera ajoutée à la liste d’images.
-            </small>
           </div>
 
           <div class="col-md-6">
@@ -103,9 +121,8 @@
           </div>
 
           <div class="col-12 d-flex flex-wrap gap-2">
-            <!-- ✅ IMPORTANT: désactivé seulement pendant saving/uploading -->
-            <button class="btn-primary" type="button" @click="save" :disabled="saving || uploading">
-              {{ uploading ? "Upload…" : (saving ? "..." : (editingId ? "Enregistrer" : "Ajouter")) }}
+            <button class="btn-primary" type="button" @click="saveProject" :disabled="saving || uploading">
+              {{ saving ? "..." : (editingId ? "Enregistrer projet" : "Ajouter projet") }}
             </button>
 
             <button v-if="editingId" class="btn-ghost" type="button" @click="cancelEdit" :disabled="saving || uploading">
@@ -166,7 +183,7 @@
         </div>
 
         <p class="hint">
-          🔧 Collection Firestore : <code>projects</code> (read public, write admin).
+          🔧 Firestore : <code>projects</code> — Storage : <code>projects/{projectId}/...</code>
         </p>
       </div>
     </div>
@@ -186,7 +203,7 @@ import {
   serverTimestamp,
   updateDoc,
 } from "firebase/firestore";
-import { ref as sRef, uploadBytes, getDownloadURL } from "firebase/storage";
+import { ref as sRef, getDownloadURL, uploadBytesResumable } from "firebase/storage";
 import { db, storage } from "@/firebase";
 
 const loading = ref(true);
@@ -198,7 +215,21 @@ const projects = ref([]);
 let unsub = null;
 
 const editingId = ref(null);
-const imageInput = ref("");
+
+const fileInput = ref(null);
+
+// pending (local)
+const pendingFiles = ref([]);
+const pendingPreviews = ref([]);
+const previewUrlsToRevoke = ref([]);
+
+// upload progress
+const uploadTotal = ref(0);
+const uploadDone = ref(0);
+const uploadProgressPct = ref(0);
+
+// tasks for cancel
+const uploadTasks = ref([]);
 
 const form = reactive({
   title: "",
@@ -214,6 +245,22 @@ const projectsSorted = computed(() =>
   [...projects.value].sort((a, b) => (a.order ?? 999) - (b.order ?? 999))
 );
 
+function safeName(name) {
+  return String(name || "file")
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-zA-Z0-9._-]/g, "_");
+}
+
+function clearFileInput() {
+  if (fileInput.value) fileInput.value.value = "";
+}
+
+function revokePreviews() {
+  for (const u of previewUrlsToRevoke.value) URL.revokeObjectURL(u);
+  previewUrlsToRevoke.value = [];
+}
+
 function resetForm() {
   form.title = "";
   form.status = "En cours";
@@ -222,7 +269,12 @@ function resetForm() {
   form.link = "";
   form.order = 1;
   form.isVisible = true;
-  imageInput.value = "";
+
+  pendingFiles.value = [];
+  pendingPreviews.value = [];
+  revokePreviews();
+  clearFileInput();
+
   err.value = "";
 }
 
@@ -248,104 +300,193 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
   if (unsub) unsub();
+  revokePreviews();
 });
 
-function addImage() {
+function onFiles(e) {
   err.value = "";
-  const url = (imageInput.value || "").trim();
-  if (!url) return;
+  const files = Array.from(e.target.files || []);
+  if (!files.length) return;
 
-  if (form.images.includes(url)) {
-    imageInput.value = "";
-    return;
+  for (const f of files) {
+    const type = (f.type || "").toLowerCase();
+    const looksLikeImage = type.startsWith("image/") || /\.(png|jpe?g|gif|webp|bmp|svg)$/i.test(f.name);
+    if (!looksLikeImage) continue;
+
+    pendingFiles.value.push(f);
+
+    const url = URL.createObjectURL(f);
+    previewUrlsToRevoke.value.push(url);
+    pendingPreviews.value.push({ url, name: f.name });
   }
 
-  form.images.push(url);
-  imageInput.value = "";
+  clearFileInput();
+}
+
+function removePending(i) {
+  pendingFiles.value.splice(i, 1);
+  const p = pendingPreviews.value.splice(i, 1)[0];
+  if (p?.url) {
+    URL.revokeObjectURL(p.url);
+    previewUrlsToRevoke.value = previewUrlsToRevoke.value.filter((x) => x !== p.url);
+  }
 }
 
 function removeImage(i) {
   form.images.splice(i, 1);
 }
 
-/** ✅ Upload images vers Firebase Storage */
-async function onFiles(e) {
-  err.value = "";
-  const files = Array.from(e.target.files || []);
-  if (!files.length) return;
+function cancelUpload() {
+  for (const t of uploadTasks.value) {
+    try { t.cancel(); } catch {}
+  }
+  uploadTasks.value = [];
+  uploading.value = false;
+  uploadTotal.value = 0;
+  uploadDone.value = 0;
+  uploadProgressPct.value = 0;
+  err.value = "Upload annulé.";
+}
+
+async function uploadOneWithTimeout(task, timeoutMs = 20000) {
+  return await Promise.race([
+    new Promise((resolve, reject) => {
+      task.on(
+        "state_changed",
+        () => {},
+        (error) => reject(error),
+        async () => {
+          try {
+            const url = await getDownloadURL(task.snapshot.ref);
+            resolve(url);
+          } catch (e) {
+            reject(e);
+          }
+        }
+      );
+    }),
+    new Promise((_, reject) =>
+      setTimeout(() => reject(new Error("Upload timeout. Vérifie Storage rules + connexion.")), timeoutMs)
+    ),
+  ]);
+}
+
+async function uploadPendingImages(projectId) {
+  if (!pendingFiles.value.length) return;
 
   uploading.value = true;
+  uploadTotal.value = pendingFiles.value.length;
+  uploadDone.value = 0;
+  uploadProgressPct.value = 0;
+  uploadTasks.value = [];
+
+  const uploadedUrls = [];
+
   try {
-    const urls = [];
+    for (let i = 0; i < pendingFiles.value.length; i++) {
+      const file = pendingFiles.value[i];
 
-    for (const file of files) {
-      const path = `projects/${Date.now()}_${file.name}`;
+      const stamp = `${Date.now()}_${Math.random().toString(16).slice(2)}`;
+      const path = `projects/${projectId}/${stamp}_${safeName(file.name)}`;
+
       const storageRef = sRef(storage, path);
+      const task = uploadBytesResumable(storageRef, file);
+      uploadTasks.value.push(task);
 
-      await uploadBytes(storageRef, file); // peut échouer si rules/auth
-      const url = await getDownloadURL(storageRef);
-      urls.push(url);
+      // progress (simple: file-by-file)
+      task.on("state_changed", (snap) => {
+        const filePct = snap.totalBytes > 0 ? Math.round((snap.bytesTransferred / snap.totalBytes) * 100) : 0;
+        // global approx : i files done + current file pct
+        const global = Math.round(((i + filePct / 100) / uploadTotal.value) * 100);
+        uploadProgressPct.value = Math.min(99, Math.max(0, global));
+      });
+
+      const url = await uploadOneWithTimeout(task, 25000);
+      uploadedUrls.push(url);
+      uploadDone.value += 1;
+      uploadProgressPct.value = Math.round((uploadDone.value / uploadTotal.value) * 100);
     }
 
-    // append sans doublons
-    for (const u of urls) {
+    // merge into form.images
+    for (const u of uploadedUrls) {
       if (!form.images.includes(u)) form.images.push(u);
     }
-  } catch (e2) {
-    console.error(e2);
-    // ✅ sinon ça "reste bloqué" et tu crois que le bouton ne marche pas
-    err.value = e2?.message || "Erreur upload Storage (permissions / auth / rules).";
+
+    await updateDoc(doc(db, "projects", projectId), {
+      images: form.images,
+      image: form.images?.[0] || "",
+      updatedAt: serverTimestamp(),
+    });
+
+    // clear pending
+    pendingFiles.value = [];
+    pendingPreviews.value = [];
+    revokePreviews();
   } finally {
     uploading.value = false;
-    e.target.value = "";
+    uploadTasks.value = [];
+    uploadTotal.value = 0;
+    uploadDone.value = 0;
+    uploadProgressPct.value = 0;
   }
 }
 
-async function save() {
+async function saveProject() {
   err.value = "";
   if (!form.title?.trim()) {
     err.value = "Le titre est obligatoire.";
     return;
   }
 
-  // si upload toujours en cours, on bloque (pour éviter projet sans images complètes)
-  if (uploading.value) {
-    err.value = "Attends la fin de l’upload avant d’enregistrer.";
-    return;
-  }
-
   saving.value = true;
 
-  const payload = {
+  const basePayload = {
     title: form.title.trim(),
     status: form.status,
     summary: form.summary?.trim() || "",
-    images: Array.isArray(form.images) ? form.images : [],
-    // compat
-    image: form.images?.[0] || "",
     link: form.link?.trim() || "",
-    order: Number.isFinite(form.order) ? form.order : 999,
+    order: Number.isFinite(form.order) ? Number(form.order) : 999,
     isVisible: !!form.isVisible,
     updatedAt: serverTimestamp(),
   };
 
   try {
+    let projectId = editingId.value;
+
+    // 1) Save Firestore first (always works)
     if (editingId.value) {
-      await updateDoc(doc(db, "projects", editingId.value), payload);
-      editingId.value = null;
-      resetForm();
-      return;
+      await updateDoc(doc(db, "projects", editingId.value), {
+        ...basePayload,
+        images: Array.isArray(form.images) ? form.images : [],
+        image: form.images?.[0] || "",
+      });
+    } else {
+      const docRef = await addDoc(collection(db, "projects"), {
+        ...basePayload,
+        images: Array.isArray(form.images) ? form.images : [],
+        image: form.images?.[0] || "",
+        createdAt: serverTimestamp(),
+      });
+      projectId = docRef.id;
     }
 
-    await addDoc(collection(db, "projects"), {
-      ...payload,
-      createdAt: serverTimestamp(),
-    });
+    // 2) Upload after (if pending)
+    if (pendingFiles.value.length) {
+      try {
+        await uploadPendingImages(projectId);
+      } catch (upErr) {
+        console.error(upErr);
+        err.value =
+          "Le projet est enregistré, mais l’upload des images a échoué. " +
+          (upErr?.message || "Vérifie Storage rules: /projects/** write admin.");
+      }
+    }
 
+    editingId.value = null;
     resetForm();
-  } catch (e1) {
-    console.error(e1);
-    err.value = e1?.message || "Erreur lors de l’enregistrement.";
+  } catch (e) {
+    console.error(e);
+    err.value = e?.message || "Erreur lors de l’enregistrement.";
   } finally {
     saving.value = false;
   }
@@ -360,7 +501,11 @@ function edit(p) {
   form.link = p.link || "";
   form.order = Number.isFinite(p.order) ? p.order : 999;
   form.isVisible = p.isVisible !== false;
-  imageInput.value = "";
+
+  pendingFiles.value = [];
+  pendingPreviews.value = [];
+  revokePreviews();
+  clearFileInput();
   err.value = "";
 }
 
@@ -394,154 +539,50 @@ function firstImage(p) {
 </script>
 
 <style scoped>
-.admin {
-  background: #000;
-  min-height: 100vh;
-  color: #fff;
-  padding-top: 90px;
-}
-.title { font-weight: 900; margin: 0; }
-.subtitle { margin: 6px 0 0; color: rgba(255, 255, 255, 0.7); }
+.admin { background:#000; min-height:100vh; color:#fff; padding-top:90px; }
+.title { font-weight:900; margin:0; }
+.subtitle { margin:6px 0 0; color:rgba(255,255,255,0.7); }
 
-.card {
-  background: #0b0b0b;
-  border: 1px solid rgba(255, 255, 255, 0.10);
-  border-radius: 18px;
-  padding: 20px;
-  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.35);
-}
+.card { background:#0b0b0b; border:1px solid rgba(255,255,255,0.10); border-radius:18px; padding:20px; box-shadow:0 14px 40px rgba(0,0,0,0.35); }
 
-.btn-back {
-  text-decoration: none;
-  color: #fff;
-  font-weight: 800;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.10);
-  border-radius: 14px;
-  padding: 10px 14px;
-}
+.btn-back { text-decoration:none; color:#fff; font-weight:800; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.10); border-radius:14px; padding:10px 14px; }
 
-.badge {
-  font-weight: 900;
-  padding: 8px 12px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.10);
-}
+.badge { font-weight:900; padding:8px 12px; border-radius:999px; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.10); }
 
-.list { display: grid; gap: 12px; }
+.list { display:grid; gap:12px; }
+.item { display:flex; gap:14px; justify-content:space-between; align-items:flex-start; padding:14px; border-radius:14px; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); }
+.info { min-width:0; flex:1; }
+.name { font-weight:900; font-size:18px; }
+.meta { display:flex; flex-wrap:wrap; gap:10px; margin-top:6px; align-items:center; }
 
-.item {
-  display: flex;
-  gap: 14px;
-  justify-content: space-between;
-  align-items: flex-start;
-  padding: 14px;
-  border-radius: 14px;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-}
+.pill { display:inline-block; padding:6px 10px; border-radius:999px; font-weight:900; background:rgba(249,115,22,0.12); border:1px solid rgba(249,115,22,0.45); color:#f97316; font-size:13px; }
+.muted-pill { background:rgba(255,255,255,0.06); border-color:rgba(255,255,255,0.10); color:rgba(255,255,255,0.75); }
+.pill.ok { background:rgba(34,197,94,0.12); border-color:rgba(34,197,94,0.35); color:#22c55e; }
+.pill.off { background:rgba(239,68,68,0.12); border-color:rgba(239,68,68,0.35); color:#ef4444; }
 
-.info { min-width: 0; flex: 1; }
-.name { font-weight: 900; font-size: 18px; }
+.desc { margin:10px 0 0; color:rgba(255,255,255,0.75); }
+.links { margin-top:10px; display:grid; gap:6px; }
+.link { color:#f97316; font-weight:800; text-decoration:none; }
+.muted { color:rgba(255,255,255,0.55); font-size:13px; }
+.muted.small { font-size:12px; }
 
-.meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-top: 6px;
-  align-items: center;
-}
+.actions { display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end; }
 
-.pill {
-  display: inline-block;
-  padding: 6px 10px;
-  border-radius: 999px;
-  font-weight: 900;
-  background: rgba(249, 115, 22, 0.12);
-  border: 1px solid rgba(249, 115, 22, 0.45);
-  color: #f97316;
-  font-size: 13px;
-}
-.muted-pill {
-  background: rgba(255, 255, 255, 0.06);
-  border-color: rgba(255, 255, 255, 0.10);
-  color: rgba(255, 255, 255, 0.75);
-}
-.pill.ok { background: rgba(34, 197, 94, 0.12); border-color: rgba(34, 197, 94, 0.35); color: #22c55e; }
-.pill.off { background: rgba(239, 68, 68, 0.12); border-color: rgba(239, 68, 68, 0.35); color: #ef4444; }
+.btn-primary { border:none; border-radius:14px; padding:10px 14px; font-weight:900; color:#000; background:#f97316; }
+.btn-ghost { border-radius:14px; padding:10px 14px; font-weight:900; color:#fff; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.12); }
+.btn-small { border-radius:12px; padding:8px 10px; font-weight:900; color:#fff; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.12); }
+.btn-small.danger { border-color:rgba(239,68,68,0.45); background:rgba(239,68,68,0.12); }
 
-.desc { margin: 10px 0 0; color: rgba(255, 255, 255, 0.75); }
-.links { margin-top: 10px; display: grid; gap: 6px; }
+.empty { padding:16px; border-radius:14px; border:1px dashed rgba(255,255,255,0.18); color:rgba(255,255,255,0.7); }
+.hint { margin:14px 0 0; color:rgba(255,255,255,0.65); font-size:14px; }
 
-.link { color: #f97316; font-weight: 800; text-decoration: none; }
-.muted { color: rgba(255, 255, 255, 0.55); font-size: 13px; }
-.muted.small { font-size: 12px; }
+.img-grid { display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:10px; }
+.img-card { background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.10); border-radius:14px; overflow:hidden; }
+.img-preview { width:100%; height:140px; object-fit:cover; display:block; }
+.img-actions { display:flex; justify-content:space-between; align-items:center; gap:10px; padding:10px; }
+@media (max-width:900px){ .img-grid { grid-template-columns:repeat(2, minmax(0,1fr)); } }
 
-.actions { display: flex; gap: 10px; flex-wrap: wrap; justify-content: flex-end; }
-
-.btn-primary {
-  border: none;
-  border-radius: 14px;
-  padding: 10px 14px;
-  font-weight: 900;
-  color: #000;
-  background: #f97316;
-}
-.btn-ghost {
-  border-radius: 14px;
-  padding: 10px 14px;
-  font-weight: 900;
-  color: #fff;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-}
-.btn-small {
-  border-radius: 12px;
-  padding: 8px 10px;
-  font-weight: 900;
-  color: #fff;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-}
-.btn-small.danger {
-  border-color: rgba(239, 68, 68, 0.45);
-  background: rgba(239, 68, 68, 0.12);
-}
-.empty {
-  padding: 16px;
-  border-radius: 14px;
-  border: 1px dashed rgba(255, 255, 255, 0.18);
-  color: rgba(255, 255, 255, 0.7);
-}
-.hint { margin: 14px 0 0; color: rgba(255, 255, 255, 0.65); font-size: 14px; }
-
-/* ✅ preview images */
-.img-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 10px;
-}
-.img-card {
-  background: rgba(255,255,255,0.04);
-  border: 1px solid rgba(255,255,255,0.10);
-  border-radius: 14px;
-  overflow: hidden;
-}
-.img-preview {
-  width: 100%;
-  height: 140px;
-  object-fit: cover;
-  display: block;
-}
-.img-actions {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 10px;
-  padding: 10px;
-}
-@media (max-width: 900px) {
-  .img-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-}
+.uploadBox { border:1px solid rgba(255,255,255,0.12); border-radius:14px; padding:12px; background:rgba(255,255,255,0.04); }
+.progressLine { width:100%; height:10px; border-radius:999px; background:rgba(255,255,255,0.10); overflow:hidden; margin-top:8px; }
+.progressFill { height:100%; background:rgba(249,115,22,0.85); width:0%; transition:width .2s ease; }
 </style>
