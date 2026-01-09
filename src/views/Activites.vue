@@ -154,7 +154,7 @@ export default {
       activities: [
         {
           id: "chalet",
-          title: "Sortie Chalet",
+          title: "Chalet ISF édition 2025 ",
           cover: "/activites/chalet1.png",
           images: [
             "/activites/chalet1.png",
@@ -169,7 +169,7 @@ export default {
         },
         {
           id: "gala",
-          title: "Gala",
+          title: "Gala de la vie étudiante 2024 ",
           cover: "/activites/Gala1.png",
           images: [
             "/activites/Gala1.png",
@@ -182,7 +182,7 @@ export default {
         },
         {
           id: "midiconf",
-          title: "Midi-conférence",
+          title: "Midi-conférence avec Pierre Luc Huot ",
           cover: "/activites/midiconf1.png",
           images: [
             "/activites/midiconf1.png",
@@ -193,7 +193,7 @@ export default {
         },
         {
           id: "visite-david",
-          title: "Visite (David)",
+          title: "Visite de David Boroto ",
           cover: "/activites/visiteDavid1.png",
           images: [
             "/activites/visiteDavid1.png",
@@ -203,12 +203,12 @@ export default {
           ],
         },
 
-        // ✅ Friperie déplacée ici (pas dans Projets)
+  
         {
           id: "friperie",
           title: "Friperie ISF",
-          cover: "/activites/visiteDavid3.png",
-          images: ["/activites/visiteDavid3.png"],
+          cover: "/projets/friperie.png",
+          images: ["/projets/friperie.png"],
         },
       ],
 

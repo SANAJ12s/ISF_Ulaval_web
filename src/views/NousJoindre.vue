@@ -1,6 +1,6 @@
 <template>
   <div class="nous-joindre page-dark">
-    <!-- Hero Section -->
+   
     <section class="hero-section hero-dark">
       <div class="hero-overlay"></div>
       <div class="container hero-inner">
@@ -15,7 +15,7 @@
       </div>
     </section>
 
-    <!-- Réseaux sociaux et contact -->
+  
     <section class="py-5 section-dark">
       <div class="container">
         <div class="row">
@@ -28,7 +28,7 @@
         </div>
 
         <div class="row g-4">
-          <!-- Facebook -->
+         
           <div class="col-lg-4 col-md-6">
             <div class="card card-dark h-100">
               <div class="card-body text-center p-4">
@@ -44,6 +44,7 @@
                     href="https://www.facebook.com/isfulaval"
                     target="_blank"
                     class="btn btn-primary"
+                    rel="noopener"
                   >
                     <i class="fab fa-facebook-f me-2"></i>
                     Page ISF
@@ -52,6 +53,7 @@
                     href="https://www.facebook.com/groups/534075985970818/"
                     target="_blank"
                     class="btn btn-outline-light"
+                    rel="noopener"
                   >
                     <i class="fas fa-users me-2"></i>
                     Groupe privé
@@ -61,7 +63,7 @@
             </div>
           </div>
 
-          <!-- Instagram -->
+          
           <div class="col-lg-4 col-md-6">
             <div class="card card-dark h-100">
               <div class="card-body text-center p-4">
@@ -70,7 +72,12 @@
                 </div>
                 <h5 class="fw-bold mb-2 text-white">Instagram</h5>
                 <p class="text-white-50 mb-4">Photos, stories, behind-the-scenes.</p>
-                <a href="#" target="_blank" class="btn btn-instagram w-100">
+                <a
+                  href="https://www.instagram.com/isfulaval/"
+                  target="_blank"
+                  class="btn btn-instagram w-100"
+                  rel="noopener"
+                >
                   <i class="fab fa-instagram me-2"></i>
                   Suivre
                 </a>
@@ -78,7 +85,7 @@
             </div>
           </div>
 
-          <!-- LinkedIn -->
+       
           <div class="col-lg-4 col-md-6">
             <div class="card card-dark h-100">
               <div class="card-body text-center p-4">
@@ -87,7 +94,12 @@
                 </div>
                 <h5 class="fw-bold mb-2 text-white">LinkedIn</h5>
                 <p class="text-white-50 mb-4">Infos, projets, partenariats.</p>
-                <a href="#" target="_blank" class="btn btn-linkedin w-100">
+                <a
+                  href="https://www.linkedin.com/company/isfulaval/posts/?feedView=all"
+                  target="_blank"
+                  class="btn btn-linkedin w-100"
+                  rel="noopener"
+                >
                   <i class="fab fa-linkedin-in me-2"></i>
                   LinkedIn
                 </a>
@@ -97,39 +109,27 @@
 
           <!-- YouTube -->
           <div class="col-lg-4 col-md-6">
-            <div class="card card-dark h-100">
-              <div class="card-body text-center p-4">
-                <div class="social-icon youtube mb-3">
-                  <i class="fab fa-youtube"></i>
-                </div>
-                <h5 class="fw-bold mb-2 text-white">YouTube</h5>
-                <p class="text-white-50 mb-4">Interviews d’ingénieurs & projets.</p>
-                <a href="#" target="_blank" class="btn btn-youtube w-100">
-                  <i class="fab fa-youtube me-2"></i>
-                  Chaîne YouTube
-                </a>
-              </div>
-            </div>
-          </div>
+  <div class="card card-dark h-100">
+    <div class="card-body text-center p-4">
+      <div class="social-icon youtube mb-3">
+        <i class="fab fa-youtube"></i>
+      </div>
+      <h5 class="fw-bold mb-2 text-white">YouTube</h5>
+      <p class="text-white-50 mb-4">Interviews d’ingénieurs & projets.</p>
+      <a
+        href="https://www.youtube.com/@ISF-Ulaval"
+        target="_blank"
+        class="btn btn-youtube w-100"
+        rel="noopener"
+      >
+        <i class="fab fa-youtube me-2"></i>
+        Chaîne YouTube
+      </a>
+    </div>
+  </div>
+</div>
 
-          <!-- TikTok -->
-          <div class="col-lg-4 col-md-6">
-            <div class="card card-dark h-100">
-              <div class="card-body text-center p-4">
-                <div class="social-icon tiktok mb-3">
-                  <i class="fab fa-tiktok"></i>
-                </div>
-                <h5 class="fw-bold mb-2 text-white">TikTok</h5>
-                <p class="text-white-50 mb-4">Contenu fun + éducatif.</p>
-                <a href="#" target="_blank" class="btn btn-tiktok w-100">
-                  <i class="fab fa-tiktok me-2"></i>
-                  TikTok
-                </a>
-              </div>
-            </div>
-          </div>
 
-          <!-- Email -->
           <div class="col-lg-4 col-md-6">
             <div class="card card-dark h-100">
               <div class="card-body text-center p-4">
@@ -137,26 +137,24 @@
                   <i class="fas fa-envelope"></i>
                 </div>
                 <h5 class="fw-bold mb-2 text-white">Courriel</h5>
-                <p class="text-white-50 mb-4">Pour toute question / collaboration.</p>
-                <a href="mailto:ulaval@chapter.ewb.ca" class="btn btn-email w-100">
-                  <i class="fas fa-envelope me-2"></i>
-                  Écrire un courriel
-                </a>
-              </div>
-            </div>
-          </div>
-        </div>
+                <p class="text-white-50 mb-3">Pour toute question / collaboration.</p>
 
-        <!-- petite bande accent -->
-        <div class="row mt-5">
-          <div class="col-lg-9 mx-auto">
-            <div class="accent-strip">
-              <div class="accent-badge">
-                <i class="fas fa-bolt me-2"></i>Réponse rapide
-              </div>
-              <div class="accent-text">
-                Pour une visite au local, écris-nous avant — le local peut être fermé selon la
-                disponibilité.
+                <div class="email-pill">{{ email }}</div>
+
+                <button
+                  type="button"
+                  class="btn btn-email w-100 mt-3"
+                  @click="copyEmail"
+                  :disabled="copyState === 'copied'"
+                >
+                  <i class="fas fa-copy me-2"></i>
+                  <span v-if="copyState === 'idle'">Copier l’adresse</span>
+                  <span v-else>Copié !</span>
+                </button>
+
+                <div v-if="copyState === 'copied'" class="small text-white-50 mt-2">
+                  Adresse copié
+                </div>
               </div>
             </div>
           </div>
@@ -164,7 +162,7 @@
       </div>
     </section>
 
-    <!-- Coordonnées (cartes dark) -->
+    <!-- Coordonnées (Adresse seulement) -->
     <section class="py-5 section-dark">
       <div class="container">
         <div class="row">
@@ -177,7 +175,7 @@
         </div>
 
         <div class="row g-4 justify-content-center">
-          <div class="col-lg-5">
+          <div class="col-lg-8">
             <div class="card card-dark h-100">
               <div class="card-body p-4">
                 <h5 class="fw-bold mb-3 text-white">
@@ -199,36 +197,7 @@
 
                 <div class="mini-note mt-4">
                   <i class="fas fa-info-circle me-2"></i>
-                  Le local peut parfois être fermé. Écris-nous avant de passer.
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-lg-5">
-            <div class="card card-dark h-100">
-              <div class="card-body p-4">
-                <h5 class="fw-bold mb-3 text-white">
-                  <i class="fas fa-clock text-success me-2"></i>
-                  Heures d'ouverture
-                </h5>
-
-                <div class="hours-grid">
-                  <div class="hours-item">
-                    <div class="hours-k">Lundi – Vendredi</div>
-                    <div class="hours-v">9h00 – 17h00</div>
-                  </div>
-                  <div class="hours-item">
-                    <div class="hours-k">Dimanche</div>
-                    <div class="hours-v">
-                      13h00 – 17h00 <span class="muted">*</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="mini-warning mt-4">
-                  <i class="fas fa-exclamation-triangle me-2"></i>
-                  <strong>*</strong> Selon la disponibilité des membres du comité exécutif.
+                  Le local peut parfois être fermé.
                 </div>
               </div>
             </div>
@@ -236,109 +205,6 @@
         </div>
       </div>
     </section>
-
-    <!-- Formulaire (dark + header accent) -->
-    <section class="py-5 section-dark">
-      <div class="container">
-        <div class="row">
-          <div class="col-lg-9 mx-auto">
-            <div class="card card-dark">
-              <div class="card-header form-header text-center py-4">
-                <h4 class="mb-0 text-white">
-                  <i class="fas fa-paper-plane me-2"></i>
-                  Envoyez-nous un message
-                </h4>
-                <div class="text-white-50 mt-2">On vous répond dès que possible ✨</div>
-              </div>
-
-              <div class="card-body p-5">
-                <form @submit.prevent="submitContactForm">
-                  <div class="row g-3">
-                    <div class="col-md-6">
-                      <label for="nom" class="form-label text-white-50">Nom complet *</label>
-                      <input
-                        type="text"
-                        class="form-control form-dark"
-                        id="nom"
-                        v-model="contactForm.nom"
-                        required
-                      />
-                    </div>
-
-                    <div class="col-md-6">
-                      <label for="email" class="form-label text-white-50">Courriel *</label>
-                      <input
-                        type="email"
-                        class="form-control form-dark"
-                        id="email"
-                        v-model="contactForm.email"
-                        required
-                      />
-                    </div>
-                  </div>
-
-                  <div class="row g-3 mt-3">
-                    <div class="col-md-6">
-                      <label for="telephone" class="form-label text-white-50">Téléphone</label>
-                      <input
-                        type="tel"
-                        class="form-control form-dark"
-                        id="telephone"
-                        v-model="contactForm.telephone"
-                      />
-                    </div>
-
-                    <div class="col-md-6">
-                      <label for="sujet" class="form-label text-white-50">Sujet *</label>
-                      <select
-                        class="form-control form-dark"
-                        id="sujet"
-                        v-model="contactForm.sujet"
-                        required
-                      >
-                        <option value="">Sélectionner un sujet</option>
-                        <option value="adhésion">Question sur l'adhésion</option>
-                        <option value="projets">Nos projets</option>
-                        <option value="partenariat">Partenariat</option>
-                        <option value="don">Faire un don</option>
-                        <option value="stage">Stages internationaux</option>
-                        <option value="autre">Autre</option>
-                      </select>
-                    </div>
-                  </div>
-
-                  <div class="mt-3">
-                    <label for="message" class="form-label text-white-50">Message *</label>
-                    <textarea
-                      class="form-control form-dark"
-                      id="message"
-                      rows="6"
-                      v-model="contactForm.message"
-                      placeholder="Décrivez votre demande en détail..."
-                      required
-                    ></textarea>
-                  </div>
-
-                  <div class="mt-4 text-center">
-                    <button type="submit" class="btn btn-accent btn-lg px-5">
-                      <i class="fas fa-paper-plane me-2"></i>
-                      Envoyer
-                    </button>
-                  </div>
-                </form>
-
-                <div class="text-center mt-4 small text-white-50">
-                  Ou écris-nous directement :
-                  <a class="link-soft" href="mailto:ulaval@chapter.ewb.ca">ulaval@chapter.ewb.ca</a>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Google Maps (remplace directions + stationnement) -->
     <section class="py-5 section-dark">
       <div class="container">
         <div class="row">
@@ -398,7 +264,7 @@
       </div>
     </section>
 
-    <!-- FAQ -->
+   
     <section class="py-5 section-dark">
       <div class="container">
         <div class="row">
@@ -454,8 +320,8 @@
                 <p class="text-white-50">
                   Aucun engagement minimum ! Participez selon vos disponibilités.
                 </p>
-                <router-link to="/qui-sommes-nous" class="btn btn-outline-light">
-                  Découvrir nos valeurs
+                <router-link to="/comite-executif" class="btn btn-outline-light">
+                  Contacter le comité
                 </router-link>
               </div>
             </div>
@@ -478,15 +344,10 @@ export default {
   name: "NousJoindre",
   data() {
     return {
+      email: "ulaval@chapter.ewb.ca",
+      copyState: "idle", 
       addressLine:
         "1045 Av de la Médecine, Pavillon Alexandre-Vachon, Université Laval, Québec, QC, Canada",
-      contactForm: {
-        nom: "",
-        email: "",
-        telephone: "",
-        sujet: "",
-        message: "",
-      },
     };
   },
   computed: {
@@ -496,21 +357,29 @@ export default {
       )}`;
     },
     googleMapsEmbed() {
-      return `https://www.google.com/maps?q=${encodeURIComponent(
-        this.addressLine
-      )}&output=embed`;
+      return `https://www.google.com/maps?q=${encodeURIComponent(this.addressLine)}&output=embed`;
     },
   },
   methods: {
-    submitContactForm() {
-      alert("Merci pour votre message ! Nous vous répondrons dans les plus brefs délais.");
-      this.contactForm = {
-        nom: "",
-        email: "",
-        telephone: "",
-        sujet: "",
-        message: "",
-      };
+    async copyEmail() {
+      try {
+        await navigator.clipboard.writeText(this.email);
+        this.copyState = "copied";
+        window.setTimeout(() => (this.copyState = "idle"), 2500);
+      } catch (e) {
+        // Fallback si clipboard bloqué (rare)
+        const el = document.createElement("textarea");
+        el.value = this.email;
+        el.setAttribute("readonly", "");
+        el.style.position = "absolute";
+        el.style.left = "-9999px";
+        document.body.appendChild(el);
+        el.select();
+        document.execCommand("copy");
+        document.body.removeChild(el);
+        this.copyState = "copied";
+        window.setTimeout(() => (this.copyState = "idle"), 2500);
+      }
     },
   },
 };
@@ -593,12 +462,23 @@ export default {
 .social-icon.youtube {
   background: linear-gradient(135deg, #ff0000, #b30000);
 }
-.social-icon.tiktok {
-  background: linear-gradient(135deg, #111, #000);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-}
 .social-icon.email {
   background: linear-gradient(135deg, #6c757d, #42484f);
+}
+
+/* Email pill */
+.email-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  color: rgba(255, 255, 255, 0.86);
+  font-weight: 800;
+  letter-spacing: 0.2px;
 }
 
 /* Buttons */
@@ -639,55 +519,36 @@ export default {
   background: #cc0000;
   color: #fff;
 }
-.btn-tiktok {
-  background: #000;
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  color: #fff;
-  font-weight: 800;
-}
-.btn-tiktok:hover {
-  background: #111;
-  color: #fff;
-}
 .btn-email {
   background: #6c757d;
   border: none;
   color: #fff;
-  font-weight: 800;
+  font-weight: 900;
 }
 .btn-email:hover {
   background: #545b62;
   color: #fff;
 }
+.btn-email:disabled {
+  opacity: 0.75;
+  cursor: default;
+}
 .btn-outline-light {
   font-weight: 800;
 }
 
-/* Accent strip */
-.accent-strip {
-  display: flex;
-  gap: 14px;
-  align-items: center;
-  padding: 14px 16px;
-  border-radius: 16px;
-  background: linear-gradient(135deg, rgba(249, 115, 22, 0.18), rgba(255, 255, 255, 0.06));
-  border: 1px solid rgba(255, 255, 255, 0.08);
-}
-.accent-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 12px;
+/* Accent button */
+.btn-accent {
+  background: #f97316;
+  color: #111;
+  border: none;
+  font-weight: 950;
   border-radius: 999px;
-  background: rgba(249, 115, 22, 0.22);
-  border: 1px solid rgba(249, 115, 22, 0.35);
-  color: #fff;
-  font-weight: 900;
-  white-space: nowrap;
+  box-shadow: 0 16px 40px rgba(249, 115, 22, 0.25);
 }
-.accent-text {
-  color: rgba(255, 255, 255, 0.75);
-  font-weight: 650;
+.btn-accent:hover {
+  filter: brightness(0.95);
+  color: #111;
 }
 
 /* Info blocks */
@@ -715,87 +576,6 @@ export default {
   border: 1px solid rgba(37, 99, 235, 0.22);
   color: rgba(255, 255, 255, 0.78);
   font-weight: 650;
-}
-.mini-warning {
-  padding: 12px 14px;
-  border-radius: 14px;
-  background: rgba(249, 115, 22, 0.12);
-  border: 1px solid rgba(249, 115, 22, 0.22);
-  color: rgba(255, 255, 255, 0.78);
-  font-weight: 650;
-}
-.hours-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 10px;
-}
-.hours-item {
-  padding: 12px 14px;
-  border-radius: 14px;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-}
-.hours-k {
-  color: rgba(255, 255, 255, 0.65);
-  font-weight: 850;
-}
-.hours-v {
-  color: #fff;
-  font-weight: 950;
-  margin-top: 2px;
-}
-.muted {
-  color: rgba(255, 255, 255, 0.6);
-}
-
-/* Form header + inputs dark */
-.form-header {
-  border: none;
-  background: linear-gradient(135deg, rgba(249, 115, 22, 0.25), rgba(0, 0, 0, 0.4));
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-}
-.form-dark {
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.10);
-  color: #fff;
-  border-radius: 12px;
-  padding: 12px 14px;
-}
-.form-dark::placeholder {
-  color: rgba(255, 255, 255, 0.45);
-}
-.form-dark:focus {
-  background: rgba(255, 255, 255, 0.05);
-  border-color: rgba(249, 115, 22, 0.45);
-  box-shadow: 0 0 0 0.2rem rgba(249, 115, 22, 0.18);
-  color: #fff;
-}
-select.form-dark option {
-  color: #111;
-}
-.link-soft {
-  color: rgba(255, 255, 255, 0.85);
-  font-weight: 800;
-  text-decoration: none;
-  border-bottom: 1px dashed rgba(255, 255, 255, 0.35);
-}
-.link-soft:hover {
-  color: #f97316;
-  border-bottom-color: rgba(249, 115, 22, 0.7);
-}
-
-/* Accent button */
-.btn-accent {
-  background: #f97316;
-  color: #111;
-  border: none;
-  font-weight: 950;
-  border-radius: 999px;
-  box-shadow: 0 16px 40px rgba(249, 115, 22, 0.25);
-}
-.btn-accent:hover {
-  filter: brightness(0.95);
-  color: #111;
 }
 
 /* Map card (dark) */
@@ -891,12 +671,6 @@ select.form-dark option {
 }
 
 /* Responsive */
-@media (max-width: 992px) {
-  .accent-strip {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-}
 @media (max-width: 768px) {
   .hero-dark {
     padding-top: 60px;

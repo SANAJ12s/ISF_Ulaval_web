@@ -7,23 +7,6 @@
           <p class="mb-3">
             Ingénieurs sans frontières Canada - Section Université Laval
           </p>
-          <div class="social-links">
-            <a href="https://www.facebook.com/isfulaval" class="text-light me-3" target="_blank">
-            <i class="fab fa-facebook-f"></i>
-            </a>
-            <a href="#" class="text-light me-3" target="_blank">
-            <i class="fab fa-instagram"></i>
-            </a>
-            <a href="#" class="text-light me-3" target="_blank">
-            <i class="fab fa-linkedin-in"></i>
-            </a>
-            <a href="#" class="text-light me-3" target="_blank">
-            <i class="fab fa-youtube"></i>
-            </a>
-            <a href="#" class="text-light me-3" target="_blank">
-            <i class="fab fa-tiktok"></i>
-            </a>
-          </div>
         </div>
         
         <div class="col-lg-4 mb-4">
@@ -32,7 +15,6 @@
             <li><router-link to="/devenir-membre" class="text-light text-decoration-none">Devenir membre</router-link></li>
             <li><router-link to="/nos-projets" class="text-light text-decoration-none">Nos projets</router-link></li>
             <li><router-link to="/faire-un-don" class="text-light text-decoration-none">Faire un don</router-link></li>
-            <li><router-link to="/charte" class="text-light text-decoration-none">Notre charte</router-link></li>
           </ul>
         </div>
         

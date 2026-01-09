@@ -261,7 +261,7 @@ export default {
           linkedin: "",
           programme: "Baccalauréat Génie Civil",
           annee: "2025–2026",
-          funFact: "",
+          funFact: "J’aime le chocolat🥹",
           bio: "",
           photo: "/executif/Vp_Tresorerie.jpg",
           description:
@@ -296,6 +296,34 @@ export default {
             "Gère l’image et les réseaux sociaux; diffuse les informations importantes et maintient une cohérence visuelle.",
         },
         {
+          id: "vp-projet-d-ingenierie",
+          name: "Noa Tantely Rajaona",
+          role: "Vp Projet d’ingénierie",
+          email: "",
+          linkedin: "",
+          programme: "Baccalauréat Génie Industriel",
+          annee: "2025–2026",
+          funFact: "j'ai joué du violoncelle pendant toute mon enfance et adolescence / j'ai appris à faire de l'escrime suite à cause des JO",
+          bio: "",
+          photo: "/executif/vp_projet.jpg",
+          description:
+            "",
+        },
+        {
+          id: "assistante-projet-dingenierie",
+          name: "Sarah Martin",
+          role: "Assistante Projet d’ingénierie",
+          email: "",
+          linkedin: "",
+          programme: "Diplômée en Génie Agroenvironnemental",
+          annee: "2025–2026",
+          funFact: "J’ai fais une session d’échange puis je suis revenue !",
+          bio: "",
+          photo: "/executif/AssistanteProjetIng.png",
+          description:
+            "",
+        },
+        {
           id: "vp-evenementiel",
           name: "Manuela Thérèse Karelle Ngongo Kengne",
           role: "VP Événementiel",
@@ -304,7 +332,7 @@ export default {
           programme: "Baccalauréat Génie Alimentaire",
           annee: "2025–2026",
           funFact:
-            "Passionnée de cheveux afro et de coiffures africaines (sur moi et mes proches).",
+            "Je suis passionnée de cheveux afro et de coiffures africaines.J'en fais sur moi même et sur mes proches",
           bio: "",
           photo: "/executif/Vp_Evenementiel.jpg",
           description:
@@ -344,7 +372,7 @@ export default {
           role: "VP Leadership",
           email: "",
           linkedin: "",
-          programme: "",
+          programme: "Baccalauréat",
           annee: "2025–2026",
           funFact: "J’aime prendre des photos.",
           bio: "",
@@ -367,20 +395,6 @@ export default {
             "Appuie la VP Leadership dans la préparation et l’animation d’activités de formation et de sensibilisation.",
         },
         {
-          id: "sage-2",
-          name: "Benjamin Méthot",
-          role: "Sage",
-          email: "",
-          linkedin: "",
-          programme: "Chercheur en génie électrique",
-          annee: "2025–2026",
-          funFact: "Adore aller en Égypte.",
-          bio: "",
-          photo: "/executif/Sage2.png",
-          description:
-            "Rôle conseil : partage d’expérience, soutien et accompagnement pour la continuité de l’association.",
-        },
-        {
           id: "sage-1",
           name: "Yeva Côté-Paradis",
           role: "Sage",
@@ -393,6 +407,20 @@ export default {
           photo: "/executif/Sage1.png",
           description:
             "Rôle conseil : appuie l’exécutif dans la vision, la structure et la prise de décision.",
+        },
+        {
+          id: "sage-2",
+          name: "Benjamin Méthot",
+          role: "Sage",
+          email: "",
+          linkedin: "",
+          programme: "Chercheur en génie électrique",
+          annee: "2025–2026",
+          funFact: "Adore aller en Égypte.",
+          bio: "",
+          photo: "/executif/Sage2.png",
+          description:
+            "Rôle conseil : partage d’expérience, soutien et accompagnement pour la continuité de l’association.",
         },
         // Si tu veux utiliser aussi ces 2 images (optionnel):
         // { id:"assistant-leadership-2", name:"...", role:"Assistant Leadership", photo:"/executif/Assistant_Leadership.jpg", ... }

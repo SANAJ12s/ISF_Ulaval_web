@@ -37,55 +37,6 @@
       </div>
     </section>
 
-    <!-- BANDES : QUI SOMMES-NOUS -->
-    <section class="who-we-are">
-      <h2 class="section-title">Qui sommes-nous ?</h2>
-
-      <div class="band band-orange">
-        <div class="container band-inner">
-          <h3>Notre histoire</h3>
-          <p>
-            La section Ingénieurs sans frontières – Université Laval fait partie du réseau
-            Ingénieurs sans frontières Canada. Elle rassemble aujourd’hui une communauté dynamique
-            et engagée de plus de 90 membres.
-          </p>
-          <p>
-            Ouverte à toutes les étudiantes et tous les étudiants, de tous les cycles, de tous les
-            programmes, incluant les étudiants et étudiantes aux cycles supérieurs, notre section
-            est un espace inclusif où chacun peut s’impliquer à sa façon et selon ses intérêts.
-          </p>
-        </div>
-      </div>
-
-      <div class="band band-black">
-        <div class="container band-inner">
-          <h3>Notre mission</h3>
-          <p>
-            Notre mission est de sensibiliser et mobiliser la communauté étudiante autour des enjeux
-            sociaux, environnementaux et éthiques liés à l’ingénierie et au développement international.
-          </p>
-          <p>
-            Par le biais de conférences, d’activités de sensibilisation, d’événements et d’initiatives
-            concrètes, nous cherchons à créer un impact positif et durable, ici comme ailleurs.
-          </p>
-        </div>
-      </div>
-
-      <div class="band band-orange">
-        <div class="container band-inner">
-          <h3>Notre vision</h3>
-          <p>
-            Nous croyons en une ingénierie humaine, responsable et engagée. Notre vision est de contribuer
-            à la formation de personnes conscientes des impacts de leurs actions et désireuses de mettre
-            leurs compétences au service d’un avenir plus juste, solidaire et durable.
-          </p>
-          <p>
-            Que tu sois simplement curieux·se ou prêt·e à t’impliquer activement, tu as ta place parmi nous.
-          </p>
-        </div>
-      </div>
-    </section>
-
     <!-- ÉVÉNEMENTS À VENIR (Firestore + carousel auto) -->
     <section class="py-5 events-home">
       <div class="container">
@@ -141,7 +92,9 @@
 
               <div class="event-badges">
                 <span v-if="currentEvent.category" class="pill">{{ currentEvent.category }}</span>
-                <span v-if="currentEvent.date" class="pill muted-pill"> {{ formatDate(currentEvent.date) }} </span>
+                <span v-if="currentEvent.date" class="pill muted-pill">
+                  {{ formatDate(currentEvent.date) }}
+                </span>
               </div>
             </div>
 
@@ -278,7 +231,8 @@ export default {
   },
 
   mounted() {
-    const q = query(collection(db, "events"));    this._unsub = onSnapshot(
+    const q = query(collection(db, "events"));
+    this._unsub = onSnapshot(
       q,
       (snap) => {
         this.events = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
@@ -311,8 +265,7 @@ export default {
       const m = String(d.getMonth() + 1).padStart(2, "0");
       const day = String(d.getDate()).padStart(2, "0");
       return `${y}-${m}-${day}`;
-}
-,
+    },
 
     formatDate(yyyyMmDd) {
       try {
@@ -328,7 +281,7 @@ export default {
       this.stopAuto();
       this._timer = setInterval(() => {
         if (!this._paused && this.visibleUpcoming.length > 1) {
-          this.nextEvent(false); // auto tick => pas besoin de reset
+          this.nextEvent(false);
         }
       }, this.autoMs);
     },
@@ -389,8 +342,11 @@ export default {
   position: relative;
   background-image: url("/activites/midiconf4.png");
   background-size: cover;
-  background-position: center;
-  height: 70vh;
+
+  /* ✅ on décale un peu vers le bas (tu peux ajuster 15%/20%/25%) */
+  background-position: center 18%;
+
+  height: 100vh;
 }
 
 .hero-content {
@@ -433,46 +389,6 @@ export default {
   border-radius: 18px;
   object-fit: cover;
   box-shadow: 0 14px 40px rgba(0, 0, 0, 0.35);
-}
-
-/* QUI SOMMES-NOUS */
-.who-we-are {
-  background: #000;
-  padding-bottom: 0;
-}
-.section-title {
-  text-align: center;
-  font-size: 2.4rem;
-  font-weight: 900;
-  padding: 0 12px 2.5rem;
-  margin: 0;
-  color: #fff;
-}
-.band {
-  padding: 3.2rem 0;
-}
-.band-inner {
-  max-width: 900px;
-}
-.band h3 {
-  font-size: 1.9rem;
-  font-weight: 900;
-  margin-bottom: 1rem;
-}
-.band p {
-  font-size: 1.05rem;
-  line-height: 1.8;
-  margin-bottom: 0.9rem;
-}
-.band-orange {
-  background: #f97316;
-  color: #000;
-}
-.band-black {
-  background: #000;
-  color: #fff;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 /* EVENTS */
@@ -683,10 +599,5 @@ export default {
     height: 44px;
     border-radius: 12px;
   }
-}
-
-@media (max-width: 768px) {
-  .section-title { font-size: 2rem; }
-  .band-inner { padding: 0 8%; }
 }
 </style>

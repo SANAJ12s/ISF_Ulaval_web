@@ -23,47 +23,6 @@
               </router-link>
             </div>
           </div>
-
-          <div class="col-lg-5 mt-4 mt-lg-0">
-            <div class="hero-card">
-              <div class="hero-card-top">
-                <div class="hero-badge">
-                  <i class="fas fa-users me-2"></i> Communauté
-                </div>
-                <div class="hero-badge alt">
-                  <i class="fas fa-globe me-2"></i> Impact
-                </div>
-              </div>
-
-              <div class="hero-card-body">
-                <div class="hero-icon">
-                  <i class="fas fa-hands-helping"></i>
-                </div>
-                <div class="hero-card-title">ISF Université Laval</div>
-                <div class="hero-card-sub">Plus de 90 membres engagés</div>
-
-                <div class="hero-stats">
-                  <div class="stat">
-                    <div class="stat-num">90+</div>
-                    <div class="stat-label">Membres</div>
-                  </div>
-                  <div class="stat">
-                    <div class="stat-num">3+</div>
-                    <div class="stat-label">Initiatives</div>
-                  </div>
-                  <div class="stat">
-                    <div class="stat-num">UL</div>
-                    <div class="stat-label">Campus</div>
-                  </div>
-                </div>
-
-                <div class="hero-mini">
-                  <i class="fas fa-sparkles me-2"></i>
-                  Conférences • Activités • Projets solidaires
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
     </section>
@@ -87,8 +46,9 @@
                 </div>
 
                 <p class="lead text-white mb-3">
-                  La section <strong>Ingénieurs sans frontières – Université Laval</strong> rassemble
-                  aujourd’hui une communauté dynamique et engagée de plus de <strong>90 membres</strong>.
+                  La section Ingénieurs sans frontières – Université Laval a été crée en 2004 et fait partie du 
+                  réseau de Ingénieurs sans frontières Canada. Elle rassemble aujourd’hui une communauté
+                  dynamique et engagée de plus de 90 membres.
                 </p>
 
                 <p class="text-white-50 mb-0" style="line-height: 1.85;">

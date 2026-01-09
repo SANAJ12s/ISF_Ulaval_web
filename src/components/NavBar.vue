@@ -19,15 +19,20 @@
         <router-link class="nav-link" to="/stages">Stages</router-link>
         <router-link class="nav-link" to="/devenir-membre">Devenir membre</router-link>
 
-        <!-- ✅ Admin toujours visible -->
-        <router-link
-          class="nav-link"
-          :to="admin.isAdmin ? '/admin' : '/admin/login'"
-        >
+        <router-link class="nav-link" :to="admin.isAdmin ? '/admin' : '/admin/login'">
           {{ admin.isAdmin ? "Admin" : "admin" }}
         </router-link>
 
-        <!-- ✅ Déconnexion visible seulement si admin -->
+        <button
+          class="theme-toggle"
+          type="button"
+          @click="toggleTheme"
+          :aria-label="isDark ? 'Activer le thème clair' : 'Activer le thème sombre'"
+          :title="isDark ? 'Thème clair' : 'Thème sombre'"
+        >
+          <i :class="isDark ? 'fas fa-sun' : 'fas fa-moon'"></i>
+        </button>
+
         <button
           v-if="admin.isAdmin"
           class="nav-link btn-logout"
@@ -59,7 +64,6 @@
       <router-link class="m-link" to="/stages" @click="closeMobile">Stages</router-link>
       <router-link class="m-link" to="/devenir-membre" @click="closeMobile">Devenir membre</router-link>
 
-      <!-- ✅ Admin toujours visible -->
       <router-link
         class="m-link"
         :to="admin.isAdmin ? '/admin' : '/admin/login'"
@@ -68,7 +72,14 @@
         {{ admin.isAdmin ? "Admin" : "admin" }}
       </router-link>
 
-      <!-- ✅ Logout si admin -->
+
+      <button class="m-link theme-toggle-mobile" type="button" @click="toggleTheme">
+        <span class="d-flex align-items-center gap-2">
+          <i :class="isDark ? 'fas fa-sun' : 'fas fa-moon'"></i>
+          <span>{{ isDark ? "Thème clair" : "Thème sombre" }}</span>
+        </span>
+      </button>
+
       <button
         v-if="admin.isAdmin"
         class="m-link btn-logout-mobile"
@@ -93,13 +104,20 @@ export default {
       isScrolled: false,
       mobileOpen: false,
       admin: useAdminStore(),
+
+      // Light par défaut (fond blanc standard)
+      isDark: false,
     };
   },
   async mounted() {
     this.onScroll();
     window.addEventListener("scroll", this.onScroll, { passive: true });
 
-    // ✅ Initialise l'état auth pour afficher "Connexion admin" ou "Admin"
+    const saved = localStorage.getItem("theme"); // "dark" | "light" | null
+    this.isDark = saved === "dark"
+    document.documentElement.classList.toggle("theme-dark", this.isDark);    
+    window.dispatchEvent(new CustomEvent("theme-change", { detail: { isDark: this.isDark } }));
+
     if (!this.admin.ready) {
       await this.admin.init();
     }
@@ -120,7 +138,16 @@ export default {
     async logout() {
       await this.admin.logout();
       this.mobileOpen = false;
-      this.$router.push("/"); // retour accueil
+      this.$router.push("/");
+    },
+
+    // ✅ Toggle thème + persist + event
+    toggleTheme() {
+      this.isDark = !this.isDark;
+      document.documentElement.classList.toggle("theme-dark", this.isDark);
+      localStorage.setItem("theme", this.isDark ? "dark" : "light");
+
+      window.dispatchEvent(new CustomEvent("theme-change", { detail: { isDark: this.isDark } }));
     },
   },
 };
@@ -244,13 +271,39 @@ export default {
   box-shadow: 0 0 18px rgba(0, 0, 0, 0.25);
 }
 
-/* ✅ Logout button style (comme un lien) */
 .btn-logout,
 .btn-logout-mobile {
   background: transparent;
   border: 0;
   cursor: pointer;
   text-align: left;
+}
+
+.theme-toggle {
+  width: 42px;
+  height: 42px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+
+  border: 1px solid rgba(255,255,255,0.18);
+  background: rgba(255,255,255,0.08);
+  color: #fff;
+
+  cursor: pointer;
+  transition: transform 0.15s ease, background 0.2s ease, border-color 0.2s ease;
+}
+.theme-toggle:hover {
+  transform: translateY(-1px);
+  background: rgba(255,255,255,0.12);
+}
+.top-nav.scrolled .theme-toggle {
+  border-color: rgba(0,0,0,0.18);
+  background: rgba(0,0,0,0.08);
+  color: #000;
+}
+.top-nav.scrolled .theme-toggle:hover {
+  background: rgba(0,0,0,0.12);
 }
 
 /* Burger */
@@ -295,8 +348,15 @@ export default {
     font-weight: 900;
     padding: 12px 12px;
     border-radius: 14px;
+    border: 0;
+    text-align: left;
   }
-  .m-link { color: #fff; background: rgba(255,255,255,0.06); }
+  .m-link { color: #fff; background: rgba(255,255,255,0.06); cursor: pointer; }
   .m-cta { color: #000; background: #fff; }
+
+  .theme-toggle-mobile {
+    display: block;
+    width: 100%;
+  }
 }
 </style>

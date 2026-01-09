@@ -56,15 +56,18 @@
                 </div>
 
                 <div class="d-flex gap-3 justify-content-center flex-wrap mt-4">
-                  <a href="https://isfq.qc.ca" target="_blank" class="btn btn-accent btn-lg">
-                    <i class="fas fa-external-link-alt me-2"></i>
-                    Voir ISFQ
-                  </a>
-                  <a href="https://www.ewb.ca" target="_blank" class="btn btn-outline-light btn-lg">
-                    <i class="fas fa-external-link-alt me-2"></i>
-                    Voir EWB
-                  </a>
-                </div>
+  <a
+    href="https://www.ulaval.ca"
+    target="_blank"
+    rel="noopener"
+    class="btn btn-accent btn-lg"
+    aria-label="Site officiel de l’Université Laval"
+  >
+    <i class="fas fa-external-link-alt me-2"></i>
+    Université Laval
+  </a>
+</div>
+
               </div>
             </div>
           </div>
@@ -72,93 +75,7 @@
       </div>
     </section>
 
-    <!-- ORG PARTENAIRES -->
-    <section class="py-5 section-dark">
-      <div class="container">
-        <div class="row">
-          <div class="col-lg-8 mx-auto text-center mb-5">
-            <h2 class="display-6 fw-bold mb-2 text-white">Organisations partenaires</h2>
-            <p class="lead text-white-50 mb-0">
-              Découvre les opportunités de stages via nos partenaires
-            </p>
-          </div>
-        </div>
-
-        <div class="row g-4">
-          <!-- ISFQ -->
-          <div class="col-lg-6">
-            <div class="card card-dark card-hover h-100">
-              <div class="card-body p-4">
-                <div class="d-flex align-items-start">
-                  <div class="me-4">
-                    <div class="round-badge badge-accent">
-                      <i class="fas fa-globe-americas"></i>
-                    </div>
-                  </div>
-                  <div class="flex-grow-1">
-                    <h5 class="fw-bold mb-2 text-white">Ingénieurs sans frontières Québec (ISFQ)</h5>
-                    <p class="text-white-50 mb-3">
-                      Programmes de stages et de volontariats internationaux axés sur l'ingénierie
-                      humanitaire et le développement durable.
-                    </p>
-
-                    <div class="tags">
-                      <span class="tag">Eau potable</span>
-                      <span class="tag">Énergies renouvelables</span>
-                      <span class="tag">Infrastructures</span>
-                      <span class="tag">Afrique</span>
-                    </div>
-
-                    <div class="mt-4">
-                      <a href="https://isfq.qc.ca" target="_blank" class="btn btn-accent">
-                        <i class="fas fa-external-link-alt me-2"></i>
-                        Visiter ISFQ
-                      </a>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- EWB -->
-          <div class="col-lg-6">
-            <div class="card card-dark card-hover h-100">
-              <div class="card-body p-4">
-                <div class="d-flex align-items-start">
-                  <div class="me-4">
-                    <div class="round-badge badge-green">
-                      <i class="fas fa-hands-helping"></i>
-                    </div>
-                  </div>
-                  <div class="flex-grow-1">
-                    <h5 class="fw-bold mb-2 text-white">Engineers Without Borders (EWB)</h5>
-                    <p class="text-white-50 mb-3">
-                      Opportunités de stages et de Fellowships pour développer des solutions
-                      innovantes aux défis du développement.
-                    </p>
-
-                    <div class="tags">
-                      <span class="tag">Fellowships</span>
-                      <span class="tag">Innovation</span>
-                      <span class="tag">Afrique de l'Ouest</span>
-                      <span class="tag">Échanges</span>
-                    </div>
-
-                    <div class="mt-4">
-                      <a href="https://www.ewb.ca" target="_blank" class="btn btn-outline-success">
-                        <i class="fas fa-external-link-alt me-2"></i>
-                        Visiter EWB
-                      </a>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
+  
 
     <!-- CONSEILS -->
     <section class="py-5 section-dark">
