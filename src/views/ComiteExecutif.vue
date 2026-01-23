@@ -376,7 +376,7 @@ export default {
           annee: "2025–2026",
           funFact: "J’aime prendre des photos.",
           bio: "",
-          photo: "/executif/Assistant_Leadership.jpg",
+          photo: "/executif/Vp_Leadership.jpg",
           description:
             "Organise des ateliers et activités de formation; développe les compétences et la conscientisation des membres.",
         },
@@ -390,7 +390,7 @@ export default {
           annee: "2025–2026",
           funFact: "Très bon cuisinier.",
           bio: "",
-          photo: "/executif/Vp_Leadership.jpg",
+          photo: "/executif/Assistant_Leadership.jpg",
           description:
             "Appuie la VP Leadership dans la préparation et l’animation d’activités de formation et de sensibilisation.",
         },
